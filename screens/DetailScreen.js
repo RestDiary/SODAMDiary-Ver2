@@ -281,7 +281,6 @@ function DetailScreen(card) {
         </Text>
       </SafeAreaView>
 
-      {/* 감정선택 */}
       <SafeAreaView
         style={{
           ...styles.feelingLayout,
@@ -313,7 +312,7 @@ function DetailScreen(card) {
                   >
                     <ImageModal
                       swipeToDismiss={false}
-                      resizeMode="contain"
+                      resizeMode="stretch"
                       imageBackgroundColor={nowTheme.cardBg}
                       style={{
                         marginLeft: 10,
@@ -333,8 +332,16 @@ function DetailScreen(card) {
                 )}
               </Pressable>
 
-              <Text style={{fontSize:20, color:"white", fontWeight:"bold"}}>
-              {card.route.params.card.content}
+              <Text
+                style={{
+                  marginLeft: 10,
+                  marginTop: 16,
+                  fontSize: 20,
+                  color: nowTheme.font,
+                  fontWeight: "bold",
+                }}
+              >
+                {card.route.params.card.content}
               </Text>
             </ScrollView>
           </SafeAreaView>
@@ -434,7 +441,7 @@ const styles = StyleSheet.create({
   title: {
     color: "white",
     fontSize: SCREEN_HEIGHT / 36,
-    height: SCREEN_HEIGHT / 20,
+    height: SCREEN_HEIGHT / 28,
     margin: 10,
   },
 
@@ -449,7 +456,6 @@ const styles = StyleSheet.create({
 
   feelingLayout: {
     flexDirection: "row",
-
     borderColor: "white",
   },
 
