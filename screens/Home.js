@@ -11,8 +11,10 @@ import {
   Alert,
   ImageBackground,
   StatusBar,
+  ActivityIndicator
 } from "react-native";
 import { Colors } from "react-native/Libraries/NewAppScreen";
+import axios from 'axios';
 // import { greaterOrEq } from 'react-native-reanimated';
 import {
   Entypo,
@@ -34,6 +36,9 @@ import {
   winter,
 } from "./css/globalStyles";
 import { useIsFocused } from "@react-navigation/native";
+import PieTop from './component/chartsRe/PieTop';
+import LineYear from './component/chartsRe/LineYear';
+import RingMonth from './component/chartsRe/RingMonth';
 
 //사용 디바이스 크기 값 받아오기
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
@@ -41,6 +46,125 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 function HomeScreen({ navigation }) {
   //스크린 이동할 때 lifecycle 실행
   const isFocused = useIsFocused();
+  const [pieData, setPieData] = useState([]);
+  const [lineData, setLineData] = useState([]);
+  const [ringData, setRingData] = useState([]);
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    console.log("실행함");
+    getPieData();
+    getLineData();
+    getRingData();
+  }, []);
+
+  // -------------------- [ Top5 감정 data 요청 (PieChart 사용) ] --------------------
+  const getPieData = async () => {
+    setLoading(true)
+    const userId = await AsyncStorage.getItem("id");
+    console.log("userid: ", userId)
+    console.log("axios 전, pieData 길이: ", pieData.length);
+    try {
+      await axios({
+        method: "post",
+        // url: `${API.pieTop}`,
+        url: 'http://192.168.0.10:3001/pieTop',
+        params: {
+          id: userId, //****작성자 id
+        }
+      }, null)
+        .then(res => {
+          setPieData(res.data)
+          console.log(res.data)
+          console.log("axios 후, pieData 길이: ", pieData.length);
+          console.log("axios 후, 리스폰스 길이: ", res.data.length);
+          // console.log("2: ", res.data.length);
+
+        })
+        .catch(function (error) {
+          Alert.alert("❗error : bad response")
+        })
+    } catch (error) {
+      console.log(error)
+    }
+    setLoading(false);
+  }
+
+  // -------------------- [ 한 해 감정 data 요청 (LineYear 사용) ] --------------------
+  const getLineData = async () => {  
+    setLoading(true)
+    const userId = await AsyncStorage.getItem("id");  // 작성자 id
+    let today = new Date();                           // 현재 날짜 객체
+    let year = today.getFullYear();                   // 현재 기준 연도
+
+    console.log("userid: ", userId)
+    console.log("year: ", year)
+    console.log("axios 전, lineData 길이: ", lineData.length);
+    try {
+      await axios({
+        method: "post",
+        // url: `${API.lineYear}`,
+        url: 'http://192.168.0.10:3001/lineYear',
+        params: {
+          id: userId, //****작성자 id
+          year: year  //현재 기준 연도
+        }
+      }, null)
+        .then(res => {
+          setLineData(res.data)
+          console.log("getLineData response: ", res.data);
+          console.log("axios 후, lindData 길이: ", lineData.length);
+          console.log("axios 후, line_response 길이: ", res.data.length);
+          // console.log("2: ", res.data.length);
+        })
+        .catch(function (error) {
+          Alert.alert("❗error : bad response")
+        })
+    } catch (error) {
+      console.log(error)
+    }
+    setLoading(false);
+  }
+
+
+  // -------------------- [ 월 별 감정 data 요청 (RingMonth 사용) ] --------------------
+  const getRingData = async () => {  
+    setLoading(true)
+    const userId = await AsyncStorage.getItem("id");  // 작성자 id
+    let today = new Date();                           // 현재 날짜 객체
+    let month = today.getMonth();                     // 현재 기준 월
+
+    console.log("userid: ", userId)
+    console.log("month: ", month)
+    console.log("axios 전, monthData 길이: ", ringData.length);
+
+    try {
+      await axios({
+        method: "post",
+        // url: `${API.lineYear}`,
+        url: 'http://192.168.0.10:3001/ringMonth',
+        params: {
+          id: userId,   // ****작성자 id
+          month: month   // 현재 기준 월
+        }
+      }, null)
+        .then(res => {
+          setRingData(res.data)
+          console.log("getRingData response: ", res.data);
+          console.log("axios 후, ringData 길이: ", ringData.length);
+          console.log("axios 후, ring_response 길이: ", res.data.length);
+          // console.log("2: ", res.data.length);
+        })
+        .catch(function (error) {
+          Alert.alert("❗error : bad response")
+        })
+    } catch (error) {
+      console.log(error)
+    }
+    setLoading(false);
+  }
+
+
 
   //테마
   useEffect(() => {
@@ -100,6 +224,32 @@ function HomeScreen({ navigation }) {
               </TouchableOpacity>
             </ImageBackground>
           </View>
+
+          {/* <View>
+          {loading && <ActivityIndicator size="large" color="white" />}
+          {
+            pieData[0] &&(
+              <PieTop data={pieData} />
+            ) 
+            
+          }
+
+          </View> */}
+
+
+          {/* <View>
+            {loading && <ActivityIndicator size="large" color="white" />}
+            {
+              pieData.length > 0 ? (
+                <PieTop data={pieData} />
+              ) : <PieTop data={"0"} />
+
+            }
+          </View>
+          <View>
+            
+          </View> */}
+
 
           <View style={styles.content}>
             {/* 새로로 긴 위젯을 위한 위젯 나누기 View */}
@@ -186,6 +336,42 @@ function HomeScreen({ navigation }) {
               </View>
             </View>
           </View>
+
+          
+
+          {/* [ Top5 감정분석 차트 View ] */}
+          <View>
+            {loading && <ActivityIndicator size="large" color="white" />}
+            {
+              pieData.length > 0 ? (
+                <PieTop data={pieData} />
+              ) : <PieTop data={"0"} />
+
+            }
+          </View>
+
+          {/* [ 올해 감정분석 차트 View ] */}
+          <View>
+            {
+              lineData.length > 0 ? (
+                <LineYear data={lineData} />
+              ) : <LineYear data={"0"} />
+
+            }
+          </View>
+
+          {/* [ 월 별 감정분석 차트 View ] */}
+          <View>
+            {
+              ringData.length > 0 ? (
+                <RingMonth data={ringData} />
+              ) : <RingMonth data={"0"} />
+
+            }
+          </View>
+
+
+
         </ScrollView>
       </SafeAreaView>
     </View>
@@ -260,4 +446,10 @@ const styles = StyleSheet.create({
   textStyle: {
     color: "white",
   },
+  loadingView: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: SCREEN_WIDTH / 1.05,
+    height: SCREEN_HEIGHT / 4,
+  }
 });
