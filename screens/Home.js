@@ -22,7 +22,6 @@ import {
   FontAwesome,
   MaterialIcons,
 } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import {
   dark,
@@ -35,6 +34,7 @@ import {
   magazine,
   winter,
 } from "./css/globalStyles";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
 import PieTop from './component/chartsRe/PieTop';
 import LineYear from './component/chartsRe/LineYear';
@@ -385,6 +385,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    //IOS
+    shadowColor: "#000", //그림자색
+    shadowOpacity: 0.4, //그림자 투명도
+    shadowOffset: { width: 4, height: 4 }, //그림자 위치
+    // ANDROID
+    elevation: 3,
   },
   headWidgetDiv2: {
     flexDirection: "column",
@@ -409,6 +415,12 @@ const styles = StyleSheet.create({
     height: "100%",
     justifyContent: "center",
     alignItems: "center",
+    //IOS
+    shadowColor: "#000", //그림자색
+    shadowOpacity: 0.4, //그림자 투명도
+    shadowOffset: { width: 4, height: 4 }, //그림자 위치
+    // ANDROID
+    elevation: 3,
   },
   smallWidget: {
     height: SCREEN_HEIGHT / 5.8,

@@ -26,6 +26,9 @@ function LoginScreen({ navigation }) {
       else if (selectedTheme.includes("pattern")) setNowTheme(pattern);
       else if (selectedTheme.includes("magazine")) setNowTheme(magazine);
       else if (selectedTheme.includes("winter")) setNowTheme(winter);
+      else {
+        setNowTheme(dark)
+      }
     } 
 
   const [id, setId] = useState("");

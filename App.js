@@ -49,6 +49,8 @@ import ChangePwScreen from "./screens/ChangePwScreen";
 import NewPwScreen from "./screens/NewPwScreen";
 import ChangeEmailScreen from "./screens/ChangeEmailScreen";
 import UserInfoScreen from "./screens/UserInfoScreen";
+import DiagnosisScreen from "./screens/DiagnosisScreen";
+import ResultScreen from "./screens/ResultScreen";
 import LoginScreen from "./screens/LoginScreen";
 import ThemeScreen from "./screens/ThemeScreen";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -241,12 +243,28 @@ function CustomDrawerContent(props) {
         </TouchableOpacity>
       </View>
 
-      {/* 파이차트 */}
+      {/* 파이차트
       {pieData.length > 0 ? (
         <EmotionPieChart data={pieData} />
       ) : (
         <ActivityIndicator size="large" color="white" />
-      )}
+      )} */}
+
+      {/* 자가진단 기능 */}
+      <View style={{ marginTop: 20 }}>
+        <TouchableOpacity
+          style={{ ...styles.drawerItem, backgroundColor: nowTheme.btn }}
+          // label="Close drawer"
+          onPress={() => props.navigation.navigate("Diagnosis")}
+        >
+          <MaterialCommunityIcons
+            name="theme-light-dark"
+            size={24}
+            color="white"
+          />
+          <Text style={styles.drawerItemText}>자가진단</Text>
+        </TouchableOpacity>
+      </View>
 
       {/* 테마변경 기능 */}
       <View style={{ marginTop: 20 }}>
@@ -368,6 +386,7 @@ function MyStack() {
       />
 
       {/* 기타 스크린 */}
+  
       <Stack.Screen
         name="Join"
         component={JoinScreen}
@@ -401,6 +420,19 @@ function MyStack() {
         component={ChangeEmailScreen}
         options={{ headerTintColor: "black", headerShown: false }}
       />
+      <Stack.Screen
+        name="Diagnosis"
+        component={DiagnosisScreen}
+        options={{ headerTintColor: "black", headerShown: false }}
+      />
+
+      <Stack.Screen
+        name="ResultScreen"
+        component={ResultScreen}
+        options={{ headerTintColor: "black", headerShown: false }}
+      />
+
+
       <Stack.Screen
         name="UserInfo"
         component={UserInfoScreen}
