@@ -188,30 +188,6 @@ function PictureDetailScreen(Album) {
     setCheckImage(true);
   };
 
-  //키워드 제거
-  const delEmotion = (keyword) => {
-    let temp = [...Emotions];
-    setEmotions(temp.filter((i) => i !== keyword));
-  };
-
-  //자식에서 부모에게 Audio 데이터 전달
-  const [audio, setAudio] = useState();
-  const [isRecording, setIsRecording] = useState(false);
-  const getAudio = (audio, isRecording) => {
-    setAudio(audio);
-    setIsRecording(isRecording);
-  };
-
-  const richTextHandle = (descriptionText) => {
-    if (descriptionText) {
-      setShowDescError(false);
-      setDescHTML(descriptionText);
-    } else {
-      setShowDescError(true);
-      setDescHTML("");
-    }
-  };
-
   //서버 요청 로딩
   const [loading, setLoading] = useState(false);
 
@@ -238,7 +214,6 @@ function PictureDetailScreen(Album) {
         </Text>
       </SafeAreaView>
 
-      {/* 감정선택 */}
       <SafeAreaView
         style={{
           ...styles.feelingLayout,
@@ -252,50 +227,57 @@ function PictureDetailScreen(Album) {
         </Text>
       </SafeAreaView>
 
-      {/*--------------------- 에디터 --------------------- */}
-      {editorColor.backgroundColor && (
-        <>
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            style={{ flex: 0.95, borderColor: nowTheme.cardBorder }}
-          >
-            <SafeAreaView>
-              <ScrollView>
-                {/* {이미지 보이는 곳} */}
-                <Pressable onPress={check}>
-                  {img && (
-                    <TouchableOpacity
-                      onPress={() => {
-                        setCheckImage(true);
+      <>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 0.95, borderColor: nowTheme.cardBorder }}
+        >
+          <SafeAreaView>
+            <ScrollView>
+              {/* {이미지 보이는 곳} */}
+              <Pressable onPress={check}>
+                {img && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      setCheckImage(true);
+                    }}
+                  >
+                    <ImageModal
+                      swipeToDismiss={false}
+                      resizeMode="stretch"
+                      imageBackgroundColor={nowTheme.cardBg}
+                      style={{
+                        marginLeft: 10,
+                        marginTop: 16,
+                        width: SCREEN_WIDTH / 1.5,
+                        height: SCREEN_WIDTH / 1.5,
+                        borderWidth: 1,
+                        borderColor: nowTheme.cardBorder,
+                        borderRadius: 20,
                       }}
-                    >
-                      <ImageModal
-                        swipeToDismiss={false}
-                        resizeMode="contain"
-                        imageBackgroundColor={nowTheme.cardBg}
-                        style={{
-                          marginLeft: 10,
-                          marginTop: 16,
-                          width: SCREEN_WIDTH / 1.5,
-                          height: SCREEN_WIDTH / 1.5,
-                          borderWidth: 1,
-                          borderColor: nowTheme.cardBorder,
-                          borderRadius: 20,
-                        }}
-                        source={{
-                          uri: img,
-                        }}
-                      />
-                      {/* <Image source={{ uri: imageUri }} style={styles.asd} /> */}
-                    </TouchableOpacity>
-                  )}
-                </Pressable>
-                <Text style={{fontSize:20, color:"white", fontWeight:"bold"}}>{content}</Text>
-              </ScrollView>
-            </SafeAreaView>
-          </KeyboardAvoidingView>
-        </>
-      )}
+                      source={{
+                        uri: img,
+                      }}
+                    />
+                    {/* <Image source={{ uri: imageUri }} style={styles.asd} /> */}
+                  </TouchableOpacity>
+                )}
+              </Pressable>
+              <Text
+                style={{
+                  marginLeft: 10,
+                  marginTop: 16,
+                  fontSize: 20,
+                  color: nowTheme.font,
+                  fontWeight: "bold",
+                }}
+              >
+                {content}
+              </Text>
+            </ScrollView>
+          </SafeAreaView>
+        </KeyboardAvoidingView>
+      </>
     </View>
   );
 }
@@ -368,7 +350,7 @@ const styles = StyleSheet.create({
   title: {
     color: "white",
     fontSize: SCREEN_HEIGHT / 36,
-    height: SCREEN_HEIGHT / 20,
+    height: SCREEN_HEIGHT / 28,
     margin: 10,
   },
 
