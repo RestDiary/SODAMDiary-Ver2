@@ -8,7 +8,7 @@ import {
   ScrollView,
   ActivityIndicator,
 } from "react-native";
-import { Calendar, LocaleConfig } from "react-native-calendars";
+import { Calendar, LocaleConfig, CalendarTheme } from "react-native-calendars";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Card from "./component/Card";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -25,6 +25,7 @@ import {
   magazine,
   winter,
 } from "./css/globalStyles";
+import { not } from "react-native-reanimated";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -105,7 +106,11 @@ function CalenderScreen({ navigation }) {
       const reDiaryDate = year + "-" + month + "-" + days;
       // console.log(reDiaryDate); 잘뜸
       const temp = {
-        [reDiaryDate]: { marked: true, disableTouchEvent: false },
+        [reDiaryDate]: {
+          marked: true,
+          disableTouchEvent: false,
+          selectedColor: "#e5e5e5",
+        },
       };
       Object.assign(result, temp);
     }
@@ -120,10 +125,10 @@ function CalenderScreen({ navigation }) {
           [selectedDay]: {
             selected: true,
             disableTouchEvent: false,
-            selectedColor: "blue",
+            selectedColor: nowTheme.btn,
             customStyles: {
               container: {
-                backgroundColor: "blue", // 원 대신 사각형으로 표시하려면 원하는 색상을 지정
+                backgroundColor: nowTheme.btn,
                 borderRadius: 6,
               },
             },
@@ -135,16 +140,30 @@ function CalenderScreen({ navigation }) {
   //===================================================================================
 
   return (
-    <>
+    <SafeAreaView
+      style={{
+        ...styles.container,
+        backgroundColor: nowTheme.cardBg,
+      }}
+    >
       {markingDate && (
-        <View
-          style={{
-            ...styles.container,
-            backgroundColor: nowTheme.cardBg,
-          }}
-        >
+        <View>
           <View>
             <Calendar
+              style={{
+                borderWidth: 1,
+                borderRadius: 20,
+                borderColor: nowTheme.btn,
+                backgroundColor: nowTheme.btn,
+                height: SCREEN_HEIGHT / 2.5,
+                //IOS
+                shadowColor: "#000", //그림자색
+                shadowOpacity: 0.7, //그림자 투명도
+                shadowOffset: { width: 4, height: 4 }, //그림자 위치
+                // ANDROID
+                elevation: 3,
+                margin: 4,
+              }}
               // 날짜 볼드체로 변경
               renderHeader={(date) => (
                 <View
@@ -197,7 +216,7 @@ function CalenderScreen({ navigation }) {
                 console.log("month changed", month.year);
               }}
               // 월 탐색 화살표 숨기기 기본 = 거짓
-              hideArrows={true}
+              hideArrows={false}
               // 월 페이지에 다른 달의 날짜를 표시하지 않습니다. 기본값 = 거짓
               hideExtraDays={false}
               // 캘린더 페이지에서 볼 수 있는 다른 달의 날짜. 기본값 = 거짓
@@ -240,7 +259,7 @@ function CalenderScreen({ navigation }) {
           </View>
         </View>
       )}
-    </>
+    </SafeAreaView>
   );
 }
 
