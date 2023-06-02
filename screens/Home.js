@@ -20,7 +20,6 @@ import {
   FontAwesome,
   MaterialIcons,
 } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import {
   dark,
@@ -33,6 +32,7 @@ import {
   magazine,
   winter,
 } from "./css/globalStyles";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
 
 //사용 디바이스 크기 값 받아오기
