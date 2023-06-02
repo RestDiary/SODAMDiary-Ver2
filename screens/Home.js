@@ -11,10 +11,10 @@ import {
   Alert,
   ImageBackground,
   StatusBar,
-  ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
 import { Colors } from "react-native/Libraries/NewAppScreen";
-import axios from 'axios';
+import axios from "axios";
 // import { greaterOrEq } from 'react-native-reanimated';
 import {
   Entypo,
@@ -36,9 +36,9 @@ import {
 } from "./css/globalStyles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
-import PieTop from './component/chartsRe/PieTop';
-import LineYear from './component/chartsRe/LineYear';
-import RingMonth from './component/chartsRe/RingMonth';
+import PieTop from "./component/chartsRe/PieTop";
+import LineYear from "./component/chartsRe/LineYear";
+import RingMonth from "./component/chartsRe/RingMonth";
 
 //사용 디바이스 크기 값 받아오기
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
@@ -49,7 +49,7 @@ function HomeScreen({ navigation }) {
   const [pieData, setPieData] = useState([]);
   const [lineData, setLineData] = useState([]);
   const [ringData, setRingData] = useState([]);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const [yearData, setYearData] = useState([]);
 
   useEffect(() => {
@@ -61,94 +61,99 @@ function HomeScreen({ navigation }) {
 
   // -------------------- [ Top5 감정 data 요청 (PieChart 사용) ] --------------------
   const getPieData = async () => {
-    setLoading(true)
+    setLoading(true);
     const userId = await AsyncStorage.getItem("id");
     try {
-      await axios({
-        method: "post",
-        // url: `${API.pieTop}`,
-        url: 'http://192.168.0.18:3001/pieTop',
-        params: {
-          id: userId, //****작성자 id
-        }
-      }, null)
-        .then(res => {
-          setPieData(res.data)
-
+      await axios(
+        {
+          method: "post",
+          // url: `${API.pieTop}`,
+          url: "http://192.168.0.18:3001/pieTop",
+          params: {
+            id: userId, //****작성자 id
+          },
+        },
+        null
+      )
+        .then((res) => {
+          setPieData(res.data);
         })
         .catch(function (error) {
-          Alert.alert("❗error : bad response")
-        })
+          Alert.alert("❗error : bad response");
+        });
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
     setLoading(false);
-  }
+  };
 
   // -------------------- [ 한 해 감정 data 요청 (LineYear 사용) ] --------------------
   const getLineData = async () => {
-    setLoading(true)
-    const userId = await AsyncStorage.getItem("id");  // 작성자 id
-    let today = new Date();                           // 현재 날짜 객체
-    let year = today.getFullYear();                   // 현재 기준 연도
-    setYearData(year)
+    setLoading(true);
+    const userId = await AsyncStorage.getItem("id"); // 작성자 id
+    let today = new Date(); // 현재 날짜 객체
+    let year = today.getFullYear(); // 현재 기준 연도
+    setYearData(year);
 
     try {
-      await axios({
-        method: "post",
-        // url: `${API.lineYear}`,
-        url: 'http://192.168.0.18:3001/lineYear',
-        params: {
-          id: userId, //****작성자 id
-          year: year  //현재 기준 연도
-        }
-      }, null)
-        .then(res => {
-          setLineData(res.data)
+      await axios(
+        {
+          method: "post",
+          // url: `${API.lineYear}`,
+          url: "http://192.168.0.18:3001/lineYear",
+          params: {
+            id: userId, //****작성자 id
+            year: year, //현재 기준 연도
+          },
+        },
+        null
+      )
+        .then((res) => {
+          setLineData(res.data);
           console.log("axios 후, lindData 길이: ", lineData.length);
           console.log("axios 후, line_response 길이: ", res.data.length);
           // console.log("2: ", res.data.length);
         })
         .catch(function (error) {
-          Alert.alert("❗error : bad response")
-        })
+          Alert.alert("❗error : bad response");
+        });
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
     setLoading(false);
-  }
-
+  };
 
   // -------------------- [ 월 별 감정 data 요청 (RingMonth 사용) ] --------------------
-  const getRingData = async () => {  
-    setLoading(true)
-    const userId = await AsyncStorage.getItem("id");  // 작성자 id
-    let today = new Date();                           // 현재 날짜 객체
-    let month = today.getMonth();                     // 현재 기준 월
+  const getRingData = async () => {
+    setLoading(true);
+    const userId = await AsyncStorage.getItem("id"); // 작성자 id
+    let today = new Date(); // 현재 날짜 객체
+    let month = today.getMonth(); // 현재 기준 월
 
     try {
-      await axios({
-        method: "post",
-        // url: `${API.lineYear}`,
-        url: 'http://192.168.0.18:3001/ringMonth',
-        params: {
-          id: userId,   // ****작성자 id
-          month: month   // 현재 기준 월
-        }
-      }, null)
-        .then(res => {
-          setRingData(res.data)
+      await axios(
+        {
+          method: "post",
+          // url: `${API.lineYear}`,
+          url: "http://192.168.0.18:3001/ringMonth",
+          params: {
+            id: userId, // ****작성자 id
+            month: month, // 현재 기준 월
+          },
+        },
+        null
+      )
+        .then((res) => {
+          setRingData(res.data);
         })
         .catch(function (error) {
-          Alert.alert("❗error : bad response")
-        })
+          Alert.alert("❗error : bad response");
+        });
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
     setLoading(false);
-  }
-
-
+  };
 
   //테마
   useEffect(() => {
@@ -220,7 +225,6 @@ function HomeScreen({ navigation }) {
 
           </View> */}
 
-
           {/* <View>
             {loading && <ActivityIndicator size="large" color="white" />}
             {
@@ -230,7 +234,6 @@ function HomeScreen({ navigation }) {
 
             }
           </View> */}
-
 
           <View style={styles.content}>
             {/* 새로로 긴 위젯을 위한 위젯 나누기 View */}
@@ -318,41 +321,33 @@ function HomeScreen({ navigation }) {
             </View>
           </View>
 
-          
-
           {/* [ Top5 감정분석 차트 View ] */}
           <View>
             {loading && <ActivityIndicator size="large" color="white" />}
-            {
-              pieData.length > 0 ? (
-                <PieTop data={pieData} />
-              ) : <PieTop data={"0"} />
-
-            }
+            {pieData.length > 0 ? (
+              <PieTop data={pieData} />
+            ) : (
+              <PieTop data={"0"} />
+            )}
           </View>
 
           {/* [ 올해 감정분석 차트 View ] */}
           <View>
-            {
-              lineData.length > 0 ? (
-                <LineYear data={lineData} yearData={yearData} />
-              ) : <LineYear data={"0"} />
-
-            }
+            {lineData.length > 0 ? (
+              <LineYear data={lineData} yearData={yearData} />
+            ) : (
+              <LineYear data={"0"} />
+            )}
           </View>
 
           {/* [ 월 별 감정분석 차트 View ] */}
           <View>
-            {
-              ringData.length > 0 ? (
-                <RingMonth data={ringData} />
-              ) : <RingMonth data={"0"} />
-
-            }
+            {ringData.length > 0 ? (
+              <RingMonth data={ringData} />
+            ) : (
+              <RingMonth data={"0"} />
+            )}
           </View>
-
-
-
         </ScrollView>
       </SafeAreaView>
     </View>
@@ -440,9 +435,9 @@ const styles = StyleSheet.create({
     color: "white",
   },
   loadingView: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     width: SCREEN_WIDTH / 1.05,
     height: SCREEN_HEIGHT / 4,
-  }
+  },
 });

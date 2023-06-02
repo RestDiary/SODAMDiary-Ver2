@@ -214,7 +214,11 @@ function CustomDrawerContent(props) {
 
   return (
     <DrawerContentScrollView
-      style={{ ...styles.drawerBox, backgroundColor: nowTheme.drawer }}
+      style={{
+        ...styles.drawerBox,
+        backgroundColor: nowTheme.drawer,
+        borderColor: nowTheme.cardBg,
+      }}
       {...props}
       contentContainerStyle={{ flex: 1 }}
     >
@@ -386,7 +390,7 @@ function MyStack() {
       />
 
       {/* 기타 스크린 */}
-  
+
       <Stack.Screen
         name="Join"
         component={JoinScreen}
@@ -431,7 +435,6 @@ function MyStack() {
         component={ResultScreen}
         options={{ headerTintColor: "black", headerShown: false }}
       />
-
 
       <Stack.Screen
         name="UserInfo"
@@ -490,7 +493,6 @@ const styles = StyleSheet.create({
   drawerBox: {
     backgroundColor: "#071D3A",
     borderRightWidth: 1,
-    borderColor: "#555",
   },
 
   drawerChart: {
