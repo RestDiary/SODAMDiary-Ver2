@@ -50,6 +50,7 @@ function HomeScreen({ navigation }) {
   const [lineData, setLineData] = useState([]);
   const [ringData, setRingData] = useState([]);
   const [loading, setLoading] = useState(false)
+  const [yearData, setYearData] = useState([]);
 
   useEffect(() => {
     console.log("실행함");
@@ -62,23 +63,17 @@ function HomeScreen({ navigation }) {
   const getPieData = async () => {
     setLoading(true)
     const userId = await AsyncStorage.getItem("id");
-    console.log("userid: ", userId)
-    console.log("axios 전, pieData 길이: ", pieData.length);
     try {
       await axios({
         method: "post",
         // url: `${API.pieTop}`,
-        url: 'http://192.168.0.10:3001/pieTop',
+        url: 'http://192.168.0.18:3001/pieTop',
         params: {
           id: userId, //****작성자 id
         }
       }, null)
         .then(res => {
           setPieData(res.data)
-          console.log(res.data)
-          console.log("axios 후, pieData 길이: ", pieData.length);
-          console.log("axios 후, 리스폰스 길이: ", res.data.length);
-          // console.log("2: ", res.data.length);
 
         })
         .catch(function (error) {
@@ -91,20 +86,18 @@ function HomeScreen({ navigation }) {
   }
 
   // -------------------- [ 한 해 감정 data 요청 (LineYear 사용) ] --------------------
-  const getLineData = async () => {  
+  const getLineData = async () => {
     setLoading(true)
     const userId = await AsyncStorage.getItem("id");  // 작성자 id
     let today = new Date();                           // 현재 날짜 객체
     let year = today.getFullYear();                   // 현재 기준 연도
+    setYearData(year)
 
-    console.log("userid: ", userId)
-    console.log("year: ", year)
-    console.log("axios 전, lineData 길이: ", lineData.length);
     try {
       await axios({
         method: "post",
         // url: `${API.lineYear}`,
-        url: 'http://192.168.0.10:3001/lineYear',
+        url: 'http://192.168.0.18:3001/lineYear',
         params: {
           id: userId, //****작성자 id
           year: year  //현재 기준 연도
@@ -112,7 +105,6 @@ function HomeScreen({ navigation }) {
       }, null)
         .then(res => {
           setLineData(res.data)
-          console.log("getLineData response: ", res.data);
           console.log("axios 후, lindData 길이: ", lineData.length);
           console.log("axios 후, line_response 길이: ", res.data.length);
           // console.log("2: ", res.data.length);
@@ -134,15 +126,11 @@ function HomeScreen({ navigation }) {
     let today = new Date();                           // 현재 날짜 객체
     let month = today.getMonth();                     // 현재 기준 월
 
-    console.log("userid: ", userId)
-    console.log("month: ", month)
-    console.log("axios 전, monthData 길이: ", ringData.length);
-
     try {
       await axios({
         method: "post",
         // url: `${API.lineYear}`,
-        url: 'http://192.168.0.10:3001/ringMonth',
+        url: 'http://192.168.0.18:3001/ringMonth',
         params: {
           id: userId,   // ****작성자 id
           month: month   // 현재 기준 월
@@ -150,10 +138,6 @@ function HomeScreen({ navigation }) {
       }, null)
         .then(res => {
           setRingData(res.data)
-          console.log("getRingData response: ", res.data);
-          console.log("axios 후, ringData 길이: ", ringData.length);
-          console.log("axios 후, ring_response 길이: ", res.data.length);
-          // console.log("2: ", res.data.length);
         })
         .catch(function (error) {
           Alert.alert("❗error : bad response")
@@ -245,9 +229,6 @@ function HomeScreen({ navigation }) {
               ) : <PieTop data={"0"} />
 
             }
-          </View>
-          <View>
-            
           </View> */}
 
 
@@ -354,7 +335,7 @@ function HomeScreen({ navigation }) {
           <View>
             {
               lineData.length > 0 ? (
-                <LineYear data={lineData} />
+                <LineYear data={lineData} yearData={yearData} />
               ) : <LineYear data={"0"} />
 
             }

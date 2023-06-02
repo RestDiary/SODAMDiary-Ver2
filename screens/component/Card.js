@@ -8,9 +8,9 @@ import { useNavigation } from '@react-navigation/native';
 import { dark, votanical, town, classic, purple, block, pattern, magazine, winter } from './../css/globalStyles';
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
-  BarChart,
-} from "react-native-chart-kit";
+// import {
+//   BarChart,
+// } from "react-native-chart-kit";
 function Card({ data }) {
 
   //테마
@@ -232,7 +232,7 @@ function Card({ data }) {
                <Text style={{ color: nowTheme.font, fontSize: SCREEN_WIDTH / 20, marginTop:4 }}>#{data.keyword} #{data.keyword2}</Text> :
                <Text style={{ color: nowTheme.font, fontSize: SCREEN_WIDTH / 20, marginTop:4 }}>#{data.keyword} #{data.keyword2} #{data.keyword3}</Text>
               } */}
-              <BarChart
+              {/* <BarChart
                 style={{...styles.graphStyle}}
                 data={chart}
                 width={300}
@@ -243,7 +243,7 @@ function Card({ data }) {
                 withHorizontalLabels={false}
                 withInnerLines={false}
                 fromZero={true}
-              />
+              /> */}
               
           </View>
         </ImageBackground>
@@ -287,17 +287,17 @@ function Card({ data }) {
   )
 }
 
-const chartConfig = {
-  backgroundGradientFrom: "#1E2923",
-  backgroundGradientFromOpacity: 0,
-  backgroundGradientTo: "#08130D",
-  backgroundGradientToOpacity: 0,
-  color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-  strokeWidth: 3, // optional, default 3
-  barPercentage: 0.5,
-  useShadowColorFromDataset: false, // optional
+// const chartConfig = {
+//   backgroundGradientFrom: "#1E2923",
+//   backgroundGradientFromOpacity: 0,
+//   backgroundGradientTo: "#08130D",
+//   backgroundGradientToOpacity: 0,
+//   color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+//   strokeWidth: 3, // optional, default 3
+//   barPercentage: 0.5,
+//   useShadowColorFromDataset: false, // optional
 
-};
+// };
 
 const styles = StyleSheet.create({
 

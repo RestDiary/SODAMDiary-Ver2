@@ -43,7 +43,6 @@ import WriteScreen from "./screens/WriteScreen";
 import PictureScreen from "./screens/PictureScreen";
 import JoinScreen from "./screens/JoinScreen";
 import DiaryScreen from "./screens/DiaryScreen";
-import ChartScreen from "./screens/ChartScreen";
 import HomeScreen from "./screens/Home";
 import FindPwScreen from "./screens/FindPwScreen";
 import ChangePwScreen from "./screens/ChangePwScreen";
@@ -57,8 +56,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import DetailScreen from "./screens/DetailScreen";
 import ModifyScreen from "./screens/ModifyScreen";
 import PictureDeailScreen from "./screens/PictureDeailScreen";
-import MyPieChart from "./screens/component/charts/MyPieChart";
-import EmotionPieChart from "./screens/component/charts/EmotionPieChart";
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -352,11 +349,6 @@ function MyStack() {
       <Stack.Screen
         name="Calender"
         component={CalenderScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
-      />
-      <Stack.Screen
-        name="Chart"
-        component={ChartScreen}
         options={{ headerTintColor: "black", headerShown: false }}
       />
       <Stack.Screen
