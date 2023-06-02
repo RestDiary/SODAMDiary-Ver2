@@ -18,8 +18,8 @@ function LineYear(props) {
         }
     }, [props.data])
 
-    console.log("Line: ", line)
-    console.log("year: ", year) // year 관련되거 필요하면 쓰고, 필요없으면 지우시오.
+    // console.log("Line: ", line)
+    // console.log("year: ", year) // year 관련되거 필요하면 쓰고, 필요없으면 지우시오.
 
 
     return (

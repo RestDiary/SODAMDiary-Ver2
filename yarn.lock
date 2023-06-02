@@ -1142,6 +1142,16 @@
     deepmerge "^3.2.0"
     hoist-non-react-statics "^3.3.0"
 
+"@chartiful/react-native-chart-builder@^0.1.8":
+  version "0.1.8"
+  resolved "https://registry.yarnpkg.com/@chartiful/react-native-chart-builder/-/react-native-chart-builder-0.1.8.tgz#5d924246137afdedbb9294c9f850ff491accd6f8"
+  integrity sha512-rYVHyOA01kTMTyTqsF6+SOpBkAgOF6G6mh4kdFkEJqFnHGpwVrycDM6SI7cuTyN7awDhhHBrztguV+7TZokgZw==
+
+"@chartiful/react-native-horizontal-bar-graph@^0.1.2":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@chartiful/react-native-horizontal-bar-graph/-/react-native-horizontal-bar-graph-0.1.2.tgz#5dc8311777e2b0c50758bc7f4fa0896106925214"
+  integrity sha512-mm5ZYqyFpasNHmmpkPf9Cii6UYvqFjIDn30I/ijt24oF+ofeSiktS9fD4+mQeH2S4NxtFW51KmABqGcWjC8UdQ==
+
 "@csstools/normalize.css@*":
   version "12.0.0"
   resolved "https://registry.npmjs.org/@csstools/normalize.css/-/normalize.css-12.0.0.tgz"

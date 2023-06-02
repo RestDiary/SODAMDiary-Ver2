@@ -8,6 +8,9 @@ import { useNavigation } from '@react-navigation/native';
 import { dark, votanical, town, classic, purple, block, pattern, magazine, winter } from './../css/globalStyles';
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import DayChart from './chartsRe/DayChart';
+import HorizontalBarGraph from '@chartiful/react-native-horizontal-bar-graph';
+
 // import {
 //   BarChart,
 // } from "react-native-chart-kit";
@@ -52,79 +55,38 @@ function Card({ data }) {
   const[third, setThird] = useState("");
 
   //Top3 감정 키워드 각각의 개수
-  const[first_num, setFirst_num] = useState(0);
-  const[second_num, setSecond_num] = useState(0);
-  const[third_num, setThird_num] = useState(0);
-
-  const [chart, setChart] = useState({
-    
-    labels: [],
-    datasets: [
-      {
-        data: []
-      }
-    ]
-  });
+  const [labels, setLabels] = useState([]);
+  const [datas, setData] = useState([]);
 
 
-  //차트 데이터 받아오기 및 차트 생성
+  // 차트 데이터 받아오기 및 차트 생성
   useEffect(() => {
-    setFirst(data.top_emotion);
-    setSecond(data.second_emotion);
-    setThird(data.third_emotion);
-    setFirst_num(data.top_number);
-    setSecond_num(data.second_number);
-    setThird_num(data.third_number);
-
-
-    if(data.second_number === 0) {
-      // setSecond("sodam");
-      // setThird("sodam");
-      let first = data.top_emotion.split("/")
-
-      setChart({
-        labels: [first[0]],
-    datasets: [
-      {
-        data: [data.top_number]
-      }
-    ]
-      })
-
-    }
-    
-    else if(data.third_number === 0) {
-      // setThird("sodam");
+    if (data.second_number === 0) {
+      let first = data.top_emotion.split("/");
+  
+      setLabels([first[0]]);
+      setData([data.top_number]);
+    } else if (data.third_number === 0) {
       let first = data.top_emotion.split("/");
       let second = data.second_emotion.split("/");
-      setChart({
-        labels: [first[0], second[0]],
-    datasets: [
-      {
-        data: [data.top_number, data.second_number]
-      }
-    ]
-      })
-    }
-
-    else {
+  
+      setLabels([first[0], second[0]]);
+      setData([data.top_number, data.second_number]);
+    } else {
       let first = data.top_emotion.split("/");
       let second = data.second_emotion.split("/");
       let third = data.third_emotion.split("/");
-      setChart({
-        labels: [first[0], second[0], third[0]],
-    datasets: [
-      {
-        data: [data.top_number, data.second_number, data.third_number]
-      }
-    ]
-      })
+  
+      setLabels([first[0], second[0], third[0]]);
+      setData([data.top_number, data.second_number, data.third_number]);
     }
+
 
   }, [])
 
 
-
+  console.log("labels", labels)
+  console.log("datas", datas)
 
 
   // 리렌더링 시 값이 초기화 되는 것을 막기 위해 ref 사용.
@@ -242,8 +204,40 @@ function Card({ data }) {
                 showValuesOnTopOfBars
                 withHorizontalLabels={false}
                 withInnerLines={false}
-                fromZero={true}
+                fromZero={true}\
               /> */}
+
+              <HorizontalBarGraph
+                data={datas}
+                labels={labels}
+                width={375}
+                height={350}
+                barRadius={15}
+                baseConfig={{
+                  hasYAxisBackgroundLines: false,
+                  xAxisLabelStyle: {
+                    rotation: 0,
+                    fontSize: 12,
+                    width: 70,
+                    yOffset: 4,
+                    xOffset: -15
+                  },
+                  yAxisLabelStyle: {
+                    rotation: 0,
+                    fontSize: 13,
+                    position: 'bottom',
+                    xOffset: 0,
+                    height: 100,
+                    decimals: 0
+                  },
+                  hasYAxisBackgroundLines: true,
+                }}
+                style={styles.chart}
+                barColor='black'
+                barWidthPercentage="0.3"
+              />
+
+
               
           </View>
         </ImageBackground>
@@ -301,7 +295,15 @@ function Card({ data }) {
 
 const styles = StyleSheet.create({
 
-  
+  chart: {
+    marginBottom: 30,
+    padding: 10,
+    paddingTop: 20,
+    borderRadius: 20,
+    width: 375,
+    backgroundColor: 'white',
+  },
+
   container: {
     fontSize: '3%',
     height: (SCREEN_WIDTH / 1.8) * 1.86,
