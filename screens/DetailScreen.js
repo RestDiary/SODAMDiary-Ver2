@@ -41,12 +41,11 @@ import {
 } from "./css/globalStyles";
 import ImageModal from "react-native-image-modal";
 
-import HorizontalBarGraph from '@chartiful/react-native-horizontal-bar-graph';
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
-
-
+import HorizontalBarGraph from "@chartiful/react-native-horizontal-bar-graph";
+import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import { Entypo } from "@expo/vector-icons";
+import { FontAwesome5 } from "@expo/vector-icons";
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
-
 
 function DetailScreen(card) {
   //스크린 이동할 때 lifecycle 실행
@@ -140,7 +139,6 @@ function DetailScreen(card) {
     setEditorColor(editorOption);
   };
 
-
   // 데이터 useState
   const [titleText, onChangeTitleText] = useState("");
   const [feelingText, onChangeFeelingText] = useState("");
@@ -175,12 +173,10 @@ function DetailScreen(card) {
   const [labels, setLabels] = useState([]);
   const [datas, setData] = useState([]);
 
-
   useEffect(() => {
-    detail();         // 일기 내용 가져오기
-    chartDataSet();   // 차트 데이터 값 set
+    detail(); // 일기 내용 가져오기
+    chartDataSet(); // 차트 데이터 값 set
   }, []);
-
 
   // 일기 내용 가져오기(read)
   const detail = async () => {
@@ -285,19 +281,23 @@ function DetailScreen(card) {
       let second = card.route.params.card.second_emotion.split("/");
 
       setLabels([first[0], second[0]]);
-      setData([card.route.params.card.top_number, card.route.params.card.second_number]);
-
+      setData([
+        card.route.params.card.top_number,
+        card.route.params.card.second_number,
+      ]);
     } else {
       let first = card.route.params.card.top_emotion.split("/");
       let second = card.route.params.card.second_emotion.split("/");
       let third = card.route.params.card.third_emotion.split("/");
 
       setLabels([first[0], second[0], third[0]]);
-      setData([card.route.params.card.top_number, card.route.params.card.second_number, card.route.params.card.third_number]);
+      setData([
+        card.route.params.card.top_number,
+        card.route.params.card.second_number,
+        card.route.params.card.third_number,
+      ]);
     }
   };
-
-
 
   // bottom sheet 테스트
   // ref
@@ -306,197 +306,189 @@ function DetailScreen(card) {
   // variables
   const snapPoints = ["10%", "80%"];
 
-
   // View 컴포넌트의 너비와 높이를 저장하기 위한 state 생성
   const [viewWidth, setViewWidth] = useState(0);
   const [viewHeight, setViewHeight] = useState(0);
 
-   // onLayout 이벤트에서 View의 너비와 높이를 가져와서 state 업데이트
-   const onViewLayout = (event) => {
+  // onLayout 이벤트에서 View의 너비와 높이를 가져와서 state 업데이트
+  const onViewLayout = (event) => {
     setViewWidth(event.nativeEvent.layout.width);
     setViewHeight(event.nativeEvent.layout.height);
   };
 
   return (
     <View style={{ ...styles.container, backgroundColor: nowTheme.cardBg }}>
-      {/* 제목 */}
-      <SafeAreaView
-        style={{
-          ...styles.titleLayout,
-          backgroundColor: nowTheme.btn,
-          borderColor: nowTheme.cardBorder,
-        }}
-      >
-        <Text
-          placeholder="제목:"
-          placeholderTextColor={"#456185"}
-          style={{ ...styles.title, color: nowTheme.font, fontWeight: "bold" }}
-          value={"data.title"}
-          returnKeyType="next"
-          maxLength={30}
-          editable={false} // 수정누른 경우 true로 state 바꿔야 텍스트 편집가능 함.
+      <View style={styles.topView}>
+        {/* 제목 */}
+        <SafeAreaView
+          style={{
+            ...styles.titleLayout,
+            backgroundColor: nowTheme.btn,
+            borderColor: nowTheme.cardBorder,
+          }}
         >
-          제목: {card.route.params.card.title}
-        </Text>
-      </SafeAreaView>
-
-      <SafeAreaView
-        style={{
-          ...styles.feelingLayout,
-          backgroundColor: nowTheme.btn,
-          borderColor: nowTheme.cardBorder,
-        }}
-      >
-        {/* 날짜 */}
-        <Text style={{ ...styles.date, color: nowTheme.font }}>
-          날짜: {card.route.params.card.year}년 {card.route.params.card.month}월{" "}
-          {card.route.params.card.day}일
-        </Text>
-      </SafeAreaView>
-
-      <>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={{ flex: 0.95, borderColor: nowTheme.cardBorder }}
-        >
-          <SafeAreaView>
-            <ScrollView>
-              {/* {이미지 보이는 곳} */}
-              <Pressable onPress={check}>
-                {img && (
-                  <TouchableOpacity
-                    onPress={() => {
-                      setCheckImage(true);
-                    }}
-                  >
-                    <ImageModal
-                      swipeToDismiss={false}
-                      resizeMode="stretch"
-                      imageBackgroundColor={nowTheme.cardBg}
-                      style={{
-                        marginLeft: 10,
-                        marginTop: 16,
-                        width: SCREEN_WIDTH / 1.5,
-                        height: SCREEN_WIDTH / 1.5,
-                        borderWidth: 1,
-                        borderColor: nowTheme.cardBorder,
-                        borderRadius: 20,
-                      }}
-                      source={{
-                        uri: img,
-                      }}
-                    />
-                    {/* <Image source={{ uri: imageUri }} style={styles.asd} /> */}
-                  </TouchableOpacity>
-                )}
-              </Pressable>
-
-              <Text
-                style={{
-                  marginLeft: 10,
-                  marginTop: 16,
-                  fontSize: 20,
-                  color: nowTheme.font,
-                  fontWeight: "bold",
-                }}
-              >
-                {card.route.params.card.content}
-              </Text>
-
-            </ScrollView>
-          </SafeAreaView>
-          
-          {/* bottom sheet 테스트 */}
-          {/* {labels !== "" ? */}
-            <BottomSheet
-              ref={sheetRef}                // bottomSheet 참조
-              snapPoints={snapPoints}       // 슬라이드 올릴 시, 보여주는 화면 %
-              enablePanDownToClose={false}  // 슬라이드 올리고 다시 닫으면 사리지게 하는 기능
+          <Text
+            placeholder="제목:"
+            placeholderTextColor={"#456185"}
+            style={{
+              ...styles.title,
+              color: nowTheme.bg,
+              fontWeight: "bold",
+            }}
+            value={"data.title"}
+            returnKeyType="next"
+            maxLength={30}
+            editable={false} // 수정누른 경우 true로 state 바꿔야 텍스트 편집가능 함.
+          >
+            제목: {card.route.params.card.title}
+          </Text>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            {/* 수정 버튼 */}
+            <TouchableOpacity
+              style={{ padding: 10 }}
+              onPress={() => navigation.navigate("Modify", { card: card })}
             >
-              <BottomSheetView style={styles.bottomSheetView}>
-                {/* 차트 제목용 텍스트 */}
-                <View style={styles.chartTitle}>
-                  <Text style={styles.chartTitleText}>
-                    {"[ "}감정분석 결과{" ]"}
-                  </Text>
-                </View>
+              <FontAwesome5 name="pen" size={18} color={nowTheme.bg} />
+            </TouchableOpacity>
 
-                {/* 차트 그래프 뷰 */}
-                <View onLayout={onViewLayout} style={styles.barGraph}>
-                  {/* 차트 그래프 */}
-                  <HorizontalBarGraph
-                    data={datas}
-                    labels={labels}
-                    // width={viewWidth*0.75}
-                    // height={viewHeight*0.65}
-                    width={330}
-                    height={300}
+            {/* 삭제 버튼 */}
+            <TouchableOpacity style={{ padding: 10 }} onPress={alertDelete}>
+              <MaterialIcons name="delete" size={24} color={nowTheme.bg} />
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
 
-                    baseConfig={{
-                      xAxisLabelStyle: {
-                        rotation: 0,
-                        fontSize: 12,
-                        // width: 70,
-                        yOffset: 4,
-                        // xOffset: -15
-                      },
-                      
-                      yAxisLabelStyle: {
-                        rotation: 0,
-                        fontSize: 13,
-                        position: 'bottom',
-                        xOffset: 0,
-                        height: 0,
-                        decimals: 0
-                      },
-                      hasYAxisBackgroundLines: true,
+        <SafeAreaView
+          style={{
+            ...styles.feelingLayout,
+            backgroundColor: nowTheme.btn,
+            borderColor: nowTheme.cardBorder,
+          }}
+        >
+          {/* 날짜 */}
+          <Text style={{ ...styles.date, color: nowTheme.cardBg }}>
+            날짜: {card.route.params.card.year}년 {card.route.params.card.month}
+            월 {card.route.params.card.day}일
+          </Text>
+        </SafeAreaView>
+
+        <View
+          style={{
+            ...styles.shadowView,
+          }}
+        ></View>
+      </View>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 0.95, borderColor: nowTheme.cardBorder }}
+      >
+        <SafeAreaView>
+          <ScrollView>
+            {/* {이미지 보이는 곳} */}
+            <Pressable onPress={check}>
+              {img && (
+                <TouchableOpacity
+                  onPress={() => {
+                    setCheckImage(true);
+                  }}
+                >
+                  <ImageModal
+                    swipeToDismiss={false}
+                    resizeMode="stretch"
+                    style={{
+                      marginLeft: 10,
+                      marginTop: 16,
+                      width: SCREEN_WIDTH / 1.5,
+                      height: SCREEN_WIDTH / 1.5,
+                      borderWidth: 1,
+                      borderColor: nowTheme.font,
+                      borderRadius: 20,
                     }}
-                    barRadius={10}
-                    barColor='green'
-                    barWidthPercentage="0.15"
+                    source={{
+                      uri: img,
+                    }}
                   />
-                  </View>
-              </BottomSheetView>
-            </BottomSheet>
-            {/* : */}
-            {/* <Text>
+                  {/* <Image source={{ uri: imageUri }} style={styles.asd} /> */}
+                </TouchableOpacity>
+              )}
+            </Pressable>
+
+            <Text
+              style={{
+                marginLeft: 10,
+                marginTop: 16,
+                fontSize: 20,
+                color: nowTheme.font,
+                fontWeight: "bold",
+              }}
+            >
+              {card.route.params.card.content}
+            </Text>
+          </ScrollView>
+        </SafeAreaView>
+
+        {/* bottom sheet 테스트 */}
+        {/* {labels !== "" ? */}
+        <BottomSheet
+          ref={sheetRef} // bottomSheet 참조
+          snapPoints={snapPoints} // 슬라이드 올릴 시, 보여주는 화면 %
+          enablePanDownToClose={false} // 슬라이드 올리고 다시 닫으면 사리지게 하는 기능
+        >
+          <BottomSheetView style={styles.bottomSheetView}>
+            {/* 차트 제목용 텍스트 */}
+            <View style={styles.chartTitle}>
+              <Text style={styles.chartTitleText}>
+                {"[ "}감정분석 결과{" ]"}
+              </Text>
+            </View>
+
+            {/* 차트 그래프 뷰 */}
+            <View onLayout={onViewLayout} style={styles.barGraph}>
+              {/* 차트 그래프 */}
+              <HorizontalBarGraph
+                data={datas}
+                labels={labels}
+                // width={viewWidth*0.75}
+                // height={viewHeight*0.65}
+                width={330}
+                height={300}
+                baseConfig={{
+                  xAxisLabelStyle: {
+                    rotation: 0,
+                    fontSize: 12,
+                    // width: 70,
+                    yOffset: 4,
+                    // xOffset: -15
+                  },
+
+                  yAxisLabelStyle: {
+                    rotation: 0,
+                    fontSize: 13,
+                    position: "bottom",
+                    xOffset: 0,
+                    height: 0,
+                    decimals: 1,
+                  },
+                  hasYAxisBackgroundLines: true,
+                }}
+                barRadius={10}
+                barColor="green"
+                barWidthPercentage="0.15"
+              />
+            </View>
+          </BottomSheetView>
+        </BottomSheet>
+        {/* : */}
+        {/* <Text>
               데이터가 없습니다.
             </Text> */}
-          {/* } */}
-
-        </KeyboardAvoidingView>
-
-
-        {/* 수정 버튼 */}
-        <View style={{ ...styles.saveButtonView, marginTop: 16 }}>
-          <TouchableOpacity
-            style={{
-              ...styles.saveButtonStyle,
-              backgroundColor: nowTheme.btn,
-            }}
-            onPress={() => navigation.navigate("Modify", { card: card })}
-          >
-            <Text style={{ ...styles.textButtonStyle }}>수정</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={{
-              ...styles.saveButtonStyle,
-              backgroundColor: nowTheme.btn,
-            }}
-            onPress={alertDelete}
-          >
-            <Text style={styles.textButtonStyle}>삭제</Text>
-          </TouchableOpacity>
-        </View>
-      </>
+        {/* } */}
+      </KeyboardAvoidingView>
     </View>
   );
 }
 
 export default DetailScreen;
-
-
-
 
 const styles = StyleSheet.create({
   errorTextStyle: {
@@ -570,7 +562,8 @@ const styles = StyleSheet.create({
 
   titleLayout: {
     borderColor: "white",
-    justifyContent: "center",
+    justifyContent: "space-between",
+    flexDirection: "row",
   },
 
   extendLayout: {
@@ -624,13 +617,13 @@ const styles = StyleSheet.create({
 
   bottomSheetView: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   chartTitle: {
     height: "10%",
-    alignItems: 'center',
+    alignItems: "center",
     justifyContent: "center",
     // backgroundColor: "blue",
     width: SCREEN_WIDTH,
@@ -638,15 +631,37 @@ const styles = StyleSheet.create({
 
   chartTitleText: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 
   barGraph: {
     width: SCREEN_WIDTH,
     height: "90%",
-    alignItems: 'center',
+    alignItems: "center",
     paddingTop: 20,
     // justifyContent: 'center',
     // backgroundColor: 'green',
+  },
+
+  shadowView: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 2,
+      height: 2,
+    },
+    shadowOpacity: 0.7,
+    shadowRadius: 2.62,
+    elevation: 4,
+  },
+
+  topView: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 2,
+      height: 2,
+    },
+    shadowOpacity: 0.7,
+    shadowRadius: 2.62,
+    elevation: 4,
   },
 });

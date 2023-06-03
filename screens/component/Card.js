@@ -1,17 +1,36 @@
-
-import React, { useEffect, useState, useRef } from 'react';
-import { StyleSheet,graphStyle, Button, View, Text, Dimensions, Animated, Image, Pressable, ImageBackground } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Entypo } from '@expo/vector-icons';
-import { MaterialIcons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import { dark, votanical, town, classic, purple, block, pattern, magazine, winter } from './../css/globalStyles';
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+import React, { useEffect, useState, useRef } from "react";
+import {
+  StyleSheet,
+  graphStyle,
+  Button,
+  View,
+  Text,
+  Dimensions,
+  Animated,
+  Image,
+  Pressable,
+  ImageBackground,
+} from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Entypo } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import {
+  dark,
+  votanical,
+  town,
+  classic,
+  purple,
+  block,
+  pattern,
+  magazine,
+  winter,
+} from "./../css/globalStyles";
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import DayChart from './chartsRe/DayChart';
-import HorizontalBarGraph from '@chartiful/react-native-horizontal-bar-graph';
-
+import DayChart from "./chartsRe/DayChart";
+import HorizontalBarGraph from "@chartiful/react-native-horizontal-bar-graph";
 
 function Card({ data }) {
   //테마
@@ -77,8 +96,6 @@ function Card({ data }) {
   //     setLabels([first[0], second[0], third[0]]);
   //     setData([data.top_number, data.second_number, data.third_number]);
   //   }
-
-
 
 
 
@@ -187,7 +204,7 @@ function Card({ data }) {
                 numberOfLines={1}
                 ellipsizeMode="tail"
                 style={{
-                  color: nowTheme.font,
+                  color: nowTheme.bg,
                   fontWeight: "bold",
                   fontSize: SCREEN_WIDTH / 14,
                   borderBottomWidth: 1,
@@ -221,6 +238,10 @@ function Card({ data }) {
                 fromZero={true}\
               /> */}
 
+            </View>
+          </ImageBackground>
+
+
               {/* <HorizontalBarGraph
                 data={datas}
                 labels={labels}
@@ -250,13 +271,6 @@ function Card({ data }) {
                 barColor='black'
                 barWidthPercentage="0.3"
               /> */}
-
-
-              
-          </View>
-        </ImageBackground>
-        
-
         </Animated.View>
 
         {/* 뒷면 */}
@@ -303,19 +317,15 @@ function Card({ data }) {
   );
 }
 
-
-
 const styles = StyleSheet.create({
-
   chart: {
     marginBottom: 30,
     padding: 10,
     paddingTop: 20,
     borderRadius: 20,
     width: 375,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
-
 
   container: {
     fontSize: "3%",

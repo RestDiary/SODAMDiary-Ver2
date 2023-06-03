@@ -150,7 +150,7 @@ function DiaryScreen({ navigation }) {
                 backgroundColor: nowTheme.btn,
               }}
             >
-              <Text style={{ ...styles.moonText, color: nowTheme.font }}>
+              <Text style={{ ...styles.moonText, color: nowTheme.bg }}>
                 {temp[0].month}월
               </Text>
             </View>
