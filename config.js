@@ -24,4 +24,7 @@ export const API = {
   FLASK: `${BASE_URL}/flask`,
   PWCHECK: `${BASE_URL}/pwCheck`,
   DELETEALL: `${BASE_URL}/deleteAll`,
+  PIETOP_URL: `${BASE_URL}/pieTop`,
+  LINEYEAR_URL: `${BASE_URL}/lineYear`,
+  RINGMONTH_URL: `${BASE_URL}/ringMonth`,
 };
