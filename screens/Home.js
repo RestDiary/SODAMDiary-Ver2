@@ -36,11 +36,13 @@ import {
 } from "./css/globalStyles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
+import { API } from "../config.js";
 import PieTop from './component/chartsRe/PieTop';
 import LineYear from './component/chartsRe/LineYear';
 import RingMonth from './component/chartsRe/RingMonth';
 import Card from './component/Card';
 import { API } from "../config";
+
 
 //사용 디바이스 크기 값 받아오기
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
@@ -100,8 +102,8 @@ function HomeScreen({ navigation }) {
     try {
       await axios({
         method: "post",
-        // url: `${API.pieTop}`,
-        url: 'http://192.168.0.10:3001/pieTop',
+        url: `${API.PIETOP_URL}`,
+        // url: 'http://192.168.0.10:3001/pieTop',
         params: {
           id: userId, //****작성자 id
         }
@@ -130,8 +132,8 @@ function HomeScreen({ navigation }) {
     try {
       await axios({
         method: "post",
-        // url: `${API.lineYear}`,
-        url: 'http://192.168.0.10:3001/lineYear',
+        url: `${API.LINEYEAR_URL}`,
+        // url: 'http://192.168.0.10:3001/lineYear',
         params: {
           id: userId, //****작성자 id
           year: year  //현재 기준 연도
@@ -163,8 +165,8 @@ function HomeScreen({ navigation }) {
     try {
       await axios({
         method: "post",
-        // url: `${API.lineYear}`,
-        url: 'http://192.168.0.10:3001/ringMonth',
+        url: `${API.RINGMONTH_URL}`,
+        // url: 'http://192.168.0.10:3001/ringMonth',
         params: {
           id: userId,   // ****작성자 id
           month: month   // 현재 기준 월

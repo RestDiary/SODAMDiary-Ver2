@@ -180,13 +180,13 @@ function DiaryScreen({ navigation }) {
 
   return (
     <>
-      <View>
+      <SafeAreaView style={{ backgroundColor: nowTheme.cardBg }}>
         <SearchBar
           value={search}
           onChangeText={(search) => updateSearch(search)}
           placeholder=" 내용을 검색해보세요 "
         ></SearchBar>
-      </View>
+      </SafeAreaView>
       {/* <ImageBackground style={{ ...styles.container, backgroundColor: nowTheme.cardBg, width:SCREEN_WIDTH, height:SCREEN_HEIGHT }} source={nowTheme.image} resizeMode={'cover'}> */}
       <SafeAreaView
         style={{ ...styles.container, backgroundColor: nowTheme.cardBg }}

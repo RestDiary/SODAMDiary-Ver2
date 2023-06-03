@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   View,
   Text,
@@ -41,7 +41,12 @@ import {
 } from "./css/globalStyles";
 import ImageModal from "react-native-image-modal";
 
+import HorizontalBarGraph from '@chartiful/react-native-horizontal-bar-graph';
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+
+
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
+
 
 function DetailScreen(card) {
   //스크린 이동할 때 lifecycle 실행
@@ -135,26 +140,28 @@ function DetailScreen(card) {
     setEditorColor(editorOption);
   };
 
+
+  // 데이터 useState
   const [titleText, onChangeTitleText] = useState("");
   const [feelingText, onChangeFeelingText] = useState("");
   const richText = React.useRef();
   const [descHTML, setDescHTML] = useState("");
   const [showDescError, setShowDescError] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
-  const [Emotions, setEmotions] = useState([]);
+  const [emotions, setEmotions] = useState([]);
   const [date, setDate] = useState(new Date());
   const [id, setId] = useState("");
   const [checkImage, setCheckImage] = useState(false);
   const navigation = useNavigation();
 
-  //이미지 업로드용
+  // 이미지 업로드용
   const [image, setImage] = useState("");
   const [send, setSend] = useState("");
   const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
   const formData = new FormData();
   let url = ""; //서버에서 받아올 aws이미지 경로
 
-  //일기 내용 저장
+  // 일기 내용 저장
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [month, setMonth] = useState("");
@@ -164,10 +171,18 @@ function DetailScreen(card) {
   const [keyword, setKeyword] = useState("");
   const [voice2, setVoice] = useState("");
 
+  //Top3 감정 키워드 각각의 개수
+  const [labels, setLabels] = useState([]);
+  const [datas, setData] = useState([]);
+
+
   useEffect(() => {
-    detail();
+    detail();         // 일기 내용 가져오기
+    chartDataSet();   // 차트 데이터 값 set
   }, []);
 
+
+  // 일기 내용 가져오기(read)
   const detail = async () => {
     try {
       await axios(
@@ -202,7 +217,7 @@ function DetailScreen(card) {
     setCheckImage(true);
   };
 
-  //일기 삭제
+  // 일기 삭제(delete)
   const deletDiary = () => {
     let lmgkey = image.split("com/");
     axios(
@@ -257,6 +272,50 @@ function DetailScreen(card) {
 
   //서버 요청 로딩
   const [loading, setLoading] = useState(false);
+
+  // 차트 값 설정
+  const chartDataSet = () => {
+    if (card.route.params.card.second_number === 0) {
+      let first = card.route.params.card.top_emotion.split("/");
+
+      setLabels([first[0]]);
+      setData([card.route.params.card.top_number]);
+    } else if (card.route.params.card.third_number === 0) {
+      let first = card.route.params.card.top_emotion.split("/");
+      let second = card.route.params.card.second_emotion.split("/");
+
+      setLabels([first[0], second[0]]);
+      setData([card.route.params.card.top_number, card.route.params.card.second_number]);
+
+    } else {
+      let first = card.route.params.card.top_emotion.split("/");
+      let second = card.route.params.card.second_emotion.split("/");
+      let third = card.route.params.card.third_emotion.split("/");
+
+      setLabels([first[0], second[0], third[0]]);
+      setData([card.route.params.card.top_number, card.route.params.card.second_number, card.route.params.card.third_number]);
+    }
+  };
+
+
+
+  // bottom sheet 테스트
+  // ref
+  const sheetRef = useRef(null);
+  const [isOpen, setIsOpen] = useState(true);
+  // variables
+  const snapPoints = ["10%", "80%"];
+
+
+  // View 컴포넌트의 너비와 높이를 저장하기 위한 state 생성
+  const [viewWidth, setViewWidth] = useState(0);
+  const [viewHeight, setViewHeight] = useState(0);
+
+   // onLayout 이벤트에서 View의 너비와 높이를 가져와서 state 업데이트
+   const onViewLayout = (event) => {
+    setViewWidth(event.nativeEvent.layout.width);
+    setViewHeight(event.nativeEvent.layout.height);
+  };
 
   return (
     <View style={{ ...styles.container, backgroundColor: nowTheme.cardBg }}>
@@ -343,9 +402,70 @@ function DetailScreen(card) {
               >
                 {card.route.params.card.content}
               </Text>
+
             </ScrollView>
           </SafeAreaView>
+          
+          {/* bottom sheet 테스트 */}
+          {/* {labels !== "" ? */}
+            <BottomSheet
+              ref={sheetRef}                // bottomSheet 참조
+              snapPoints={snapPoints}       // 슬라이드 올릴 시, 보여주는 화면 %
+              enablePanDownToClose={false}  // 슬라이드 올리고 다시 닫으면 사리지게 하는 기능
+            >
+              <BottomSheetView style={styles.bottomSheetView}>
+                {/* 차트 제목용 텍스트 */}
+                <View style={styles.chartTitle}>
+                  <Text style={styles.chartTitleText}>
+                    {"[ "}감정분석 결과{" ]"}
+                  </Text>
+                </View>
+
+                {/* 차트 그래프 뷰 */}
+                <View onLayout={onViewLayout} style={styles.barGraph}>
+                  {/* 차트 그래프 */}
+                  <HorizontalBarGraph
+                    data={datas}
+                    labels={labels}
+                    // width={viewWidth*0.75}
+                    // height={viewHeight*0.65}
+                    width={330}
+                    height={300}
+
+                    baseConfig={{
+                      xAxisLabelStyle: {
+                        rotation: 0,
+                        fontSize: 12,
+                        // width: 70,
+                        yOffset: 4,
+                        // xOffset: -15
+                      },
+                      
+                      yAxisLabelStyle: {
+                        rotation: 0,
+                        fontSize: 13,
+                        position: 'bottom',
+                        xOffset: 0,
+                        height: 0,
+                        decimals: 0
+                      },
+                      hasYAxisBackgroundLines: true,
+                    }}
+                    barRadius={10}
+                    barColor='green'
+                    barWidthPercentage="0.15"
+                  />
+                  </View>
+              </BottomSheetView>
+            </BottomSheet>
+            {/* : */}
+            {/* <Text>
+              데이터가 없습니다.
+            </Text> */}
+          {/* } */}
+
         </KeyboardAvoidingView>
+
 
         {/* 수정 버튼 */}
         <View style={{ ...styles.saveButtonView, marginTop: 16 }}>
@@ -374,6 +494,9 @@ function DetailScreen(card) {
 }
 
 export default DetailScreen;
+
+
+
 
 const styles = StyleSheet.create({
   errorTextStyle: {
@@ -497,5 +620,33 @@ const styles = StyleSheet.create({
     backgroundColor: "#456185",
     justifyContent: "center",
     alignItems: "center",
+  },
+
+  bottomSheetView: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  chartTitle: {
+    height: "10%",
+    alignItems: 'center',
+    justifyContent: "center",
+    // backgroundColor: "blue",
+    width: SCREEN_WIDTH,
+  },
+
+  chartTitleText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+
+  barGraph: {
+    width: SCREEN_WIDTH,
+    height: "90%",
+    alignItems: 'center',
+    paddingTop: 20,
+    // justifyContent: 'center',
+    // backgroundColor: 'green',
   },
 });
