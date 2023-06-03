@@ -82,8 +82,8 @@ function Card({ data }) {
   }, [])
 
 
-  console.log("labels", labels)
-  console.log("datas", datas)
+  // console.log("labels", labels)
+  // console.log("datas", datas)
 
 
 
