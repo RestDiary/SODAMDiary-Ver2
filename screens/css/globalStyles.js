@@ -3,6 +3,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { SimpleLineIcons } from "@expo/vector-icons";
 
+
 export const dark = {
   logo: require("../../assets/images/logo.png"),
   logoColor: "#32cd99",
@@ -46,6 +47,7 @@ export const votanical = {
   btn: "#379947",
   cardBorder: "#fff",
 };
+
 
 export const town = {
   logo: require("../../assets/images/logoTown.png"),
