@@ -55,35 +55,30 @@ function Card({ data }) {
   const [datas, setData] = useState([]);
 
 
-  // 차트 데이터 받아오기 및 차트 생성
-  useEffect(() => {
-    if (data.second_number === 0) {
-      let first = data.top_emotion.split("/");
+  // // 차트 데이터 받아오기 및 차트 생성
+  // useEffect(() => {
+  //   if (data.second_number === 0) {
+  //     let first = data.top_emotion.split("/");
   
-      setLabels([first[0]]);
-      setData([data.top_number]);
-    } else if (data.third_number === 0) {
-      let first = data.top_emotion.split("/");
-      let second = data.second_emotion.split("/");
+  //     setLabels([first[0]]);
+  //     setData([data.top_number]);
+  //   } else if (data.third_number === 0) {
+  //     let first = data.top_emotion.split("/");
+  //     let second = data.second_emotion.split("/");
   
-      setLabels([first[0], second[0]]);
-      setData([data.top_number, data.second_number]);
+  //     setLabels([first[0], second[0]]);
+  //     setData([data.top_number, data.second_number]);
 
-    } else {
-      let first = data.top_emotion.split("/");
-      let second = data.second_emotion.split("/");
-      let third = data.third_emotion.split("/");
+  //   } else {
+  //     let first = data.top_emotion.split("/");
+  //     let second = data.second_emotion.split("/");
+  //     let third = data.third_emotion.split("/");
   
-      setLabels([first[0], second[0], third[0]]);
-      setData([data.top_number, data.second_number, data.third_number]);
-    }
+  //     setLabels([first[0], second[0], third[0]]);
+  //     setData([data.top_number, data.second_number, data.third_number]);
+  //   }
 
 
-  }, [])
-
-
-  // console.log("labels", labels)
-  // console.log("datas", datas)
 
 
 
@@ -226,7 +221,7 @@ function Card({ data }) {
                 fromZero={true}\
               /> */}
 
-              <HorizontalBarGraph
+              {/* <HorizontalBarGraph
                 data={datas}
                 labels={labels}
                 width={375}
@@ -254,7 +249,7 @@ function Card({ data }) {
                 style={styles.chart}
                 barColor='black'
                 barWidthPercentage="0.3"
-              />
+              /> */}
 
 
               
