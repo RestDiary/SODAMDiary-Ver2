@@ -44,6 +44,7 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { FontAwesome } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
+import { Entypo } from "@expo/vector-icons";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -382,172 +383,170 @@ function WriteScreen({ navigation }) {
 
   return (
     <View style={{ ...styles.container, backgroundColor: nowTheme.cardBg }}>
-      {/* 제목 */}
-      <SafeAreaView
-        style={{
-          ...styles.titleLayout,
-          backgroundColor: nowTheme.btn,
-          borderColor: nowTheme.cardBorder,
-        }}
-      >
-        <TextInput
-          autoFocus
-          placeholder="제목"
-          placeholderTextColor={"#456185"}
-          style={{ ...styles.title, color: nowTheme.font, fontWeight: "bold" }}
-          onChangeText={onChangeTitleText}
-          value={titleText}
-          returnKeyType="next"
-          maxLength={30}
-        />
-      </SafeAreaView>
-      <SafeAreaView
-        style={{
-          ...styles.feelingLayout,
-          backgroundColor: nowTheme.btn,
-          borderColor: nowTheme.cardBorder,
-        }}
-      >
-        {/* 날짜 */}
-        <TouchableOpacity onPress={showDatePicker}>
-          <Text style={{ ...styles.date, color: nowTheme.font }}>
-            {year + "년 " + month + "월 " + day + "일"}
-          </Text>
-        </TouchableOpacity>
-        <View
+      <View style={styles.topView}>
+        {/* 제목 */}
+        <SafeAreaView
           style={{
-            flexDirection: "row",
-            position: "absolute",
-            right: 0,
+            ...styles.titleLayout,
+            backgroundColor: nowTheme.btn,
+            borderColor: nowTheme.cardBorder,
           }}
         >
-          {/* 키보드 내리기 버튼 */}
-          <TouchableOpacity
-            style={{ padding: 10 }}
-            onPress={() => Keyboard.dismiss()}
+          <TextInput
+            placeholder="제목"
+            placeholderTextColor={"#456185"}
+            style={{
+              ...styles.title,
+              color: nowTheme.font,
+              fontWeight: "bold",
+            }}
+            onChangeText={onChangeTitleText}
+            value={titleText}
+            returnKeyType="next"
+            maxLength={30}
+          />
+        </SafeAreaView>
+        <View
+          style={{
+            ...styles.feelingLayout,
+            backgroundColor: nowTheme.btn,
+            borderColor: nowTheme.cardBorder,
+          }}
+        >
+          {/* 날짜 */}
+          <TouchableOpacity onPress={showDatePicker}>
+            <Text
+              style={{
+                ...styles.date,
+                color: nowTheme.font,
+                fontWeight: "bold",
+              }}
+            >
+              {year + "년 " + month + "월 " + day + "일"}
+            </Text>
+          </TouchableOpacity>
+          <View
+            style={{
+              flexDirection: "row",
+              position: "absolute",
+              right: 0,
+            }}
           >
-            <MaterialIcons name="keyboard-hide" size={24} color={nowTheme.bg} />
-          </TouchableOpacity>
-          {/* 갤러리 버튼 */}
-          <TouchableOpacity style={{ padding: 10 }} onPress={pickImage}>
-            <MaterialCommunityIcons
-              name="image-plus"
-              size={24}
-              color={nowTheme.bg}
-            />
-          </TouchableOpacity>
+            {/* 키보드 내리기 버튼 */}
+            <TouchableOpacity
+              style={{ padding: 10 }}
+              onPress={() => Keyboard.dismiss()}
+            >
+              <MaterialIcons
+                name="keyboard-hide"
+                size={24}
+                color={nowTheme.bg}
+              />
+            </TouchableOpacity>
+            {/* 갤러리 버튼 */}
+            <TouchableOpacity style={{ padding: 10 }} onPress={pickImage}>
+              <MaterialCommunityIcons
+                name="image-plus"
+                size={24}
+                color={nowTheme.bg}
+              />
+            </TouchableOpacity>
+            {/* 저장 버튼 */}
+            <TouchableOpacity
+              style={{ padding: 10 }}
+              onPress={submitContentHandle}
+            >
+              <Entypo name="save" size={24} color={nowTheme.bg} />
+            </TouchableOpacity>
+          </View>
         </View>
-      </SafeAreaView>
-      <DateTimePickerModal
-        isVisible={isDatePickerVisible}
-        mode="date"
-        onConfirm={handleConfirm}
-        onCancel={hideDatePicker}
-        date={date}
-      />
 
+        <DateTimePickerModal
+          isVisible={isDatePickerVisible}
+          mode="date"
+          onConfirm={handleConfirm}
+          onCancel={hideDatePicker}
+          date={date}
+        />
+        {/* 챗봇 전체 뷰 */}
+        <View
+          style={{
+            ...styles.chatBotView,
+            backgroundColor: nowTheme.btn,
+          }}
+        >
+          {/* 챗봇 이미지 뷰 */}
+          <View style={{ ...styles.chatBotImageView }}>
+            <Image
+              source={require("../assets/images/SodamBot.png")}
+              style={styles.imageSize}
+              resizeMode={"contain"}
+            ></Image>
+          </View>
+          {/* 챗봇 내용 뷰 */}
+          <View
+            style={{
+              ...styles.chatBotContents,
+              borderColor: nowTheme.btn,
+              backgroundColor: nowTheme.bg,
+              justifyContent: "center",
+            }}
+          >
+            {/* 챗봇 텍스트 */}
+            <Text
+              style={{
+                margin: 8,
+                color: "#fff",
+                fontWeight: "bold",
+                fontSize: 16,
+                alignSelf: "center",
+              }}
+            >
+              끄덕끄덕, 듣고있어요~{showA} (평온){showE}
+            </Text>
+          </View>
+        </View>
+      </View>
+
+      {/* 스크롤 뷰 시작 */}
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 0.9 }}
       >
-        <SafeAreaView>
-          <ScrollView>
-            <View
-              style={{
-                ...styles.chatBotView,
-              }}
-            >
-              <View
+        <ScrollView>
+          {/* {이미지 보이는 곳} */}
+          <Pressable onLongPress={delImg}>
+            {image && (
+              <Image
+                source={{ uri: image }}
                 style={{
-                  ...styles.chatBotContents,
-                  borderColor: nowTheme.btn,
-                  backgroundColor: nowTheme.btn,
-                  justifyContent: "center",
+                  width: SCREEN_WIDTH / 1.5,
+                  height: SCREEN_WIDTH / 1.5,
+                  borderWidth: 1,
+                  borderColor: nowTheme.cardBorder,
+                  margin: 8,
+                  borderRadius: 20,
                 }}
-              >
-                {/* ---------- 챗봇 대답 ---------- */}
-                {showE !== "" ?
-                  <Text
-                    style={{
-                      margin: 8,
-                      color: "#fff",
-                      fontWeight: "bold",
-                      fontSize: 16,
-                      alignSelf: "center",
-                    }}
-                  >
-                    {showA} ( {showE} )
-                  </Text> :
-                  <Text
-                    style={{
-                      margin: 8,
-                      color: "#fff",
-                      fontWeight: "bold",
-                      fontSize: 16,
-                      alignSelf: "center",
-                    }}
-                  >
-                    만나서 반가워요! 저는 소담이라고 해요!
-                  </Text>}
-              </View>
-              <AntDesign name="caretright" size={24} color={nowTheme.btn} />
+              />
+            )}
+          </Pressable>
 
-              <View style={{ ...styles.chatBotImageView }}>
-                <Image
-                  source={require("../assets/images/SodamBot.png")}
-                  style={styles.imageSize}
-                  resizeMode={"contain"}
-                ></Image>
-              </View>
-            </View>
-
-            {/* {이미지 보이는 곳} */}
-            <Pressable onLongPress={delImg}>
-              {image && (
-                <Image
-                  source={{ uri: image }}
-                  style={{
-                    width: SCREEN_WIDTH / 1.5,
-                    height: SCREEN_WIDTH / 1.5,
-                    borderWidth: 1,
-                    borderColor: nowTheme.cardBorder,
-                    margin: 8,
-                    borderRadius: 20,
-                  }}
-                />
-              )}
-            </Pressable>
-            {/* 글 작성 */}
-
-            <TextInput
-              placeholder="내용"
-              placeholderTextColor={"#456185"}
-              style={{
-                ...styles.title,
-                color: nowTheme.font,
-                fontWeight: "bold",
-              }}
-              onChangeText={setContent}
-              value={content}
-              returnKeyType="next"
-              multiline={true}
-            />
-          </ScrollView>
-        </SafeAreaView>
+          {/* 글 작성 */}
+          <TextInput
+            placeholder="내용"
+            placeholderTextColor={"#456185"}
+            style={{
+              ...styles.title,
+              color: nowTheme.font,
+              fontWeight: "bold",
+            }}
+            onChangeText={setContent}
+            value={content}
+            returnKeyType="next"
+            multiline={true}
+          />
+        </ScrollView>
       </KeyboardAvoidingView>
-
-      {/* 저장 버튼 */}
-      <View style={styles.saveButtonView}>
-        <TouchableOpacity
-          style={{
-            ...styles.saveButtonStyle,
-            backgroundColor: nowTheme.btn,
-          }}
-          onPress={submitContentHandle}
-        >
-          <Text style={styles.textButtonStyle}>저장</Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 }
@@ -575,7 +574,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#456185",
     borderRadius: 10,
     padding: 10,
-    width: "25%",
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",
@@ -583,15 +581,14 @@ const styles = StyleSheet.create({
       width: 2,
       height: 2,
     },
-
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
     elevation: 4,
-    fontSize: 20,
+    marginRight: 8,
   },
 
   textButtonStyle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "600",
     color: "#fff",
   },
@@ -615,6 +612,17 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#071D3A",
     flex: 1,
+  },
+
+  topView: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 2,
+      height: 2,
+    },
+    shadowOpacity: 0.7,
+    shadowRadius: 2.62,
+    elevation: 4,
   },
 
   title: {
@@ -679,39 +687,41 @@ const styles = StyleSheet.create({
 
   chatBotView: {
     flexDirection: "row",
-    flex: 1,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 2,
-      height: 2,
-    },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-    elevation: 4,
     alignItems: "center",
     justifyContent: "space-between",
   },
 
   chatBotContents: {
     flex: 0.84,
-    borderRadius: 10,
-    marginLeft: 8,
-    height: SCREEN_HEIGHT / 16,
-    maxHeight: SCREEN_HEIGHT / 16,
+    borderTopRightRadius: 10,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    marginRight: 16,
+    height: SCREEN_HEIGHT / 12,
+    maxHeight: SCREEN_HEIGHT / 12,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 2,
+      height: 2,
+    },
+    shadowOpacity: 0.7,
+    shadowRadius: 2.62,
+    elevation: 4,
   },
 
   chatBotImageView: {
     marginTop: 12,
     marginRight: 12,
+    marginLeft: 12,
     marginBottom: 12,
     flex: 0.16,
     justifyContent: "center",
-    height: SCREEN_HEIGHT / 16,
-    maxHeight: SCREEN_HEIGHT / 16,
+    height: SCREEN_HEIGHT / 12,
+    maxHeight: SCREEN_HEIGHT / 12,
   },
 
   imageSize: {
-    width: "120%",
-    height: "120%",
+    width: "110%",
+    height: "110%",
   },
 });
