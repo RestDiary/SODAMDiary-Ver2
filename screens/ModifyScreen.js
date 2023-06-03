@@ -460,7 +460,7 @@ function DetailScreen(card) {
             placeholderTextColor={"#456185"}
             style={{
               ...styles.title,
-              color: nowTheme.font,
+              color: nowTheme.bg,
               fontWeight: "bold",
             }}
             onChangeText={onChangeTitleText}
@@ -482,7 +482,7 @@ function DetailScreen(card) {
             <Text
               style={{
                 ...styles.date,
-                color: nowTheme.font,
+                color: nowTheme.bg,
                 fontWeight: "bold",
               }}
             >
@@ -560,7 +560,7 @@ function DetailScreen(card) {
             <Text
               style={{
                 margin: 8,
-                color: "#fff",
+                color: nowTheme.font,
                 fontWeight: "bold",
                 fontSize: 16,
                 alignSelf: "center",
@@ -587,7 +587,7 @@ function DetailScreen(card) {
                   width: SCREEN_WIDTH / 1.5,
                   height: SCREEN_WIDTH / 1.5,
                   borderWidth: 1,
-                  borderColor: nowTheme.cardBorder,
+                  borderColor: nowTheme.font,
                   margin: 8,
                   borderRadius: 20,
                 }}
@@ -691,7 +691,7 @@ const styles = StyleSheet.create({
 
   title: {
     color: "white",
-    fontSize: SCREEN_HEIGHT / 36,
+    fontSize: SCREEN_HEIGHT / 43,
     margin: 10,
   },
 

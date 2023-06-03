@@ -388,7 +388,7 @@ function WriteScreen({ navigation }) {
         <SafeAreaView
           style={{
             ...styles.titleLayout,
-            backgroundColor: nowTheme.btn,
+            backgroundColor: "white",
             borderColor: nowTheme.cardBorder,
           }}
         >
@@ -409,7 +409,7 @@ function WriteScreen({ navigation }) {
         <View
           style={{
             ...styles.feelingLayout,
-            backgroundColor: nowTheme.btn,
+            backgroundColor: "white",
             borderColor: nowTheme.cardBorder,
           }}
         >
@@ -440,7 +440,7 @@ function WriteScreen({ navigation }) {
               <MaterialIcons
                 name="keyboard-hide"
                 size={24}
-                color={nowTheme.bg}
+                color={nowTheme.btn}
               />
             </TouchableOpacity>
             {/* 갤러리 버튼 */}
@@ -448,7 +448,7 @@ function WriteScreen({ navigation }) {
               <MaterialCommunityIcons
                 name="image-plus"
                 size={24}
-                color={nowTheme.bg}
+                color={nowTheme.btn}
               />
             </TouchableOpacity>
             {/* 저장 버튼 */}
@@ -456,7 +456,7 @@ function WriteScreen({ navigation }) {
               style={{ padding: 10 }}
               onPress={submitContentHandle}
             >
-              <Entypo name="save" size={24} color={nowTheme.bg} />
+              <Entypo name="save" size={24} color={nowTheme.btn} />
             </TouchableOpacity>
           </View>
         </View>
@@ -472,7 +472,7 @@ function WriteScreen({ navigation }) {
         <View
           style={{
             ...styles.chatBotView,
-            backgroundColor: nowTheme.btn,
+            backgroundColor: "white",
           }}
         >
           {/* 챗봇 이미지 뷰 */}
@@ -488,7 +488,7 @@ function WriteScreen({ navigation }) {
             style={{
               ...styles.chatBotContents,
               borderColor: nowTheme.btn,
-              backgroundColor: nowTheme.bg,
+              backgroundColor: nowTheme.btn,
               justifyContent: "center",
             }}
           >
