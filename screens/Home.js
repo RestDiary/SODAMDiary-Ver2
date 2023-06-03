@@ -39,6 +39,8 @@ import { useIsFocused } from "@react-navigation/native";
 import PieTop from './component/chartsRe/PieTop';
 import LineYear from './component/chartsRe/LineYear';
 import RingMonth from './component/chartsRe/RingMonth';
+import Card from './component/Card';
+import { API } from "../config";
 
 //사용 디바이스 크기 값 받아오기
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
@@ -51,13 +53,45 @@ function HomeScreen({ navigation }) {
   const [ringData, setRingData] = useState([]);
   const [loading, setLoading] = useState(false)
   const [yearData, setYearData] = useState([]);
+  const [userId, setUserId] = useState("");  //이름 띄워주기 위함
 
+  const [randomDiaryData, setRandomDiaryData] = useState([]);
+  
+
+  //밑에 함수 통계 데이터 최초 1회 실행
   useEffect(() => {
     console.log("실행함");
     getPieData();
     getLineData();
     getRingData();
+    getRandomDate();
   }, []);
+
+  const getRandomDate = async () => {
+    setLoading(true)
+    const userId = await AsyncStorage.getItem("id");
+    try {
+      await axios({
+        method: "post",
+        url: `${API.RANDOMDIARY}`,
+        // url: 'http://192.168.0.10:3001/pieTop',
+        params: {
+          id: userId, //****작성자 id
+        }
+      }, null)
+        .then(res => {
+          setRandomDiaryData(res.data)
+          console.log(res.data);
+
+        })
+        .catch(function (error) {
+          Alert.alert("❗error : bad response")
+        })
+    } catch (error) {
+      console.log(error)
+    }
+    setLoading(false);
+  }
 
   // -------------------- [ Top5 감정 data 요청 (PieChart 사용) ] --------------------
   const getPieData = async () => {
@@ -67,7 +101,7 @@ function HomeScreen({ navigation }) {
       await axios({
         method: "post",
         // url: `${API.pieTop}`,
-        url: 'http://192.168.0.18:3001/pieTop',
+        url: 'http://192.168.0.10:3001/pieTop',
         params: {
           id: userId, //****작성자 id
         }
@@ -97,7 +131,7 @@ function HomeScreen({ navigation }) {
       await axios({
         method: "post",
         // url: `${API.lineYear}`,
-        url: 'http://192.168.0.18:3001/lineYear',
+        url: 'http://192.168.0.10:3001/lineYear',
         params: {
           id: userId, //****작성자 id
           year: year  //현재 기준 연도
@@ -130,7 +164,7 @@ function HomeScreen({ navigation }) {
       await axios({
         method: "post",
         // url: `${API.lineYear}`,
-        url: 'http://192.168.0.18:3001/ringMonth',
+        url: 'http://192.168.0.10:3001/ringMonth',
         params: {
           id: userId,   // ****작성자 id
           month: month   // 현재 기준 월
@@ -150,7 +184,7 @@ function HomeScreen({ navigation }) {
 
 
 
-  //테마
+  //테마 isFocused 변화 시 렌더링
   useEffect(() => {
     getTheme();
   }, [isFocused]);
@@ -175,12 +209,14 @@ function HomeScreen({ navigation }) {
   React.useEffect(() => {
     isLogin();
   }, []);
-
+//로그인이 안돼있다면 로그인페이지 이동함수
   const isLogin = async () => {
     const userId = await AsyncStorage.getItem("id");
     if (!userId) {
       Alert.alert("로그인 후에 이용해 주세요.");
       navigation.navigate("Login");
+    }else{
+      setUserId(userId)
     }
   };
 
@@ -189,147 +225,52 @@ function HomeScreen({ navigation }) {
     navigation.navigate(screen);
   };
 
+
   return (
     <View style={{ ...styles.container, backgroundColor: nowTheme.bg }}>
       <SafeAreaView>
         <StatusBar barStyle="light-content" />
         <ScrollView>
-          {/* 테마 대표 이미지 넣기 */}
-          <View style={styles.imgBox}>
-            {/* 이미지 들어가는 자리 */}
-            <ImageBackground
-              style={{ height: "100%", width: "100%" }}
-              source={nowTheme.image}
-            >
-              <TouchableOpacity onPress={() => navigation.openDrawer()}>
-                <View style={{ marginLeft: "5.5%", marginTop: "6%" }}>
-                  {nowTheme.menu}
-                </View>
-              </TouchableOpacity>
-            </ImageBackground>
+          {/* 사용자 이름 표시 */}
+          <View style={styles.memberContainer}>
+              <Text style={styles.memberTop}>
+                {userId}님과
+              </Text>
+              <Text style={styles.memberBottom}>
+                즐거운 하루
+              </Text>
           </View>
 
-          {/* <View>
-          {loading && <ActivityIndicator size="large" color="white" />}
-          {
-            pieData[0] &&(
-              <PieTop data={pieData} />
-            ) 
-            
-          }
-
-          </View> */}
-
-
-          {/* <View>
-            {loading && <ActivityIndicator size="large" color="white" />}
-            {
-              pieData.length > 0 ? (
-                <PieTop data={pieData} />
-              ) : <PieTop data={"0"} />
-
-            }
-          </View> */}
-
-
-          <View style={styles.content}>
-            {/* 새로로 긴 위젯을 위한 위젯 나누기 View */}
-            <View style={styles.headWidgetContainer}>
-              <View style={styles.headWidgetDiv1}>
-                <TouchableOpacity
-                  onPress={(screen) => moveNavigate("Calender")}
-                >
-                  <View
-                    style={{
-                      ...styles.longWidget,
-                      backgroundColor: nowTheme.calender,
-                      borderRadius: 20,
-                    }}
-                  >
-                    <Entypo name="calendar" size={24} color="white" />
-                    <Text style={styles.textStyle}>calender</Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.headWidgetDiv2}>
-                <View style={styles.smallWidgetContaner}>
-                  <TouchableOpacity onPress={(screen) => moveNavigate("Chart")}>
-                    <View
-                      style={{
-                        ...styles.smallWidget,
-                        backgroundColor: nowTheme.chart,
-                        borderRadius: 20,
-                      }}
-                    >
-                      <AntDesign name="piechart" size={24} color="white" />
-                      <Text style={styles.textStyle}>chart</Text>
-                    </View>
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.smallWidgetContaner}>
-                  <TouchableOpacity onPress={(screen) => moveNavigate("Diary")}>
-                    <View
-                      style={{
-                        ...styles.smallWidget,
-                        backgroundColor: nowTheme.diary,
-                        borderRadius: 20,
-                      }}
-                    >
-                      <Entypo name="list" size={24} color="white" />
-                      <Text style={styles.textStyle}>diary</Text>
-                    </View>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-            <View style={styles.widgetContainer}>
-              <View style={styles.smallWidgetContaner}>
-                <TouchableOpacity onPress={(screen) => moveNavigate("Picture")}>
-                  <View
-                    style={{
-                      ...styles.smallWidget,
-                      backgroundColor: nowTheme.picture,
-                      borderRadius: 20,
-                    }}
-                  >
-                    <MaterialIcons name="photo-album" size={24} color="white" />
-                    <Text style={styles.textStyle}>picture</Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.smallWidgetContaner}>
-                <TouchableOpacity onPress={(screen) => moveNavigate("Write")}>
-                  <View
-                    style={{
-                      ...styles.smallWidget,
-                      backgroundColor: nowTheme.write,
-                      borderRadius: 20,
-                    }}
-                  >
-                    <FontAwesome
-                      name="pencil-square-o"
-                      size={24}
-                      color="white"
-                    />
-                    <Text style={styles.textStyle}>write</Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-
-          
-
-          {/* [ Top5 감정분석 차트 View ] */}
           <View>
-            {loading && <ActivityIndicator size="large" color="white" />}
-            {
-              pieData.length > 0 ? (
-                <PieTop data={pieData} />
-              ) : <PieTop data={"0"} />
-
-            }
+            <Text>최근 다이어리 (작명 필요)</Text>
+              <ScrollView showsHorizontalScrollIndicator={false} horizontal>
+              <View style={styles.notCard}></View>
+                {loading && <ActivityIndicator size="large" color="white" />}
+                  {randomDiaryData[0]&&
+                    randomDiaryData.map((my, index) => {
+                      // return <Card key={index} data={diaryData[index]} /> 일기데이터 받아오기전까지
+                      return <Card key={index} data = {randomDiaryData[index]}></Card>
+                    })
+                  }
+                <View style={styles.notCard}></View>
+                </ScrollView>
           </View>
+
+          <Text>나의 감정 통계</Text>
+          <ScrollView showsHorizontalScrollIndicator={false} horizontal>
+
+
+          <View>
+            {/* [ Top5 감정분석 차트 View ] */}
+              {loading && <ActivityIndicator size="large" color="white" />}
+              {
+                pieData.length > 0 ? (
+                  <PieTop data={pieData} />
+                ) : <PieTop data={"0"} />
+              }
+
+          </View>
+
 
           {/* [ 올해 감정분석 차트 View ] */}
           <View>
@@ -341,6 +282,7 @@ function HomeScreen({ navigation }) {
             }
           </View>
 
+          
           {/* [ 월 별 감정분석 차트 View ] */}
           <View>
             {
@@ -350,6 +292,17 @@ function HomeScreen({ navigation }) {
 
             }
           </View>
+          </ScrollView>
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -369,80 +322,89 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     width: SCREEN_WIDTH,
   },
-  imgBox: {
-    height: SCREEN_HEIGHT / 3,
-    width: SCREEN_WIDTH,
-    justifyContent: "center",
-    alignItems: "center",
+  memberContainer: {
+
+    marginTop:SCREEN_HEIGHT /12,
+    marginLeft:SCREEN_WIDTH / 12,
+    height: SCREEN_HEIGHT /6.3,
   },
-  content: {},
-  headWidgetContainer: {
-    flexDirection: "row",
-    width: SCREEN_WIDTH,
-    height: SCREEN_HEIGHT / 2.4,
+  memberTop: {
+    fontSize:SCREEN_HEIGHT / 24,
   },
-  headWidgetDiv1: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    //IOS
-    shadowColor: "#000", //그림자색
-    shadowOpacity: 0.4, //그림자 투명도
-    shadowOffset: { width: 4, height: 4 }, //그림자 위치
-    // ANDROID
-    elevation: 3,
+  memberBottom:{
+    fontSize:SCREEN_HEIGHT / 24,
   },
-  headWidgetDiv2: {
-    flexDirection: "column",
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  widgetContainer: {
-    flexDirection: "row",
-    width: SCREEN_WIDTH,
-    height: SCREEN_HEIGHT / 4.8,
-  },
-  longWidget: {
-    height: SCREEN_HEIGHT / 2.6,
-    width: SCREEN_WIDTH / 2.4,
-    borderRadius: 20,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  smallWidgetContaner: {
-    flex: 1,
-    height: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    //IOS
-    shadowColor: "#000", //그림자색
-    shadowOpacity: 0.4, //그림자 투명도
-    shadowOffset: { width: 4, height: 4 }, //그림자 위치
-    // ANDROID
-    elevation: 3,
-  },
-  smallWidget: {
-    height: SCREEN_HEIGHT / 5.8,
-    width: SCREEN_WIDTH / 2.4,
-    backgroundColor: "#de8260",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  smallWidget2: {
-    height: SCREEN_HEIGHT / 5.8,
-    width: SCREEN_WIDTH / 1.1,
-    backgroundColor: "#de8260",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  textStyle: {
-    color: "white",
-  },
-  loadingView: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: SCREEN_WIDTH / 1.05,
-    height: SCREEN_HEIGHT / 4,
-  }
+
+
+  // 참고용 (이전 css 코드)
+  // content: {},
+  // headWidgetContainer: {
+  //   flexDirection: "row",
+  //   width: SCREEN_WIDTH,
+  //   height: SCREEN_HEIGHT / 2.4,
+  // },
+  // headWidgetDiv1: {
+  //   flex: 1,
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  //   //IOS
+  //   shadowColor: "#000", //그림자색
+  //   shadowOpacity: 0.4, //그림자 투명도
+  //   shadowOffset: { width: 4, height: 4 }, //그림자 위치
+  //   // ANDROID
+  //   elevation: 3,
+  // },
+  // headWidgetDiv2: {
+  //   flexDirection: "column",
+  //   flex: 1,
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  // },
+  // widgetContainer: {
+  //   flexDirection: "row",
+  //   width: SCREEN_WIDTH,
+  //   height: SCREEN_HEIGHT / 4.8,
+  // },
+  // longWidget: {
+  //   height: SCREEN_HEIGHT / 2.6,
+  //   width: SCREEN_WIDTH / 2.4,
+  //   borderRadius: 20,
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  // },
+  // smallWidgetContaner: {
+  //   flex: 1,
+  //   height: "100%",
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  //   //IOS
+  //   shadowColor: "#000", //그림자색
+  //   shadowOpacity: 0.4, //그림자 투명도
+  //   shadowOffset: { width: 4, height: 4 }, //그림자 위치
+  //   // ANDROID
+  //   elevation: 3,
+  // },
+  // smallWidget: {
+  //   height: SCREEN_HEIGHT / 5.8,
+  //   width: SCREEN_WIDTH / 2.4,
+  //   backgroundColor: "#de8260",
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  // },
+  // smallWidget2: {
+  //   height: SCREEN_HEIGHT / 5.8,
+  //   width: SCREEN_WIDTH / 1.1,
+  //   backgroundColor: "#de8260",
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  // },
+  // textStyle: {
+  //   color: "white",
+  // },
+  // loadingView: {
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  //   width: SCREEN_WIDTH / 1.05,
+  //   height: SCREEN_HEIGHT / 4,
+  // }
 });

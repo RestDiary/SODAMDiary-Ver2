@@ -30,13 +30,8 @@ import {
   magazine,
   winter,
 } from "./screens/css/globalStyles";
-import { Ionicons } from "@expo/vector-icons";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Entypo } from "@expo/vector-icons";
-import { MaterialIcons } from "@expo/vector-icons";
+import {AntDesign,FontAwesome5,MaterialIcons, Entypo,Ionicons,MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation, useIsFocused } from "@react-navigation/native";
-import { FontAwesome5 } from "@expo/vector-icons";
-import { AntDesign } from "@expo/vector-icons";
 //screen
 import CalenderScreen from "./screens/CalenderScreen";
 import WriteScreen from "./screens/WriteScreen";
@@ -58,14 +53,17 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import DetailScreen from "./screens/DetailScreen";
 import ModifyScreen from "./screens/ModifyScreen";
 import PictureDeailScreen from "./screens/PictureDeailScreen";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
 
 //사용 디바이스 크기 값 받아오기
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
-//Drawer
+
+//Drawer 커스텀
 function CustomDrawerContent(props) {
   //스크린 이동할 때 lifecycle 실행
   const isFocused = useIsFocused();
@@ -214,7 +212,11 @@ function CustomDrawerContent(props) {
 
   return (
     <DrawerContentScrollView
-      style={{ ...styles.drawerBox, backgroundColor: nowTheme.drawer }}
+      style={{
+        ...styles.drawerBox,
+        backgroundColor: nowTheme.drawer,
+        borderColor: nowTheme.cardBg,
+      }}
       {...props}
       contentContainerStyle={{ flex: 1 }}
     >
@@ -234,7 +236,6 @@ function CustomDrawerContent(props) {
       </View>
 
       {/* <DrawerItemList {...props} /> */}
-
       <View style={{ alignItems: "flex-end", marginRight: 24 }}>
         <TouchableOpacity
           style={{ ...styles.nameBox, backgroundColor: nowTheme.btn }}
@@ -263,6 +264,22 @@ function CustomDrawerContent(props) {
             color="white"
           />
           <Text style={styles.drawerItemText}>자가진단</Text>
+        </TouchableOpacity>
+      </View>
+
+            {/* 자가진단 기능 */}
+      <View style={{ }}>
+        <TouchableOpacity
+          style={{ ...styles.drawerItem, backgroundColor: nowTheme.btn }}
+          // label="Close drawer"
+          onPress={() => props.navigation.navigate("Picture")}
+        >
+          <MaterialCommunityIcons
+            name="theme-light-dark"
+            size={24}
+            color="white"
+          />
+          <Text style={styles.drawerItemText}>앨범 모아보기</Text>
         </TouchableOpacity>
       </View>
 
@@ -333,23 +350,108 @@ function CustomDrawerContent(props) {
   );
 }
 
+
+
+//바텀 탭 네비게이터
+const TabComponent = () => {
+  return (
+    <Tab.Navigator
+      initialRouteName="home"
+      screenOptions={({route}) => ({
+        tabBarLabel: route.name,
+        tabBarIcon: ({focused}) => TabBarIcon(focused, route.name),
+
+        tabBarActiveBackgroundColor: 'white',
+        tabBarInactiveBackgroundColor: 'white',
+        tabBarActiveTintColor: '#549750',
+        tabBarInactiveTintColor: 'black',
+        // tabBarLabelPosition: 'beside-icon',
+        tabBarLabelPosition: 'below-icon',
+        headerShown: false,
+      })}>
+
+      <Tab.Screen name="home" component={HomeScreen} />
+      {/* option options={{tabBarStyle : {display:'none'}}} 으로 조작하면 특정 네비게이터에서 안보인다. */}
+      <Tab.Screen name="write" component={WriteScreen}  options={{tabBarStyle : {display:'none',}}}  /> 
+      <Tab.Screen name="calender" component={CalenderScreen}   />
+    </Tab.Navigator>
+  );
+};
+
+//바텀탭 아이콘
+const TabBarIcon = (focused, name) => {
+  let iconName, iconSize;
+
+
+  if (name == 'home') {
+    iconName = 'home-outline';
+    // iconImagePath = require('./assets/favicon.png');
+  } else if (name == 'write') {
+    iconName = 'add-circle-outline';
+    // iconImagePath = require('./assets/icon.png');
+  } else if (name == 'calender') {
+    iconName = 'calendar-sharp';
+    // iconImagePath = require('./assets/favicon.png');
+  }
+  iconSize = focused ? 22 : 24;
+  return (<>
+    <Ionicons name={iconName} size={iconSize} />
+    <Image
+      style={{
+        height: focused ? -2 : -2,
+        
+      }}
+      // source={iconImagePath}
+    />
+    </>
+  );
+};
+
+//드로워 네비게이터 컴포넌트 (바텀탭 네비게이터)
 function MyDrawer() {
+  const navigation = useNavigation();
   return (
     <Drawer.Navigator
       useLegacyImplementation
-      drawerStyle={{ backgroundColor: "#C6CBEF" }}
       drawerContent={(props) => <CustomDrawerContent {...props} />}
+      drawerStyle={{ backgroundColor: "#C6CBEF" , }}
+      options={{gestureEnabled: false,}}
+      screenOptions={{
+        swipeEnabled:false, 
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: 'transparent',
+          elevation: 0,
+          shadowOpacity: 0,
+        },
+        headerTitle: '',
+        headerRight: () => ( // 오르쪽에 검색, 프로필 보기 네비게이터 만들기
+        <Button
+          title="일기 검색 하기"
+          // onPress={(...props) => props.navigation.navigate("diary")}
+          onPress={() => navigation.navigate('Diary')}
+
+          color="black"
+        />
+        
+      ),
+      }}
     >
       <Drawer.Screen
-        name="home"
-        options={{ headerShown: false }}
-        component={HomeScreen}
+        name="SoDam"
+        options={{
+          headerShown: true,  
+          }}
+        component={TabComponent}
       />
+      
     </Drawer.Navigator>
   );
 }
 
 function MyStack() {
+
+  
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -357,16 +459,20 @@ function MyStack() {
         component={LoginScreen}
         options={{ headerShown: false, headerTintColor: "black" }}
       />
+      
+
+        { /*드로워 네비게이터 스택에 등록  */}
       <Stack.Screen
         name="Home"
         component={MyDrawer}
-        options={{ headerShown: false, headerTintColor: "black" }}
+        options={{ headerShown: false, headerTintColor: "black",gestureEnabled: false,}}
       />
+
 
       {/* Home */}
       <Stack.Screen
         name="Calender"
-        component={CalenderScreen}
+        component={MyDrawer}
         options={{ headerTintColor: "black", headerShown: false }}
       />
       <Stack.Screen
@@ -386,7 +492,7 @@ function MyStack() {
       />
 
       {/* 기타 스크린 */}
-  
+
       <Stack.Screen
         name="Join"
         component={JoinScreen}
@@ -431,7 +537,6 @@ function MyStack() {
         component={ResultScreen}
         options={{ headerTintColor: "black", headerShown: false }}
       />
-
 
       <Stack.Screen
         name="UserInfo"
@@ -490,7 +595,6 @@ const styles = StyleSheet.create({
   drawerBox: {
     backgroundColor: "#071D3A",
     borderRightWidth: 1,
-    borderColor: "#555",
   },
 
   drawerChart: {

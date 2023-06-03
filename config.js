@@ -24,4 +24,5 @@ export const API = {
   FLASK: `${BASE_URL}/flask`,
   PWCHECK: `${BASE_URL}/pwCheck`,
   DELETEALL: `${BASE_URL}/deleteAll`,
+  RANDOMDIARY: `${BASE_URL}/randomDiary`,
 };
