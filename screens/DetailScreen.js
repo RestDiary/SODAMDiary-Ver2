@@ -384,7 +384,7 @@ function DetailScreen(card) {
                 >
                   <ImageModal
                     swipeToDismiss={false}
-                    resizeMode="stretch"
+                    resizeMode="cover"
                     style={{
                       marginLeft: 10,
                       marginTop: 16,
