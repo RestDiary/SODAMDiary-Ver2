@@ -11,10 +11,10 @@ import {
   Alert,
   ImageBackground,
   StatusBar,
-  ActivityIndicator,
+  ActivityIndicator
 } from "react-native";
 import { Colors } from "react-native/Libraries/NewAppScreen";
-import axios from "axios";
+import axios from 'axios';
 // import { greaterOrEq } from 'react-native-reanimated';
 import {
   Entypo,
@@ -37,10 +37,13 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
 import { API } from "../config.js";
-import PieTop from "./component/chartsRe/PieTop";
-import LineYear from "./component/chartsRe/LineYear";
-import RingMonth from "./component/chartsRe/RingMonth";
-import Card from "./component/Card";
+import PieTop from './component/chartsRe/PieTop';
+import LineYear from './component/chartsRe/LineYear';
+import RingMonth from './component/chartsRe/RingMonth';
+import Card from './component/Card';
+import { YearPicker } from 'react-native-propel-kit';       //년도 결정
+import { Picker } from '@react-native-picker/picker';     //월 결정
+
 
 //사용 디바이스 크기 값 받아오기
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
@@ -51,144 +54,148 @@ function HomeScreen({ navigation }) {
   const [pieData, setPieData] = useState([]);
   const [lineData, setLineData] = useState([]);
   const [ringData, setRingData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [yearData, setYearData] = useState([]);
-  const [userId, setUserId] = useState(""); //이름 띄워주기 위함
+  const [loading, setLoading] = useState(false)
+  const [yearData, setYearData] = useState(new Date().getFullYear());
+  const [monthData, setMonthData] = useState(new Date().getMonth() + 1)
+  const [userId, setUserId] = useState("");  //이름 띄워주기 위함
+
 
   const [randomDiaryData, setRandomDiaryData] = useState([]);
 
-  //밑에 함수 통계 데이터 최초 1회 실행
+
   useEffect(() => {
-    console.log("실행함");
+    console.log("Pie차트 실행");
     getPieData();
-    getLineData();
-    getRingData();
     getRandomDate();
   }, []);
 
+
+  useEffect(() => {
+    console.log("Line차트 실행");
+    getLineData();
+  }, [yearData]);
+
+
+  useEffect(() => {
+    console.log("Ring차트 실행");
+    getRingData();
+  }, [monthData]);
+
+
+
+
   const getRandomDate = async () => {
-    setLoading(true);
+    setLoading(true)
     const userId = await AsyncStorage.getItem("id");
     try {
-      await axios(
-        {
-          method: "post",
-          url: `${API.RANDOMDIARY}`,
-          // url: 'http://192.168.0.10:3001/pieTop',
-          params: {
-            id: userId, //****작성자 id
-          },
-        },
-        null
-      )
-        .then((res) => {
-          setRandomDiaryData(res.data);
+      await axios({
+        method: "post",
+        url: `${API.RANDOMDIARY}`,
+        // url: 'http://192.168.0.10:3001/pieTop',
+        params: {
+          id: userId, //****작성자 id
+        }
+      }, null)
+        .then(res => {
+          setRandomDiaryData(res.data)
           console.log(res.data);
+
         })
         .catch(function (error) {
-          Alert.alert("❗error : bad response");
-        });
+          Alert.alert("❗error : bad response")
+        })
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
     setLoading(false);
-  };
+  }
 
   // -------------------- [ Top5 감정 data 요청 (PieChart 사용) ] --------------------
   const getPieData = async () => {
-    setLoading(true);
+    setLoading(true)
     const userId = await AsyncStorage.getItem("id");
     try {
-      await axios(
-        {
-          method: "post",
-          url: `${API.PIETOP_URL}`,
-          // url: 'http://192.168.0.10:3001/pieTop',
-          params: {
-            id: userId, //****작성자 id
-          },
-        },
-        null
-      )
-        .then((res) => {
-          setPieData(res.data);
+      await axios({
+        method: "post",
+        url: `${API.PIETOP_URL}`,
+        // url: 'http://192.168.0.10:3001/pieTop',
+        params: {
+          id: userId, //****작성자 id
+        }
+      }, null)
+        .then(res => {
+          setPieData(res.data)
+
         })
         .catch(function (error) {
-          Alert.alert("❗error : bad response");
-        });
+          Alert.alert("❗error : bad response")
+        })
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
     setLoading(false);
-  };
+  }
 
   // -------------------- [ 한 해 감정 data 요청 (LineYear 사용) ] --------------------
   const getLineData = async () => {
-    setLoading(true);
-    const userId = await AsyncStorage.getItem("id"); // 작성자 id
-    let today = new Date(); // 현재 날짜 객체
-    let year = today.getFullYear(); // 현재 기준 연도
-    setYearData(year);
+    setLoading(true)
+    const userId = await AsyncStorage.getItem("id");  // 작성자 id
 
     try {
-      await axios(
-        {
-          method: "post",
-          url: `${API.LINEYEAR_URL}`,
-          // url: 'http://192.168.0.10:3001/lineYear',
-          params: {
-            id: userId, //****작성자 id
-            year: year, //현재 기준 연도
-          },
-        },
-        null
-      )
-        .then((res) => {
-          setLineData(res.data);
+      await axios({
+        method: "post",
+        url: `${API.LINEYEAR_URL}`,
+        // url: 'http://192.168.0.10:3001/lineYear',
+        params: {
+          id: userId, //****작성자 id
+          year: yearData  //현재 기준 연도
+        }
+      }, null)
+        .then(res => {
+          setLineData(res.data)
           console.log("axios 후, lindData 길이: ", lineData.length);
           console.log("axios 후, line_response 길이: ", res.data.length);
           // console.log("2: ", res.data.length);
         })
         .catch(function (error) {
-          Alert.alert("❗error : bad response");
-        });
+          Alert.alert("❗error : bad response")
+        })
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
     setLoading(false);
-  };
+  }
+
 
   // -------------------- [ 월 별 감정 data 요청 (RingMonth 사용) ] --------------------
   const getRingData = async () => {
-    setLoading(true);
-    const userId = await AsyncStorage.getItem("id"); // 작성자 id
-    let today = new Date(); // 현재 날짜 객체
-    let month = today.getMonth(); // 현재 기준 월
+    setLoading(true)
+    const userId = await AsyncStorage.getItem("id");  // 작성자 id
+
 
     try {
-      await axios(
-        {
-          method: "post",
-          url: `${API.RINGMONTH_URL}`,
-          // url: 'http://192.168.0.10:3001/ringMonth',
-          params: {
-            id: userId, // ****작성자 id
-            month: month, // 현재 기준 월
-          },
-        },
-        null
-      )
-        .then((res) => {
-          setRingData(res.data);
+      await axios({
+        method: "post",
+        url: `${API.RINGMONTH_URL}`,
+        // url: 'http://192.168.0.10:3001/ringMonth',
+        params: {
+          id: userId,   // ****작성자 id
+          month: monthData   // 현재 기준 월
+        }
+      }, null)
+        .then(res => {
+          setRingData(res.data)
         })
         .catch(function (error) {
-          Alert.alert("❗error : bad response");
-        });
+          Alert.alert("❗error : bad response")
+        })
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
     setLoading(false);
-  };
+  }
+
+
 
   //테마 isFocused 변화 시 렌더링
   useEffect(() => {
@@ -222,7 +229,7 @@ function HomeScreen({ navigation }) {
       Alert.alert("로그인 후에 이용해 주세요.");
       navigation.navigate("Login");
     } else {
-      setUserId(userId);
+      setUserId(userId)
     }
   };
 
@@ -231,6 +238,7 @@ function HomeScreen({ navigation }) {
     navigation.navigate(screen);
   };
 
+
   return (
     <View style={{ ...styles.container, backgroundColor: nowTheme.bg }}>
       <SafeAreaView>
@@ -238,8 +246,12 @@ function HomeScreen({ navigation }) {
         <ScrollView>
           {/* 사용자 이름 표시 */}
           <View style={styles.memberContainer}>
-            <Text style={styles.memberTop}>{userId}님과</Text>
-            <Text style={styles.memberBottom}>즐거운 하루</Text>
+            <Text style={styles.memberTop}>
+              {userId}님과
+            </Text>
+            <Text style={styles.memberBottom}>
+              즐거운 하루
+            </Text>
           </View>
 
           <View>
@@ -250,44 +262,82 @@ function HomeScreen({ navigation }) {
               {randomDiaryData[0] &&
                 randomDiaryData.map((my, index) => {
                   // return <Card key={index} data={diaryData[index]} /> 일기데이터 받아오기전까지
-                  return (
-                    <Card key={index} data={randomDiaryData[index]}></Card>
-                  );
-                })}
+                  return <Card key={index} data={randomDiaryData[index]}></Card>
+                })
+              }
               <View style={styles.notCard}></View>
             </ScrollView>
           </View>
 
           <Text>나의 감정 통계</Text>
-          <ScrollView showsHorizontalScrollIndicator={false} horizontal>
-            <View>
+          <ScrollView showsHorizontalScrollIndicator={false} horizontal pagingEnabled={true} style={styles.chartScrollView}>
+            <View style={styles.topChartView}>
               {/* [ Top5 감정분석 차트 View ] */}
               {loading && <ActivityIndicator size="large" color="white" />}
-              {pieData.length > 0 ? (
-                <PieTop data={pieData} />
-              ) : (
-                <PieTop data={"0"} />
-              )}
+              {
+                pieData.length > 0 ? (
+                  <PieTop data={pieData} />
+                ) : <PieTop data={"0"} />
+              }
+
             </View>
 
             {/* [ 올해 감정분석 차트 View ] */}
-            <View>
-              {lineData.length > 0 ? (
-                <LineYear data={lineData} yearData={yearData} />
-              ) : (
-                <LineYear data={"0"} />
-              )}
+            <View style={styles.yearChartView}>
+              <TouchableOpacity>
+                <YearPicker style={{ ...styles.yearText, color: nowTheme.font, height: SCREEN_HEIGHT / 14 }} title="년도 선택" value={yearData} onChange={setYearData} />
+              </TouchableOpacity>
+              {
+                lineData.length > 0 ? (
+                  <LineYear data={lineData} yearData={yearData} />
+                ) : <LineYear data={"0"} />
+
+              }
+
             </View>
 
             {/* [ 월 별 감정분석 차트 View ] */}
-            <View>
-              {ringData.length > 0 ? (
-                <RingMonth data={ringData} />
-              ) : (
-                <RingMonth data={"0"} />
-              )}
+            <View style={styles.monthChartView}>
+              <TouchableOpacity>
+                <Picker
+                  selectedValue={monthData}
+                  onValueChange={(item) => setMonthData(item)}
+                  style={styles.pickerView}
+                >
+                  <Picker.Item label="1월" value="1" selected={monthData === '1'} />
+                  <Picker.Item label="2월" value="2" selected={monthData === '2'} />
+                  <Picker.Item label="3월" value="3" selected={monthData === '3'} />
+                  <Picker.Item label="4월" value="4" selected={monthData === '4'} />
+                  <Picker.Item label="5월" value="5" selected={monthData === '5'} />
+                  <Picker.Item label="6월" value="6" selected={monthData === '6'} />
+                  <Picker.Item label="7월" value="7" selected={monthData === '7'} />
+                  <Picker.Item label="8월" value="8" selected={monthData === '8'} />
+                  <Picker.Item label="9월" value="9" selected={monthData === '9'} />
+                  <Picker.Item label="10월" value="10" selected={monthData === '10'} />
+                  <Picker.Item label="11월" value="11" selected={monthData === '11'} />
+                  <Picker.Item label="12월" value="12" selected={monthData === '12'} />
+                </Picker>
+              </TouchableOpacity>
+
+              {
+                ringData.length > 0 ? (
+                  <RingMonth data={ringData} />
+                ) : <RingMonth data={"0"} />
+
+              }
+
             </View>
+
+            <View style={styles.weekChartView}>
+              <Text>
+                안녕
+              </Text>
+            </View>
+
+
           </ScrollView>
+
+
         </ScrollView>
       </SafeAreaView>
     </View>
@@ -305,6 +355,7 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH,
   },
   memberContainer: {
+
     marginTop: SCREEN_HEIGHT / 12,
     marginLeft: SCREEN_WIDTH / 12,
     height: SCREEN_HEIGHT / 6.3,
@@ -315,6 +366,63 @@ const styles = StyleSheet.create({
   memberBottom: {
     fontSize: SCREEN_HEIGHT / 24,
   },
+
+  year: {
+    marginTop: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  yearText: {
+    color: "#fff",
+    fontSize: SCREEN_WIDTH / 14,
+    fontWeight: 'bold',
+  },
+
+  chartScrollView: {
+    flex: 1,
+  },
+
+  topChartView: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "red",
+    width: SCREEN_WIDTH
+  },
+
+  yearChartView: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "blue",
+    width: SCREEN_WIDTH
+  },
+
+  monthChartView: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    // backgroundColor: "yellow",
+    width: SCREEN_WIDTH,
+    flexDirection: "column",
+  },
+
+  pickerView: {
+    // flex: 1,
+    height: "20%",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "pupple",
+  },
+
+  weekChartView: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "green",
+    width: SCREEN_WIDTH
+  }
+
 
   // 참고용 (이전 css 코드)
   // content: {},

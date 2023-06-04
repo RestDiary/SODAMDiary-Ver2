@@ -422,7 +422,7 @@ function MyDrawer() {
       useLegacyImplementation
       drawerContent={(props) => <CustomDrawerContent {...props} />}
       drawerStyle={{ backgroundColor: "#C6CBEF" }}
-      options={{ gestureEnabled: true }}
+      options={{ gestureEnabled: false }}
       screenOptions={{
         swipeEnabled: false,
         headerShown: true,
@@ -470,7 +470,7 @@ function MyStack() {
         options={{
           headerShown: false,
           headerTintColor: "black",
-          gestureEnabled: true,
+          gestureEnabled: false,
         }}
       />
 

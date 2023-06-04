@@ -28,4 +28,6 @@ export const API = {
   PIETOP_URL: `${BASE_URL}/pieTop`,
   LINEYEAR_URL: `${BASE_URL}/lineYear`,
   RINGMONTH_URL: `${BASE_URL}/ringMonth`,
+  DETAILMONTH: `${BASE_URL}/detailMonth`,
+  DETAILWEEK: `${BASE_URL}/detailWeek`,
 };
