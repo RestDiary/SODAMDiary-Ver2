@@ -41,7 +41,7 @@ import PieTop from './component/chartsRe/PieTop';
 import LineYear from './component/chartsRe/LineYear';
 import RingMonth from './component/chartsRe/RingMonth';
 import Card from './component/Card';
-import { API } from "../config";
+
 
 
 //사용 디바이스 크기 값 받아오기

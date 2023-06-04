@@ -32,6 +32,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import DayChart from "./chartsRe/DayChart";
 import HorizontalBarGraph from "@chartiful/react-native-horizontal-bar-graph";
 
+
 function Card({ data }) {
   //테마
   useEffect(() => {

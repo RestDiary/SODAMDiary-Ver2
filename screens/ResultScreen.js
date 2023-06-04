@@ -30,6 +30,7 @@ import {
   import AsyncStorage from "@react-native-async-storage/async-storage";
 
   const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
+  
 
 
   // 이미지 뽑는 컴포넌트
@@ -46,6 +47,8 @@ import {
 
 function ResultScreen ({ navigation, route }){
   const { totalScore } = route.params; //라우트 이용해서 점수 받아오기
+
+
 
   //메시지 저장공간
   const [message, setMessage] = useState("");
