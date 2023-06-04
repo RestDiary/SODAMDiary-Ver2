@@ -20,7 +20,6 @@ import {
   RichToolbar,
 } from "react-native-pell-rich-editor";
 import { MaterialIcons } from "@expo/vector-icons";
-import { Picker } from "@react-native-picker/picker";
 import { Chip } from "react-native-paper";
 import { API } from "../config.js";
 import * as ImagePicker from "expo-image-picker";
@@ -169,14 +168,70 @@ function DetailScreen(card) {
   const [keyword, setKeyword] = useState("");
   const [voice2, setVoice] = useState("");
 
-  //Top3 감정 키워드 각각의 개수
-  const [labels, setLabels] = useState([]);
-  const [datas, setData] = useState([]);
+  // Week 일기 감정 결과값 데이터
+  const [weekData, setWeekData] = useState([]);
+
+  // Month 일기 감정 결과값 데이터
+  const [monthData, setMonthData] = useState([]);
+
+  // Today Top3 감정 키워드 각각의 개수
+  const [dayLabels, setDayLabels] = useState([]);
+  const [dayDatas, setDayDatas] = useState([]);
+
+  // Week 전체 감정 키워드 각각의 개수
+  const [weekLabels, setWeekLabels] = useState([]);
+  const [weekDatas, setWeekDatas] = useState([]);
+
+  // Month 전체 감정 키워드 각각의 개수
+  const [monthLabels, setMonthLabels] = useState([]);
+  const [monthDatas, setMonthDatas] = useState([]);
+
+  // 다이어리 year, month, day 값 세팅
+  const [resDateData, setResDateData] = useState({});
+  
+  // chartOnoff 세팅
+  const [chartDay, setChartDay] = useState("1");
+  const [chartWeek, setChartWeek] = useState("0");
+  const [chartMonth, setChartMonth] = useState("0");
+
 
   useEffect(() => {
-    detail(); // 일기 내용 가져오기
-    chartDataSet(); // 차트 데이터 값 set
+    detail();       // 일기 내용 가져오기
+    chartDataSet(); // 일일 차트 데이터 값 set
   }, []);
+
+
+
+  // week, month 값 가져오기
+  useEffect(() => {
+    console.log("week, month useEffect!")
+    // month 데이터 값 set
+    if (resDateData && Object.keys(resDateData).length > 0) {
+      detailMonth(resDateData);
+    }
+    
+    // week 데이터 값 set
+    if (resDateData && Object.keys(resDateData).length > 0) {
+      detailWeek(resDateData);    
+    }
+  }, [resDateData])
+
+
+  // week 차트 세팅
+  useEffect(() => {
+    if (weekData && Object.keys(weekData).length > 0) {
+      chartWeekSet(weekData);
+    }
+  }, [weekData])
+
+  // month 차트 세팅
+  useEffect(() => {
+    if (monthData && Object.keys(monthData).length > 0) {
+      chartMonthSet(monthData);
+    }
+  }, [monthData])
+  
+
 
   // 일기 내용 가져오기(read)
   const detail = async () => {
@@ -200,6 +255,13 @@ function DetailScreen(card) {
           setImg(res.data[0]["img"]);
           setKeyword(res.data[0]["keyword"]);
           setVoice(res.data[0]["voice"]);
+
+          // 사용할 날짜 데이터 세팅
+          setResDateData({
+            year: res.data[0]["year"],
+            month: res.data[0]["month"],
+            day: res.data[0]["day"]
+          })
         })
         .catch(function (error) {
           console.log(error);
@@ -208,6 +270,107 @@ function DetailScreen(card) {
       console.log(error);
     }
   };
+
+
+  // week 데이터 가져오기
+  const detailWeek = async (dateData) => {  
+    const userId = await AsyncStorage.getItem("id");  // 작성자 id
+    try {
+      await axios({
+        method: "post",
+        // url: `${API.DETAILWEEK}`,
+        url: 'http://192.168.0.10:3001/detailWeek',
+        params: {
+          id: userId,     // ****작성자 id
+          year: dateData.year,    // 다이어리 최초 작성한 기준, 연
+          month: dateData.month,  // 다이어리 최초 작성한 기준, 월
+          day : dateData.day      // 다이어리 최초 작성한 기준, 일
+        }
+      }, null)
+        .then(res => {
+          // console.log("res_detailWeek: ", res.data)
+          const resData = res.data;
+
+          // 가져온 감정결과값들에서 대분류 기준으로 카운트를 다시 세야한다.
+          const emotionCounts = {};
+
+          resData.forEach(data => {
+            // emotion_value의 앞부분만 추출
+            const mainEmotion = data.emotion_value.split('/')[0];
+
+            // 만약 다음 인덱스에서 앞에서 추출한 키워드가 있다면..
+            if(emotionCounts[mainEmotion]){
+              // 해당배열의 count를 합한다.
+              emotionCounts[mainEmotion] += data.count;
+            }else{
+              // 새로운 키워드 키로 카운트 넣는다.
+              emotionCounts[mainEmotion] = data.count;
+            }
+          });
+
+          console.log("week_emotionCounts: ",emotionCounts);
+          setWeekData(emotionCounts);
+
+
+        })
+        .catch(function (error) {
+          Alert.alert("❗error : bad response")
+        })
+    } catch (error) {
+      console.log(error)
+    }
+    setLoading(false);
+  }
+
+
+  // month 데이터 가져오기
+  const detailMonth = async (dateDatas) => {  
+    const userId = await AsyncStorage.getItem("id");  // 작성자 id
+    console.log("dateDatas: ", dateDatas);
+    try {
+      await axios({
+        method: "post",
+        // url: `${API.DETAILMONTH}`,
+        url: 'http://192.168.0.10:3001/detailMonth',
+        params: {
+          id: userId,               // ****작성자 id
+          year: dateDatas.year,     // 다이어리 최초 작성한 기준, year
+          month: dateDatas.month    // 다이어리 최초 작성한 기준, month
+        }
+      }, null)
+        .then(res => {
+          // console.log("res_detailMonth: ", res.data)
+          const resData = res.data;
+
+          // 가져온 감정결과값들에서 대분류 기준으로 카운트를 다시 세야한다.
+          const emotionCounts = {};
+
+          resData.forEach(data => {
+            // emotion_value의 앞부분만 추출
+            const mainEmotion = data.emotion_value.split('/')[0];
+
+            // 만약 다음 인덱스에서 앞에서 추출한 키워드가 있다면..
+            if(emotionCounts[mainEmotion]){
+              // 해당배열의 count를 합한다.
+              emotionCounts[mainEmotion] += data.count;
+            }else{
+              // 새로운 키워드 키로 카운트 넣는다.
+              emotionCounts[mainEmotion] = data.count;
+            }
+          });
+
+          console.log("month_emotionCounts: ",emotionCounts);
+          setMonthData(emotionCounts);
+        })
+        .catch(function (error) {
+          Alert.alert("❗error : bad response")
+        })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+
 
   const check = () => {
     setCheckImage(true);
@@ -269,19 +432,21 @@ function DetailScreen(card) {
   //서버 요청 로딩
   const [loading, setLoading] = useState(false);
 
-  // 차트 값 설정
+
+
+  // 차트 값 설정_today
   const chartDataSet = () => {
     if (card.route.params.card.second_number === 0) {
       let first = card.route.params.card.top_emotion.split("/");
 
-      setLabels([first[0]]);
-      setData([card.route.params.card.top_number]);
+      setDayLabels([first[0]]);
+      setDayDatas([card.route.params.card.top_number]);
     } else if (card.route.params.card.third_number === 0) {
       let first = card.route.params.card.top_emotion.split("/");
       let second = card.route.params.card.second_emotion.split("/");
 
-      setLabels([first[0], second[0]]);
-      setData([
+      setDayLabels([first[0], second[0]]);
+      setDayDatas([
         card.route.params.card.top_number,
         card.route.params.card.second_number,
       ]);
@@ -290,8 +455,8 @@ function DetailScreen(card) {
       let second = card.route.params.card.second_emotion.split("/");
       let third = card.route.params.card.third_emotion.split("/");
 
-      setLabels([first[0], second[0], third[0]]);
-      setData([
+      setDayLabels([first[0], second[0], third[0]]);
+      setDayDatas([
         card.route.params.card.top_number,
         card.route.params.card.second_number,
         card.route.params.card.third_number,
@@ -299,12 +464,41 @@ function DetailScreen(card) {
     }
   };
 
+
+
+// 차트 값 설정_week
+const chartWeekSet = (weekData) => {
+  console.log("chartDataSet2 check!")
+
+  const labels = Object.keys(weekData)
+  const datas = Object.values(weekData)
+
+  setWeekLabels(labels)
+  setWeekDatas(datas)
+}
+
+
+
+// 차트 값 설정_month
+const chartMonthSet = (monthData) => {
+  console.log("charDataSet3 check!")
+
+  const labels = Object.keys(monthData)
+  const datas = Object.values(monthData)
+
+  setMonthLabels(labels)
+  setMonthDatas(datas)
+}
+
+
+
+
   // bottom sheet 테스트
   // ref
   const sheetRef = useRef(null);
   const [isOpen, setIsOpen] = useState(true);
   // variables
-  const snapPoints = ["10%", "80%"];
+  const snapPoints = ["10%", "95%"];
 
   // View 컴포넌트의 너비와 높이를 저장하기 위한 state 생성
   const [viewWidth, setViewWidth] = useState(0);
@@ -314,6 +508,27 @@ function DetailScreen(card) {
   const onViewLayout = (event) => {
     setViewWidth(event.nativeEvent.layout.width);
     setViewHeight(event.nativeEvent.layout.height);
+  };
+
+  
+  // 버튼 클릭 시 차트 변환
+  const onChart = (data) => {
+    if(data == "today"){
+      // console.log("today 입니다.")
+      setChartDay("1");
+      setChartWeek("0");
+      setChartMonth("0");
+    }else if(data == "week"){
+      // console.log("week 입니다.")
+      setChartDay("0");
+      setChartWeek("1");
+      setChartMonth("0");
+    }else if(data == "month"){
+      // console.log("month 입니다.")
+      setChartDay("0");
+      setChartWeek("0");
+      setChartMonth("1");
+    }
   };
 
   return (
@@ -428,7 +643,6 @@ function DetailScreen(card) {
         </SafeAreaView>
 
         {/* bottom sheet 테스트 */}
-        {/* {labels !== "" ? */}
         <BottomSheet
           ref={sheetRef} // bottomSheet 참조
           snapPoints={snapPoints} // 슬라이드 올릴 시, 보여주는 화면 %
@@ -442,47 +656,132 @@ function DetailScreen(card) {
               </Text>
             </View>
 
+
+            <View style={styles.chartButton}>
+              <Button title="today" onPress={() => onChart("today")}/>
+              <Button title="week" onPress={() => onChart("week")}/>
+              <Button title="month" onPress={() => onChart("month")}/>
+            </View>
+
+
             {/* 차트 그래프 뷰 */}
             <View onLayout={onViewLayout} style={styles.barGraph}>
-              {/* 차트 그래프 */}
-              <HorizontalBarGraph
-                data={datas}
-                labels={labels}
-                // width={viewWidth*0.75}
-                // height={viewHeight*0.65}
-                width={330}
-                height={300}
-                baseConfig={{
-                  xAxisLabelStyle: {
-                    rotation: 0,
-                    fontSize: 12,
-                    // width: 70,
-                    yOffset: 4,
-                    // xOffset: -15
-                  },
+              {/* 일일(day) 차트 그래프 */}
+              {chartDay === "1" && (
+                <>
+                  <HorizontalBarGraph
+                    data={dayDatas}
+                    labels={dayLabels}
+                    // width={viewWidth*0.75}
+                    // height={viewHeight*0.65}
+                    width={330}
+                    height={300}
+                    baseConfig={{
+                      xAxisLabelStyle: {
+                        rotation: 0,
+                        fontSize: 12,
+                        // width: 70,
+                        yOffset: 4,
+                        // xOffset: -15
+                      },
 
-                  yAxisLabelStyle: {
-                    rotation: 0,
-                    fontSize: 13,
-                    position: "bottom",
-                    xOffset: 0,
-                    height: 0,
-                    decimals: 1,
-                  },
-                  hasYAxisBackgroundLines: true,
-                }}
-                barRadius={10}
-                barColor="green"
-                barWidthPercentage="0.15"
-              />
+                      yAxisLabelStyle: {
+                        rotation: 0,
+                        fontSize: 13,
+                        position: "bottom",
+                        xOffset: 0,
+                        height: 0,
+                        decimals: 1,
+                      },
+                      hasYAxisBackgroundLines: true,
+                    }}
+                    barRadius={10}
+                    barColor="green"
+                    barWidthPercentage="0.15"
+                  />
+                </>
+              )}
+              
+
+              {/* 주(week) 차트 그래프 */}
+              {chartWeek === "1" && (
+                <>
+                  {/* 차트 그래프 */}
+                  <HorizontalBarGraph
+                    data={weekDatas}
+                    labels={weekLabels}
+                    // width={viewWidth*0.75}
+                    // height={viewHeight*0.65}
+                    width={330}
+                    height={300}
+                    baseConfig={{
+                      xAxisLabelStyle: {
+                        rotation: 0,
+                        fontSize: 12,
+                        // width: 70,
+                        yOffset: 4,
+                        // xOffset: -15
+                      },
+
+                      yAxisLabelStyle: {
+                        rotation: 0,
+                        fontSize: 13,
+                        position: "bottom",
+                        xOffset: 0,
+                        height: 0,
+                        decimals: 1,
+                      },
+                      hasYAxisBackgroundLines: true,
+                    }}
+                    barRadius={10}
+                    barColor="green"
+                    barWidthPercentage="0.15"
+                  />
+                </>
+              )}
+
+
+              {/* 달(month) 차트 그래프 */}
+              {chartMonth === "1" && (
+                <>
+                  {/* 차트 그래프 */}
+                  <HorizontalBarGraph
+                    data={monthDatas}
+                    labels={monthLabels}
+                    // width={viewWidth*0.75}
+                    // height={viewHeight*0.65}
+                    width={330}
+                    height={300}
+                    baseConfig={{
+                      xAxisLabelStyle: {
+                        rotation: 0,
+                        fontSize: 12,
+                        // width: 70,
+                        yOffset: 4,
+                        // xOffset: -15
+                      },
+
+                      yAxisLabelStyle: {
+                        rotation: 0,
+                        fontSize: 13,
+                        position: "bottom",
+                        xOffset: 0,
+                        height: 0,
+                        decimals: 1,
+                      },
+                      hasYAxisBackgroundLines: true,
+                    }}
+                    barRadius={10}
+                    barColor="green"
+                    barWidthPercentage="0.15"
+                  />
+                </>
+              )}
             </View>
+
           </BottomSheetView>
         </BottomSheet>
-        {/* : */}
-        {/* <Text>
-              데이터가 없습니다.
-            </Text> */}
-        {/* } */}
+
       </KeyboardAvoidingView>
     </View>
   );
@@ -629,6 +928,13 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH,
   },
 
+  chartButton: {
+    height: "10%",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+  },
+
   chartTitleText: {
     fontSize: 20,
     fontWeight: "bold",
@@ -636,7 +942,7 @@ const styles = StyleSheet.create({
 
   barGraph: {
     width: SCREEN_WIDTH,
-    height: "90%",
+    height: "80%",
     alignItems: "center",
     paddingTop: 20,
     // justifyContent: 'center',

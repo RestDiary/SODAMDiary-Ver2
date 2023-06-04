@@ -7,7 +7,7 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 function LineYear(props) {
     const [line, setLine] = useState([])
     const [year, setYear] = useState([])
-    
+
 
     useEffect(() => {
         if (JSON.parse(JSON.stringify(props.data)) === "0") {
@@ -25,70 +25,70 @@ function LineYear(props) {
     return (
         <>
             <View style={styles.container}>
-                {line.length > 0 ? 
-                <LineChart
-                    data={ {
-                        labels: line.map(item => item.emotion_value),
-                        datasets: [
-                            {
-                            data: line.map(item => item.count),
-                            color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`, // optional
-                            strokeWidth: 2 // optional
-                            }
-                        ],
-                        legend: [year+"  "+"감정분석 키워드 수치"] // optional
-                    }}
-                    width={SCREEN_WIDTH}
-                    height={256}
-                    verticalLabelRotation={0}
-                    chartConfig={{
-                        backgroundGradientFrom: "#1E2923",
-                        backgroundGradientFromOpacity: 0,
-                        backgroundGradientTo: "#08130D",
-                        backgroundGradientToOpacity: 0.5,
-                        color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
-                        strokeWidth: 2, // optional, default 3
-                        barPercentage: 0.5,
-                        useShadowColorFromDataset: false, // optional
-                    }}
-                    bezier
-                    horizontalLabelRotation={0}
-                    fromZero
-                    withInnerLines={false}
-                    withHorizontalLines={false}
-                /> :
-                <LineChart
-                data={ {
-                    labels: ["sodam"],
-                    datasets: [
-                        {
-                        data: [1],
-                        color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`, // optional
-                        strokeWidth: 2 // optional
-                        }
-                    ],
-                    legend: [year+"  "+"감정분석 키워드 수치"] // optional
-                }}
-                width={SCREEN_WIDTH}
-                height={256}
-                verticalLabelRotation={0}
-                chartConfig={{
-                    backgroundGradientFrom: "#1E2923",
-                    backgroundGradientFromOpacity: 0,
-                    backgroundGradientTo: "#08130D",
-                    backgroundGradientToOpacity: 0.5,
-                    color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
-                    strokeWidth: 2, // optional, default 3
-                    barPercentage: 0.5,
-                    useShadowColorFromDataset: false, // optional
-                }}
-                bezier
-                horizontalLabelRotation={0}
-                fromZero
-                withInnerLines={false}
-                withHorizontalLines={false}
-            />
-}
+                {line.length > 0 ?
+                    <LineChart
+                        data={{
+                            labels: line.map(item => item.emotion_value),
+                            datasets: [
+                                {
+                                    data: line.map(item => item.count),
+                                    color: (opacity = 1) => `rgba(55, 153, 71, ${opacity})`, // optional
+                                    strokeWidth: 2 // optional
+                                }
+                            ],
+                            legend: [year + "  " + "감정분석 키워드 수치"] // optional
+                        }}
+                        width={SCREEN_WIDTH}
+                        height={256}
+                        verticalLabelRotation={0}
+                        chartConfig={{
+                            backgroundGradientFrom: "#1E2923",
+                            backgroundGradientFromOpacity: 0,
+                            backgroundGradientTo: "#08130D",
+                            backgroundGradientToOpacity: 0,
+                            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                            strokeWidth: 2, // optional, default 3
+                            barPercentage: 0.5,
+                            useShadowColorFromDataset: false, // optional
+                        }}
+                        bezier
+                        horizontalLabelRotation={0}
+                        fromZero
+                        withInnerLines={false}
+                        withHorizontalLines={false}
+                    /> :
+                    <LineChart
+                        data={{
+                            labels: ["sodam"],
+                            datasets: [
+                                {
+                                    data: [1],
+                                    color: (opacity = 1) => `rgba(55, 153, 71, ${opacity})`, // optional
+                                    strokeWidth: 2 // optional
+                                }
+                            ],
+                            legend: [year + "  " + "감정분석 키워드 수치"] // optional
+                        }}
+                        width={SCREEN_WIDTH}
+                        height={256}
+                        verticalLabelRotation={0}
+                        chartConfig={{
+                            backgroundGradientFrom: "#1E2923",
+                            backgroundGradientFromOpacity: 0,
+                            backgroundGradientTo: "#08130D",
+                            backgroundGradientToOpacity: 0,
+                            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                            strokeWidth: 2, // optional, default 3
+                            barPercentage: 0.5,
+                            useShadowColorFromDataset: false, // optional
+                        }}
+                        bezier
+                        horizontalLabelRotation={0}
+                        fromZero
+                        withInnerLines={false}
+                        withHorizontalLines={false}
+                    />
+                }
             </View>
         </>
     );

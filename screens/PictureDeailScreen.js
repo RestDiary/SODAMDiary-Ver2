@@ -20,7 +20,6 @@ import {
   RichToolbar,
 } from "react-native-pell-rich-editor";
 import { MaterialIcons } from "@expo/vector-icons";
-import { Picker } from "@react-native-picker/picker";
 import { Chip } from "react-native-paper";
 import { API } from "../config.js";
 import * as ImagePicker from "expo-image-picker";

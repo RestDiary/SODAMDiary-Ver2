@@ -23,7 +23,7 @@ function PieTop(props) {
     <View style={styles.container}>
       {pie.length > 0 ?
       <PieChart
-        data={pie.map((item, index) => ({ name: item.top_emotion, population: item.count, color: color[index], legendFontColor: "#ffffff", legendFontSize: 15 }))}
+        data={pie.map((item, index) => ({ name: item.top_emotion, population: item.count, color: color[index], legendFontColor: "black", legendFontSize: 15 }))}
         width={SCREEN_WIDTH / 1}
         height={300}
         chartConfig={chartConfig}

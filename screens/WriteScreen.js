@@ -21,7 +21,6 @@ import {
   RichToolbar,
 } from "react-native-pell-rich-editor";
 import { MaterialIcons } from "@expo/vector-icons";
-import { Picker } from "@react-native-picker/picker";
 import { Chip } from "react-native-paper";
 import Modal from "react-native-modal";
 import * as ImagePicker from "expo-image-picker";
