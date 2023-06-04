@@ -388,16 +388,16 @@ function WriteScreen({ navigation }) {
         <SafeAreaView
           style={{
             ...styles.titleLayout,
-            backgroundColor: "white",
+            backgroundColor: nowTheme.btn,
             borderColor: nowTheme.cardBorder,
           }}
         >
           <TextInput
-            placeholder="제목"
-            placeholderTextColor={"#456185"}
+            placeholder="제목:"
+            placeholderTextColor={"#e5e5e5"}
             style={{
               ...styles.title,
-              color: nowTheme.font,
+              color: nowTheme.bg,
               fontWeight: "bold",
             }}
             onChangeText={onChangeTitleText}
@@ -409,7 +409,7 @@ function WriteScreen({ navigation }) {
         <View
           style={{
             ...styles.feelingLayout,
-            backgroundColor: "white",
+            backgroundColor: nowTheme.btn,
             borderColor: nowTheme.cardBorder,
           }}
         >
@@ -418,7 +418,7 @@ function WriteScreen({ navigation }) {
             <Text
               style={{
                 ...styles.date,
-                color: nowTheme.font,
+                color: nowTheme.bg,
                 fontWeight: "bold",
               }}
             >
@@ -440,7 +440,7 @@ function WriteScreen({ navigation }) {
               <MaterialIcons
                 name="keyboard-hide"
                 size={24}
-                color={nowTheme.btn}
+                color={nowTheme.bg}
               />
             </TouchableOpacity>
             {/* 갤러리 버튼 */}
@@ -448,7 +448,7 @@ function WriteScreen({ navigation }) {
               <MaterialCommunityIcons
                 name="image-plus"
                 size={24}
-                color={nowTheme.btn}
+                color={nowTheme.bg}
               />
             </TouchableOpacity>
             {/* 저장 버튼 */}
@@ -456,7 +456,7 @@ function WriteScreen({ navigation }) {
               style={{ padding: 10 }}
               onPress={submitContentHandle}
             >
-              <Entypo name="save" size={24} color={nowTheme.btn} />
+              <Entypo name="save" size={24} color={nowTheme.bg} />
             </TouchableOpacity>
           </View>
         </View>
@@ -472,7 +472,7 @@ function WriteScreen({ navigation }) {
         <View
           style={{
             ...styles.chatBotView,
-            backgroundColor: "white",
+            backgroundColor: nowTheme.btn,
           }}
         >
           {/* 챗봇 이미지 뷰 */}
@@ -488,7 +488,7 @@ function WriteScreen({ navigation }) {
             style={{
               ...styles.chatBotContents,
               borderColor: nowTheme.btn,
-              backgroundColor: nowTheme.btn,
+              backgroundColor: nowTheme.bg,
               justifyContent: "center",
             }}
           >
@@ -496,7 +496,7 @@ function WriteScreen({ navigation }) {
             <Text
               style={{
                 margin: 8,
-                color: "#fff",
+                color: nowTheme.font,
                 fontWeight: "bold",
                 fontSize: 16,
                 alignSelf: "center",
@@ -533,8 +533,8 @@ function WriteScreen({ navigation }) {
 
           {/* 글 작성 */}
           <TextInput
-            placeholder="내용"
-            placeholderTextColor={"#456185"}
+            placeholder="내용:"
+            placeholderTextColor={"#c6c6c6"}
             style={{
               ...styles.title,
               color: nowTheme.font,

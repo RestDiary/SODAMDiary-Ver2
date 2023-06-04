@@ -140,38 +140,24 @@ function DiaryScreen({ navigation }) {
     return (
       <>
         {temp[0] && (
-          <View style={styles.moon}>
-            <View
+          <>
+            <Text
               style={{
-                marginLeft: 10,
-                marginRight: 10,
-                borderRadius: 10,
-                backgroundColor: nowTheme.btn,
+                ...styles.moonText,
+                color: nowTheme.font,
               }}
             >
-              <Text style={{ ...styles.moonText, color: nowTheme.bg }}>
-                {temp[0].month}월
-              </Text>
-            </View>
+              {temp[0].month}월
+            </Text>
             <View style={styles.cardContainer}>
-              <SafeAreaView>
-                {/* 가로 스크롤 뷰 */}
-                <ScrollView
-                  showsHorizontalScrollIndicator={false}
-                  horizontal
-                  style={styles.scrollView}
-                >
-                  {/*----------------------------<day>------------------------------  */}
-                  {/* 카드 버튼이벤트 , 한칸을 투명하게 카드하나 더 만들면 양쪽으로 온다*/}
-                  <View style={styles.notCard}></View>
-                  {temp.map((my, index) => {
-                    return <Card key={index} data={temp[index]} />;
-                  })}
-                  <View style={styles.notCard}></View>
-                </ScrollView>
-              </SafeAreaView>
+              {/* 가로 스크롤 뷰 */}
+              <ScrollView showsHorizontalScrollIndicator={false} horizontal>
+                {temp.map((my, index) => {
+                  return <Card key={index} data={temp[index]} />;
+                })}
+              </ScrollView>
             </View>
-          </View>
+          </>
         )}
       </>
     );
@@ -215,7 +201,7 @@ function DiaryScreen({ navigation }) {
                   style={{
                     ...styles.yearText,
                     color: nowTheme.font,
-                    height: SCREEN_HEIGHT / 14,
+                    height: SCREEN_HEIGHT / 24,
                   }}
                   title="년도 선택"
                   value={year}
@@ -272,20 +258,12 @@ const styles = StyleSheet.create({
   moon: {},
 
   moonText: {
-    margin: 16,
-    color: "#fff",
-  },
-
-  scrollView: {
-    marginBottom: 16,
+    margin: 4,
   },
 
   cardContainer: {
-    height: (SCREEN_WIDTH / 1.8) * 2,
+    width: "100%",
   },
 
-  notCard: {
-    width: SCREEN_WIDTH / 5.4,
-    height: SCREEN_HEIGHT / 5.4,
-  },
+  notCard: {},
 });

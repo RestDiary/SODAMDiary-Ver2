@@ -163,7 +163,7 @@ function CalenderScreen({ navigation }) {
                   shadowOffset: { width: 4, height: 4 }, //그림자 위치
                   // ANDROID
                   elevation: 3,
-                  margin: 4,
+                  margin: 8,
                 }}
                 // 날짜 볼드체로 변경
                 renderHeader={(date) => (
@@ -306,9 +306,10 @@ const styles = StyleSheet.create({
   },
 
   cardContainer: {},
+
   notCard: {
-    width: SCREEN_WIDTH / 5.4,
-    height: SCREEN_HEIGHT / 5.4,
+    width: SCREEN_WIDTH / 14,
+    height: SCREEN_HEIGHT / 14,
   },
 
   calendar: {},
