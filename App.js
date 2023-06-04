@@ -534,7 +534,7 @@ function MyStack() {
       <Stack.Screen
         name="ResultScreen"
         component={ResultScreen}
-        options={{ headerTintColor: "black", headerShown: false,     gestureEnabled: true,
+        options={{ headerTintColor: "black", headerShown: false,     gestureEnabled: false,
         animation: 'none',}}
       />
 

@@ -312,7 +312,7 @@ const [scores, setScores] = useState(Array(21).fill(null)); //20개의 원소를
               key={'option_' + index}
               onPress={() => handleOptionPress(index)} //0번 선택시 인덱스 0을 보낸다. 함수에서 해당 value값을 score에 저장
             >
-                <Text style={{fontSize:SCREEN_HEIGHT/46}}>{option.text}</Text>
+                <Text style={{fontSize:SCREEN_HEIGHT/46, color:'white'}}>{option.text}</Text>
             </TouchableOpacity>
             ))
         }
@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
       width:SCREEN_WIDTH/1.4,
       alignItems:"center",
       shadowOffset:{width:2,height:4},
-      backgroundColor: '#d5d9d9'
+      backgroundColor: '#2699fb'
       // shadowColor:"black",
       // shadowOpacity: 0.26,
       // shadowRadius: 10 ,
