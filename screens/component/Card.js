@@ -73,18 +73,17 @@ function Card({ data }) {
   const [labels, setLabels] = useState([]);
   const [datas, setData] = useState([]);
 
-
   // // 차트 데이터 받아오기 및 차트 생성
   // useEffect(() => {
   //   if (data.second_number === 0) {
   //     let first = data.top_emotion.split("/");
-  
+
   //     setLabels([first[0]]);
   //     setData([data.top_number]);
   //   } else if (data.third_number === 0) {
   //     let first = data.top_emotion.split("/");
   //     let second = data.second_emotion.split("/");
-  
+
   //     setLabels([first[0], second[0]]);
   //     setData([data.top_number, data.second_number]);
 
@@ -92,12 +91,10 @@ function Card({ data }) {
   //     let first = data.top_emotion.split("/");
   //     let second = data.second_emotion.split("/");
   //     let third = data.third_emotion.split("/");
-  
+
   //     setLabels([first[0], second[0], third[0]]);
   //     setData([data.top_number, data.second_number, data.third_number]);
   //   }
-
-
 
   // 리렌더링 시 값이 초기화 되는 것을 막기 위해 ref 사용.
   const flipAnimation = useRef(new Animated.Value(0)).current;
@@ -237,12 +234,10 @@ function Card({ data }) {
 
                 fromZero={true}\
               /> */}
-
             </View>
           </ImageBackground>
 
-
-              {/* <HorizontalBarGraph
+          {/* <HorizontalBarGraph
                 data={datas}
                 labels={labels}
                 width={375}
@@ -411,6 +406,14 @@ const styles = StyleSheet.create({
     height: "40%",
     alignItems: "center",
     justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 2,
+      height: 2,
+    },
+    shadowOpacity: 0.7,
+    shadowRadius: 2.62,
+    elevation: 4,
   },
   imageSize: {
     alignItems: "center",
