@@ -32,7 +32,7 @@ import {
   magazine,
   winter,
 } from "./css/globalStyles";
-import { SearchBar } from "react-native-elements";
+import { SearchBar } from '@rneui/themed';
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { YearPicker } from "react-native-propel-kit";
 
@@ -113,7 +113,6 @@ function DiaryScreen({ navigation }) {
   //검색 기능
   const updateSearch = (search) => {
     setSearch(search);
-
     let temp = [...dataTmp]; //temp를 원본 객체를 계속 지원해준다. 출력은 diaryData에서 하기때문에
 
     // console.log(temp[0].content);
@@ -184,7 +183,12 @@ function DiaryScreen({ navigation }) {
         <SearchBar
           value={search}
           onChangeText={(search) => updateSearch(search)}
+          lightTheme={true}
           placeholder=" 내용을 검색해보세요 "
+          containerStyle={{backgroundColor: 'white'}}
+          // inputContainerStyle={{color: 'white',backgroundColor: '#379947'}}
+          searchIcon={{ color: 'white', }}
+          // inputStyle={{ backgroundColor: '#379947' }}
         ></SearchBar>
       </SafeAreaView>
       {/* <ImageBackground style={{ ...styles.container, backgroundColor: nowTheme.cardBg, width:SCREEN_WIDTH, height:SCREEN_HEIGHT }} source={nowTheme.image} resizeMode={'cover'}> */}
