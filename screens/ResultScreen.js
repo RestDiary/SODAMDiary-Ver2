@@ -28,7 +28,7 @@ import {
   } from "./css/globalStyles";
 
   import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ScreenHeight } from 'react-native-elements/dist/helpers';
+import { ScreenHeight, ScreenWidth } from 'react-native-elements/dist/helpers';
 import {AntDesign,FontAwesome5,MaterialIcons, Entypo,Ionicons,MaterialCommunityIcons,Foundation } from "@expo/vector-icons";
 
   const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
@@ -41,7 +41,7 @@ import {AntDesign,FontAwesome5,MaterialIcons, Entypo,Ionicons,MaterialCommunityI
       <View>
         <ScrollView horizontal>
         {imageUrls.map((source, index)=>(
-          <Image key={index} source={source} style = {{width:SCREEN_WIDTH/1.2,height:SCREEN_HEIGHT/3}} resizeMode="stretch"></Image>
+          <Image key={index} source={source} style = {{width:SCREEN_WIDTH/2,height:SCREEN_HEIGHT/3,marginLeft:SCREEN_WIDTH/4.4, marginBottom:SCREEN_HEIGHT/22}} resizeMode="stretch"></Image>
           ))}
         </ScrollView>
       </View>
@@ -86,29 +86,17 @@ function ResultScreen ({ navigation, route }){
 
   // 이미지 주소들
   const SymptomSources =[
-    require('../assets/images/result/result1.jpg'),
-    require('../assets/images/result/result2.jpg'),
-    require('../assets/images/result/result3.jpg'),
-    require('../assets/images/result/result4.jpg'),
-    require('../assets/images/result/result5.jpg'),
-    require('../assets/images/result/result6.jpg'),
-    require('../assets/images/result/result7.jpg'),
-    require('../assets/images/result/result8.jpg'),
-    require('../assets/images/result/result9.jpg'),
-    require('../assets/images/result/result10.jpg'),
+    require('../assets/images/result/우울함.png'),
+    require('../assets/images/result/두퉁.png'),
+    require('../assets/images/result/환각.png'),
+
   ];
 
   const resolutionSources =[
-    require('../assets/images/result/result1.jpg'),
-    require('../assets/images/result/result2.jpg'),
-    require('../assets/images/result/result3.jpg'),
-    require('../assets/images/result/result4.jpg'),
-    require('../assets/images/result/result5.jpg'),
-    require('../assets/images/result/result6.jpg'),
-    require('../assets/images/result/result7.jpg'),
-    require('../assets/images/result/result8.jpg'),
-    require('../assets/images/result/result9.jpg'),
-    require('../assets/images/result/result10.jpg'),
+    require('../assets/images/result/다양한사람들과의모임.png'),
+    require('../assets/images/result/산책.png'),
+    require('../assets/images/result/여행즐기기.png'),
+    require('../assets/images/result/취미생활즐기기.png'),
   ];
   
 
@@ -124,7 +112,7 @@ function ResultScreen ({ navigation, route }){
         <Text style={[styles.headerText,{color:"#2699fb"}]}>{totalScore}</Text>
           <Text style={styles.headerText}>점 입니다</Text>
         </View>
-  <Text style={{ fontSize:ScreenHeight/40,marginTop:ScreenHeight/20, fontWeight:'bold' }}>{message}</Text>
+  <Text style={{ fontSize:ScreenHeight/54,marginTop:ScreenHeight/20, fontWeight:'bold',marginBottom:ScreenHeight/20 }}>{message}</Text>
         </View>
 
 
@@ -132,6 +120,9 @@ function ResultScreen ({ navigation, route }){
           <>
             <View>
                 <ImageList imageUrls={SymptomSources}></ImageList>
+            </View>
+            <View style={{alignItems:'center'}}>
+              <Image source={require('../assets/images/result/arrow.png')} style = {{marginTop:ScreenHeight/20, marginBottom:SCREEN_HEIGHT/22,width:SCREEN_WIDTH/3}} resizeMode="contain"></Image>
             </View>
             <View style={styles.headerContainer2}>
               <Text style={styles.headerText2}>당신을 위한</Text>
@@ -149,7 +140,7 @@ function ResultScreen ({ navigation, route }){
         <View style={styles.buttonContainer}>
         { totalScore >= 60 ?
           <TouchableOpacity style={[styles.button,styles.shadowStyle,styles.buttonStyle,]} onPress={handleButtonPress}>
-            <Foundation name="telephone" size={ScreenHeight/12} color="#2699fb" style={{marginLeft:30}} />
+            <Foundation name="telephone" size={ScreenHeight/16} color="#2699fb" style={{marginLeft:30}} />
             <Text style={{ fontSize: ScreenHeight/40, color: 'black',fontWeight:'bold' ,marginLeft:30 }}> 전화상담 받기 </Text>
           </TouchableOpacity>
         :
@@ -184,6 +175,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor:'#F9F9F9'
   },
 
   headerContainer:{
