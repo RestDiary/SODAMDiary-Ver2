@@ -183,7 +183,7 @@ function Card({ data }) {
             ) : (
               <Image
                 source={nowTheme.logo}
-                style={styles.imageSize}
+                style={{ ...styles.imageSize, opacity: 0.8 }}
                 resizeMode={"contain"}
               ></Image>
             )}
@@ -227,14 +227,14 @@ function Card({ data }) {
 const styles = StyleSheet.create({
   container: {
     fontSize: "3%",
-    height: (SCREEN_WIDTH / 1.8) * 1.86,
+    height: (SCREEN_WIDTH / 3) * 1.86,
     alignItems: "center",
     justifyContent: "center",
   },
 
   front: {
-    width: SCREEN_WIDTH / 1.8,
-    height: (SCREEN_WIDTH / 1.8) * 1.6,
+    width: SCREEN_WIDTH / 3,
+    height: (SCREEN_WIDTH / 3) * 1.6,
     position: "absolute",
     backfaceVisibility: "hidden",
     //IOS
@@ -255,6 +255,7 @@ const styles = StyleSheet.create({
     width: null,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
+    backgroundColor: "black",
   },
 
   frontTitle: {
@@ -272,8 +273,8 @@ const styles = StyleSheet.create({
   },
 
   back: {
-    width: SCREEN_WIDTH / 1.8,
-    height: (SCREEN_WIDTH / 1.8) * 1.6,
+    width: SCREEN_WIDTH / 3,
+    height: (SCREEN_WIDTH / 3) * 1.6,
     marginRight: 16,
     marginLeft: 16,
     alignItems: "center",

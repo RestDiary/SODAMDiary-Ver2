@@ -594,8 +594,16 @@ export default function App() {
 const styles = StyleSheet.create({
   nameBox: {
     padding: 6,
-    backgroundColor: "#456185",
+    backgroundColor: "#379947",
     borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 2,
+      height: 2,
+    },
+    shadowOpacity: 0.7,
+    shadowRadius: 2.62,
+    elevation: 4,
   },
   drawerBox: {
     backgroundColor: "#071D3A",
@@ -651,6 +659,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     opacity: 0.8,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 2,
+      height: 2,
+    },
+    shadowOpacity: 0.7,
+    shadowRadius: 2.62,
+    elevation: 4,
   },
 
   drawerItemText: {

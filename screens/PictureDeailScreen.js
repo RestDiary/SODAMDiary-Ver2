@@ -147,8 +147,7 @@ function PictureDetailScreen(Album) {
   const [year, setYear] = useState("");
   const [day, setDay] = useState("");
   const [img, setImg] = useState("");
-  const [keyword, setKeyword] = useState("");
-  const [voice, setVoice] = useState("");
+  const [gptText, setGptText] = useState("");
   const [checkImage, setCheckImage] = useState(false);
 
   // 감정분석 키워드, 카운트 데이터
@@ -168,49 +167,47 @@ function PictureDetailScreen(Album) {
 
   // 일기데이터 불러오기, 감정데이터 세팅
   useEffect(() => {
-    async function getDiaryDetails() {
-      const resEmotData = await detail();
-      setEmotionData(resEmotData);
-    }
-    getDiaryDetails();
+    detail();
   }, []);
 
   // 차트 세팅
   useEffect(() => {
     if (emotionData && Object.keys(emotionData).length > 0) {
-      chartDataSet(emotionData);
+      chartDataSet();
     }
   }, [emotionData]);
 
   const detail = async () => {
     try {
-      const res = await axios({
-        method: "post",
-        url: `${API.DIARYINFO}`,
-        params: {
-          diarykey: Album.route.params.album,
+      await axios(
+        {
+          method: "post",
+          url: `${API.DIARYINFO}`,
+          //url: 'http://192.168.0.18:3001/diaryInfo',
+          params: {
+            diarykey: Album.route.params.Album,
+          },
         },
+        null
+      ).then((res) => {
+        console.log("헤이: ", res.data);
+        setTitle(res.data[0]["title"]);
+        setContent(res.data[0]["content"]);
+        setMonth(res.data[0]["month"]);
+        setYear(res.data[0]["year"]);
+        setDay(res.data[0]["day"]);
+        setImg(res.data[0]["img"]);
+        setGptText(res.data[0]["cb_sentence"]);
+
+        setEmotionData({
+          top_emotion: res.data[0]["top_emotion"],
+          second_emotion: res.data[0]["second_emotion"],
+          third_emotion: res.data[0]["third_emotion"],
+          top_number: res.data[0]["top_number"],
+          second_number: res.data[0]["second_number"],
+          third_number: res.data[0]["third_number"],
+        });
       });
-
-      setTitle(res.data[0]["title"]);
-      setContent(res.data[0]["content"]);
-      setMonth(res.data[0]["month"]);
-      setYear(res.data[0]["year"]);
-      setDay(res.data[0]["day"]);
-      setImg(res.data[0]["img"]);
-      setKeyword(res.data[0]["keyword"]);
-      setVoice(res.data[0]["voice"]);
-
-      const emotionData = {
-        top_emotion: res.data[0]["top_emotion"],
-        second_emotion: res.data[0]["second_emotion"],
-        third_emotion: res.data[0]["third_emotion"],
-        top_number: res.data[0]["top_number"],
-        second_number: res.data[0]["second_number"],
-        third_number: res.data[0]["third_number"],
-      };
-
-      return emotionData;
     } catch (error) {
       console.log(error);
       return {};
@@ -223,6 +220,12 @@ function PictureDetailScreen(Album) {
 
   //서버 요청 로딩
   const [loading, setLoading] = useState(false);
+  const [bgColor, setBgcolor] = ["#fdeebb", "#d5f0ff", "#ffd5fd"];
+  const [gdColor, setGdColor] = [
+    ["#ffad06", "#ffcd06", "#ffdd06"],
+    ["#00b1f0", "#00d1f0", "#00e1f0"],
+    ["#f00080", "#f04080", "#f08080"],
+  ];
 
   // 차트 값 설정
   const chartDataSet = () => {
@@ -233,23 +236,37 @@ function PictureDetailScreen(Album) {
       let first = emotionData.top_emotion.split("/");
 
       setLabels([first[0]]);
-      setData([emotionData.top_number]);
+      setData([100]);
     } else if (emotionData.third_number === 0) {
       let first = emotionData.top_emotion.split("/");
       let second = emotionData.second_emotion.split("/");
 
+      let one = emotionData.top_number;
+      let two = emotionData.second_number;
+
+      let oneData = (one / (one + two)) * 100;
+      let twoData = (two / (one + two)) * 100;
+
       setLabels([first[0], second[0]]);
-      setData([emotionData.top_number, emotionData.second_number]);
+      setData([Math.round(oneData), Math.round(twoData)]);
     } else {
       let first = emotionData.top_emotion.split("/");
       let second = emotionData.second_emotion.split("/");
       let third = emotionData.third_emotion.split("/");
 
+      let one = emotionData.top_number;
+      let two = emotionData.second_number;
+      let three = emotionData.third_number;
+
+      let oneData = (one / (one + two + three)) * 100;
+      let twoData = (two / (one + two + three)) * 100;
+      let threeData = (three / (one + two + three)) * 100;
+
       setLabels([first[0], second[0], third[0]]);
       setData([
-        emotionData.top_number,
-        emotionData.second_number,
-        emotionData.third_number,
+        Math.round(oneData),
+        Math.round(twoData),
+        Math.round(threeData),
       ]);
     }
   };
@@ -257,358 +274,306 @@ function PictureDetailScreen(Album) {
   // bottom sheet 테스트
   // ref
   const sheetRef = useRef(null);
-  const [isOpen, setIsOpen] = useState(true);
   // variables
   const snapPoints = ["10%", "98%"];
 
   return (
     <View style={{ ...styles.container, backgroundColor: nowTheme.cardBg }}>
-      {/* 제목 */}
-      <SafeAreaView
-        style={{
-          ...styles.titleLayout,
-          backgroundColor: nowTheme.btn,
-          borderColor: nowTheme.cardBorder,
-        }}
-      >
-        <Text
-          placeholder="제목:"
-          placeholderTextColor={"#456185"}
-          style={{ ...styles.title, color: nowTheme.bg, fontWeight: "bold" }}
-          value={"title"}
-          returnKeyType="next"
-          maxLength={30}
-          editable={false} // 수정누른 경우 true로 state 바꿔야 텍스트 편집가능 함.
+      <View style={styles.topView}>
+        {/* 제목 */}
+        <SafeAreaView
+          style={{
+            ...styles.titleLayout,
+            backgroundColor: nowTheme.btn,
+            borderColor: nowTheme.cardBorder,
+          }}
         >
-          제목: {title}
-        </Text>
-      </SafeAreaView>
-
-      <SafeAreaView
-        style={{
-          ...styles.feelingLayout,
-          backgroundColor: nowTheme.btn,
-          borderColor: nowTheme.cardBorder,
-        }}
-      >
-        {/* 날짜 */}
-        <Text style={{ ...styles.date, color: nowTheme.bg }}>
-          날짜: {year}년 {month}월 {day}일
-        </Text>
-      </SafeAreaView>
-
-      <>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={{ flex: 0.95, borderColor: nowTheme.cardBorder }}
-        >
-          <SafeAreaView>
-            <ScrollView>
-              {/* {이미지 보이는 곳} */}
-              <Pressable onPress={check}>
-                {img && (
-                  <TouchableOpacity
-                    onPress={() => {
-                      setCheckImage(true);
-                    }}
-                  >
-                    <ImageModal
-                      swipeToDismiss={false}
-                      resizeMode="stretch"
-                      imageBackgroundColor={nowTheme.cardBg}
-                      style={{
-                        marginLeft: 10,
-                        marginTop: 16,
-                        width: SCREEN_WIDTH / 1.5,
-                        height: SCREEN_WIDTH / 1.5,
-                        borderWidth: 1,
-                        borderColor: nowTheme.font,
-                        borderRadius: 20,
-                      }}
-                      source={{
-                        uri: img,
-                      }}
-                    />
-                    {/* <Image source={{ uri: imageUri }} style={styles.asd} /> */}
-                  </TouchableOpacity>
-                )}
-              </Pressable>
-
-              <Text
-                style={{
-                  marginLeft: 10,
-                  marginTop: 16,
-                  fontSize: 20,
-                  color: nowTheme.font,
-                  fontWeight: "bold",
-                }}
-              >
-                {content}
-              </Text>
-            </ScrollView>
-          </SafeAreaView>
-
-          {/* bottom sheet 테스트 */}
-          {/* {labels !== "" ? */}
-          <BottomSheet
-            ref={sheetRef} // bottomSheet 참조
-            snapPoints={snapPoints} // 슬라이드 올릴 시, 보여주는 화면 %
-            enablePanDownToClose={false} // 슬라이드 올리고 다시 닫으면 사리지게 하는 기능
-            style={{
-              shadowColor: "#000",
-              shadowOffset: {
-                width: 0,
-                height: -2,
-              },
-              shadowOpacity: 0.7,
-              shadowRadius: 2.62,
-              elevation: 4,
-            }}
+          <Text
+            placeholder="제목:"
+            placeholderTextColor={"#456185"}
+            style={{ ...styles.title, color: nowTheme.bg, fontWeight: "bold" }}
+            value={"title"}
+            returnKeyType="next"
+            maxLength={30}
+            editable={false} // 수정누른 경우 true로 state 바꿔야 텍스트 편집가능 함.
           >
-            <BottomSheetView
-              style={{
-                ...styles.bottomSheetView,
-              }}
-            >
-              {/* 차트 제목용 텍스트 */}
-              <View style={styles.chartTitle}>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-around",
-                    alignItems: "center",
-                    width: SCREEN_WIDTH,
-                    marginHorizontal: 16,
+            제목: {title}
+          </Text>
+        </SafeAreaView>
+
+        <SafeAreaView
+          style={{
+            ...styles.feelingLayout,
+            backgroundColor: nowTheme.btn,
+            borderColor: nowTheme.cardBorder,
+          }}
+        >
+          {/* 날짜 */}
+          <Text style={{ ...styles.date, color: nowTheme.bg }}>
+            날짜: {year}년 {month}월 {day}일
+          </Text>
+        </SafeAreaView>
+
+        <View
+          style={{
+            ...styles.shadowView,
+          }}
+        ></View>
+      </View>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 0.95, borderColor: nowTheme.cardBorder }}
+      >
+        <SafeAreaView>
+          <ScrollView>
+            {/* {이미지 보이는 곳} */}
+            <Pressable onPress={check}>
+              {img && (
+                <TouchableOpacity
+                  onPress={() => {
+                    setCheckImage(true);
                   }}
                 >
-                  <View
+                  <ImageModal
+                    swipeToDismiss={false}
+                    resizeMode="stretch"
                     style={{
-                      padding: 4,
-                      backgroundColor: "#404040",
-                      borderRadius: 100,
+                      marginLeft: 10,
+                      marginTop: 16,
+                      width: SCREEN_WIDTH / 1.5,
+                      height: SCREEN_WIDTH / 1.5,
+                      borderWidth: 1,
+                      borderColor: nowTheme.font,
+                      borderRadius: 20,
                     }}
-                  ></View>
-                  <View
-                    style={{
-                      padding: 4,
-                      backgroundColor: "#404040",
-                      borderRadius: 100,
+                    source={{
+                      uri: img,
                     }}
-                  ></View>
-                </View>
+                  />
+                  {/* <Image source={{ uri: imageUri }} style={styles.asd} /> */}
+                </TouchableOpacity>
+              )}
+            </Pressable>
 
-                <Text style={styles.chartTitleText}>감정분석 결과</Text>
-              </View>
+            <Text
+              style={{
+                marginLeft: 10,
+                marginTop: 16,
+                fontSize: 20,
+                color: nowTheme.font,
+                fontWeight: "bold",
+              }}
+            >
+              {content}
+            </Text>
+          </ScrollView>
+        </SafeAreaView>
 
-              {/* 차트 그래프 뷰 */}
-              <View style={styles.barContents}>
-                <View style={styles.barGraph}>
-                  {/* 기쁨 */}
-                  <View style={styles.emotionView}>
+        {/* bottom sheet 테스트 */}
+
+        <BottomSheet
+          ref={sheetRef} // bottomSheet 참조
+          snapPoints={snapPoints} // 슬라이드 올릴 시, 보여주는 화면 %
+          enablePanDownToClose={false} // 슬라이드 올리고 다시 닫으면 사리지게 하는 기능
+          style={{
+            shadowColor: "#000",
+            shadowOffset: {
+              width: 0,
+              height: -2,
+            },
+            shadowOpacity: 0.7,
+            shadowRadius: 2.62,
+            elevation: 4,
+          }}
+        >
+          <BottomSheetView
+            style={{
+              ...styles.bottomSheetView,
+            }}
+          >
+            <SafeAreaView>
+              <ScrollView horizontal={true} pagingEnabled={true}>
+                <View>
+                  {/* 차트 제목용 텍스트 */}
+                  <View style={styles.chartTitle}>
                     <View
                       style={{
-                        ...styles.emtionImage,
-                        backgroundColor: "#fdeebb",
+                        flexDirection: "row",
+                        justifyContent: "space-around",
+                        alignItems: "center",
+                        width: SCREEN_WIDTH,
+                        marginHorizontal: 16,
                       }}
-                    ></View>
-                    <View style={{ ...styles.columnView }}>
-                      <View style={{ ...styles.emotionDic }}>
-                        <Text style={{ ...styles.emotionKey }}>기쁨</Text>
-                        <Text style={{ ...styles.emotionValue }}>60%</Text>
+                    >
+                      <View
+                        style={{
+                          padding: 4,
+                          backgroundColor: "#404040",
+                          borderRadius: 100,
+                        }}
+                      ></View>
+                      <View
+                        style={{
+                          padding: 4,
+                          backgroundColor: "#404040",
+                          borderRadius: 100,
+                        }}
+                      ></View>
+                    </View>
+
+                    <Text style={styles.chartTitleText}>챗봇분석 결과</Text>
+                  </View>
+                  <View style={styles.barContents}>
+                    <View
+                      style={{
+                        ...styles.sodamView,
+                        backgroundColor: nowTheme.btn,
+                      }}
+                    >
+                      <View style={{ ...styles.sodamTitleView }}>
+                        <Text
+                          style={{ ...styles.sodamText, color: nowTheme.bg }}
+                        >
+                          소담이가 하고 싶은 말이 있대요!
+                        </Text>
                       </View>
-                      <View style={{ ...styles.emotionBarView }}>
-                        <View style={{ ...styles.emotionBarKey }}>
-                          <LinearGradient
-                            style={{
-                              ...styles.emotionBarValue,
-                              width: "60%", // 이 값이 유동적이여야 함.
-                            }}
-                            start={{ x: 0, y: 0 }}
-                            end={{ x: 1, y: 0 }}
-                            colors={["#ffad06", "#ffcd06", "#ffdd06"]}
-                          ></LinearGradient>
-                        </View>
+
+                      <View style={{ ...styles.chatBotImageView }}>
+                        <Image
+                          source={require("../assets/images/SodamBot.png")}
+                          style={styles.imageSize}
+                          resizeMode={"contain"}
+                        ></Image>
                       </View>
                     </View>
-                  </View>
-                  {/* 슬픔  */}
-                  <View style={styles.emotionView}>
                     <View
                       style={{
-                        ...styles.emtionImage,
-                        backgroundColor: "#d5f0ff",
+                        ...styles.sodamChatView,
                       }}
-                    ></View>
-                    <View style={{ ...styles.columnView }}>
-                      <View style={{ ...styles.emotionDic }}>
-                        <Text style={{ ...styles.emotionKey }}>슬픔</Text>
-                        <Text style={{ ...styles.emotionValue }}>80%</Text>
-                      </View>
-                      <View style={{ ...styles.emotionBarView }}>
-                        <View style={{ ...styles.emotionBarKey }}>
-                          <LinearGradient
-                            style={{
-                              ...styles.emotionBarValue,
-                              width: "80%", // 이 값이 유동적이여야 함.
-                            }}
-                            start={{ x: 0, y: 0 }}
-                            end={{ x: 1, y: 0 }}
-                            colors={["#00b1f0", "#00d1f0", "#00e1f0"]}
-                          ></LinearGradient>
-                        </View>
-                      </View>
-                    </View>
-                  </View>
-                  {/* 분노 */}
-                  <View style={styles.emotionView}>
-                    <View
-                      style={{
-                        ...styles.emtionImage,
-                        backgroundColor: "#ffd5fd",
-                      }}
-                    ></View>
-                    <View style={{ ...styles.columnView }}>
-                      <View style={{ ...styles.emotionDic }}>
-                        <Text style={{ ...styles.emotionKey }}>분노</Text>
-                        <Text style={{ ...styles.emotionValue }}>20%</Text>
-                      </View>
-                      <View style={{ ...styles.emotionBarView }}>
-                        <View style={{ ...styles.emotionBarKey }}>
-                          <LinearGradient
-                            style={{
-                              ...styles.emotionBarValue,
-                              width: "20%", // 이 값이 유동적이여야 함.
-                            }}
-                            start={{ x: 0, y: 0 }}
-                            end={{ x: 1, y: 0 }}
-                            colors={["#f00080", "#f04080", "#f08080"]}
-                          ></LinearGradient>
-                        </View>
-                      </View>
-                    </View>
-                  </View>
-                  {/* 당황 */}
-                  <View style={styles.emotionView}>
-                    <View
-                      style={{
-                        ...styles.emtionImage,
-                        backgroundColor: "#d5ffe0",
-                      }}
-                    ></View>
-                    <View style={{ ...styles.columnView }}>
-                      <View style={{ ...styles.emotionDic }}>
-                        <Text style={{ ...styles.emotionKey }}>당황</Text>
-                        <Text style={{ ...styles.emotionValue }}>40%</Text>
-                      </View>
-                      <View style={{ ...styles.emotionBarView }}>
-                        <View style={{ ...styles.emotionBarKey }}>
-                          <LinearGradient
-                            style={{
-                              ...styles.emotionBarValue,
-                              width: "40%", // 이 값이 유동적이여야 함.
-                            }}
-                            start={{ x: 0, y: 0 }}
-                            end={{ x: 1, y: 0 }}
-                            colors={["#43c900", "#43d900", "#43f900"]}
-                          ></LinearGradient>
-                        </View>
-                      </View>
-                    </View>
-                  </View>
-                  {/* 상처 */}
-                  <View style={styles.emotionView}>
-                    <View
-                      style={{
-                        ...styles.emtionImage,
-                        backgroundColor: "#CBA2DB",
-                      }}
-                    ></View>
-                    <View style={{ ...styles.columnView }}>
-                      <View style={{ ...styles.emotionDic }}>
-                        <Text style={{ ...styles.emotionKey }}>상처</Text>
-                        <Text style={{ ...styles.emotionValue }}>70%</Text>
-                      </View>
-                      <View style={{ ...styles.emotionBarView }}>
-                        <View style={{ ...styles.emotionBarKey }}>
-                          <LinearGradient
-                            style={{
-                              ...styles.emotionBarValue,
-                              width: "70%", // 이 값이 유동적이여야 함.
-                            }}
-                            start={{ x: 0, y: 0 }}
-                            end={{ x: 1, y: 0 }}
-                            colors={["#CB6ADB", "#CB9ADB", "#CBbADB"]}
-                          ></LinearGradient>
-                        </View>
-                      </View>
-                    </View>
-                  </View>
-                  {/* 불안 */}
-                  <View style={styles.emotionView}>
-                    <View
-                      style={{
-                        ...styles.emtionImage,
-                        backgroundColor: "#BDC4FF",
-                      }}
-                    ></View>
-                    <View style={{ ...styles.columnView }}>
-                      <View style={{ ...styles.emotionDic }}>
-                        <Text style={{ ...styles.emotionKey }}>불안</Text>
-                        <Text style={{ ...styles.emotionValue }}>40%</Text>
-                      </View>
-                      <View style={{ ...styles.emotionBarView }}>
-                        <View style={{ ...styles.emotionBarKey }}>
-                          <LinearGradient
-                            style={{
-                              ...styles.emotionBarValue,
-                              width: "40%", // 이 값이 유동적이여야 함.
-                            }}
-                            start={{ x: 0, y: 0 }}
-                            end={{ x: 1, y: 0 }}
-                            colors={["#ACA0E8", "#ACb0E8", "#ACd0E8"]}
-                          ></LinearGradient>
-                        </View>
-                      </View>
-                    </View>
-                  </View>
-                  {/* 평온 */}
-                  <View style={styles.emotionView}>
-                    <View
-                      style={{
-                        ...styles.emtionImage,
-                        backgroundColor: "#FFBDBF",
-                      }}
-                    ></View>
-                    <View style={{ ...styles.columnView }}>
-                      <View style={{ ...styles.emotionDic }}>
-                        <Text style={{ ...styles.emotionKey }}>평온</Text>
-                        <Text style={{ ...styles.emotionValue }}>60%</Text>
-                      </View>
-                      <View style={{ ...styles.emotionBarView }}>
-                        <View style={{ ...styles.emotionBarKey }}>
-                          <LinearGradient
-                            style={{
-                              ...styles.emotionBarValue,
-                              width: "60%", // 이 값이 유동적이여야 함.
-                            }}
-                            start={{ x: 0, y: 0 }}
-                            end={{ x: 1, y: 0 }}
-                            colors={["#FFBDBD", "#FFcDBD", "#FFdDBD"]}
-                          ></LinearGradient>
-                        </View>
-                      </View>
+                    >
+                      <Text style={{ ...styles.sodamChat }}>{gptText}</Text>
                     </View>
                   </View>
                 </View>
-              </View>
-            </BottomSheetView>
-          </BottomSheet>
-        </KeyboardAvoidingView>
-      </>
+                <View>
+                  {/* 차트 제목용 텍스트 */}
+                  <View style={styles.chartTitle}>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-around",
+                        alignItems: "center",
+                        width: SCREEN_WIDTH,
+                        marginHorizontal: 16,
+                      }}
+                    >
+                      <View
+                        style={{
+                          padding: 4,
+                          backgroundColor: "#404040",
+                          borderRadius: 100,
+                        }}
+                      ></View>
+                      <View
+                        style={{
+                          padding: 4,
+                          backgroundColor: "#404040",
+                          borderRadius: 100,
+                        }}
+                      ></View>
+                    </View>
+
+                    <Text style={styles.chartTitleText}>감정분석 결과</Text>
+                  </View>
+                  {/* 차트 그래프 뷰 */}
+                  <View style={styles.barContents}>
+                    {/* 기쁨 */}
+                    <View style={styles.barGraph}>
+                      {labels.map((label, index) => {
+                        return (
+                          <View key={index} style={styles.emotionView}>
+                            {index === 0 ? (
+                              <View
+                                style={{
+                                  ...styles.emtionImage,
+                                  backgroundColor: "#fdeebb",
+                                }}
+                              ></View>
+                            ) : index === 1 ? (
+                              <View
+                                style={{
+                                  ...styles.emtionImage,
+                                  backgroundColor: "#d5f0ff",
+                                }}
+                              ></View>
+                            ) : (
+                              <View
+                                style={{
+                                  ...styles.emtionImage,
+                                  backgroundColor: "#ffd5fd",
+                                }}
+                              ></View>
+                            )}
+                            <View style={{ ...styles.columnView }}>
+                              <View style={{ ...styles.emotionDic }}>
+                                <Text style={{ ...styles.emotionKey }}>
+                                  {label}
+                                </Text>
+                                <Text style={{ ...styles.emotionValue }}>
+                                  {datas[index]}%
+                                </Text>
+                              </View>
+
+                              <View style={{ ...styles.emotionBarView }}>
+                                <View style={{ ...styles.emotionBarKey }}>
+                                  {index === 0 ? (
+                                    <LinearGradient
+                                      style={{
+                                        ...styles.emotionBarValue,
+                                        width: `${datas[index]}%`, // 이 값이 유동적이여야 함.
+                                      }}
+                                      start={{ x: 0, y: 0 }}
+                                      end={{ x: 1, y: 0 }}
+                                      colors={["#ffad06", "#ffcd06", "#ffdd06"]}
+                                    ></LinearGradient>
+                                  ) : index === 1 ? (
+                                    <LinearGradient
+                                      style={{
+                                        ...styles.emotionBarValue,
+                                        width: `${datas[index]}%`, // 이 값이 유동적이여야 함.
+                                      }}
+                                      start={{ x: 0, y: 0 }}
+                                      end={{ x: 1, y: 0 }}
+                                      colors={["#00b1f0", "#00d1f0", "#00e1f0"]}
+                                    ></LinearGradient>
+                                  ) : (
+                                    <LinearGradient
+                                      style={{
+                                        ...styles.emotionBarValue,
+                                        width: `${datas[index]}%`, // 이 값이 유동적이여야 함.
+                                      }}
+                                      start={{ x: 0, y: 0 }}
+                                      end={{ x: 1, y: 0 }}
+                                      colors={["#f00080", "#f04080", "#f08080"]}
+                                    ></LinearGradient>
+                                  )}
+                                </View>
+                              </View>
+                            </View>
+                          </View>
+                        );
+                      })}
+                    </View>
+                  </View>
+                </View>
+              </ScrollView>
+            </SafeAreaView>
+          </BottomSheetView>
+        </BottomSheet>
+      </KeyboardAvoidingView>
     </View>
   );
 }
-
 export default PictureDetailScreen;
 
 const styles = StyleSheet.create({
@@ -683,7 +648,8 @@ const styles = StyleSheet.create({
 
   titleLayout: {
     borderColor: "white",
-    justifyContent: "center",
+    justifyContent: "space-between",
+    flexDirection: "row",
   },
 
   extendLayout: {
@@ -692,7 +658,6 @@ const styles = StyleSheet.create({
 
   feelingLayout: {
     flexDirection: "row",
-
     borderColor: "white",
   },
 
@@ -751,6 +716,7 @@ const styles = StyleSheet.create({
   chartTitleText: {
     fontSize: 20,
     fontWeight: "bold",
+    color: "#404040",
   },
   barContents: {
     flex: 1,
@@ -759,6 +725,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F9F9F9",
     borderColor: "#ccc",
     borderWidth: 1,
+    maxWidth: SCREEN_WIDTH,
   },
 
   barGraph: {
@@ -847,4 +814,47 @@ const styles = StyleSheet.create({
     height: "100%",
     borderRadius: 100,
   },
+  chatBotImageView: {
+    marginTop: 12,
+    marginRight: 12,
+    marginLeft: 12,
+    marginBottom: 12,
+    flex: 0.5,
+    justifyContent: "center",
+    height: SCREEN_HEIGHT / 12,
+    maxHeight: SCREEN_HEIGHT / 12,
+  },
+  imageSize: {
+    width: "85%",
+    height: "85%",
+  },
+
+  sodamView: {
+    flex: 0.15,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    borderBottomWidth: 1,
+    borderColor: "#c6c6c6",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-evenly",
+  },
+
+  sodamTitleView: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: 8,
+  },
+  sodamText: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+
+  sodamChatView: {
+    alignItems: "center",
+    justifyContent: "flex-start",
+    margin: 16,
+  },
+
+  sodamChat: { fontSize: 22 },
 });
