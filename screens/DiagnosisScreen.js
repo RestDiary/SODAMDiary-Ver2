@@ -16,7 +16,7 @@ import {
   } from "react-native";
 
   import {
-    RadioButton
+    RadioButton, shadow
   }from 'react-native-paper';
   import RadioGroup from 'react-native-radio-buttons-group';
 
@@ -280,12 +280,22 @@ const [scores, setScores] = useState(Array(21).fill(null)); //20개의 원소를
 
 
   return (
-    <View style={{ ...styles.selfContainer}}>
+    <>
+      <View style={styles.memberContainer}>
+        <Text style={styles.memberTop}>나의 우울증</Text>
+        <Text style={styles.memberBottom}>진단검사</Text>
+      </View>
+      {   //20번 넘어갔을때 불러오려하면 터진다. 문제가 20 즉 21번이라면 가려주자
+            currentQuestionIndex !==20 &&(<>
+      <View style={styles.questionBox}>
+        <Text style={{fontSize: SCREEN_HEIGHT/46,fontWeight:'bold'}}>{questions[currentQuestionIndex].question}</Text> 
+      </View>
+      </>)
+      }
+      <View style={{ ...styles.selfContainer}}>
         {/* 문제 가지고오기( state가 변함에 따라 문제도 바뀐다) */}
         {   //20번 넘어갔을때 불러오려하면 터진다. 문제가 20 즉 21번이라면 가려주자
             currentQuestionIndex !==20 &&(<>
-        
-        <Text style={{ flex:0.5,fontSize: 20 }}>{questions[currentQuestionIndex].question}</Text> 
         {/* <View>
             <Text>'currentQuestionIndex : '{currentQuestionIndex}</Text>
         </View>
@@ -294,21 +304,15 @@ const [scores, setScores] = useState(Array(21).fill(null)); //20개의 원소를
         </View> */}
 
         {/* 문제에따른 선택지 4개 가지고오기   === (아니다/ 가끔그렇다/ 자주그렇다/ 항상그렇다) */}
-        <View style={{flexDirection:"row"}}>
+        <View style={styles.selectBox}>
         {
             questions[currentQuestionIndex].options.map((option, index) => (    //맵으로 0번부터 3번까지 돌린다 (총 4번)
             <TouchableOpacity
-                key={'option_' + index}
-                onPress={() => handleOptionPress(index)} //0번 선택시 인덱스 0을 보낸다. 함수에서 해당 value값을 score에 저장
-                // disabled={scores[currentQuestionIndex] !== null} 한번선택한것은 못선택하게하기
-                style={{
-                    borderWidth: 1,
-                    // borderColor: scores[currentQuestionIndex] === index-1 ? 'green' : 'black',
-                    padding: 10,
-                    marginVertical: 5,
-                }}
+              style={[styles.buttonStyle, styles.shadowStyle, styles.touchStyle]}
+              key={'option_' + index}
+              onPress={() => handleOptionPress(index)} //0번 선택시 인덱스 0을 보낸다. 함수에서 해당 value값을 score에 저장
             >
-                <Text>{option.text}</Text>
+                <Text style={{fontSize:SCREEN_HEIGHT/46, color:'white'}}>{option.text}</Text>
             </TouchableOpacity>
             ))
         }
@@ -316,12 +320,13 @@ const [scores, setScores] = useState(Array(21).fill(null)); //20개의 원소를
         </>)
         }
 
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <View style={styles.naviButton}>
             <TouchableOpacity onPress={handlePreviousButtonPress} >
                 <Text style={{ color: currentQuestionIndex === 0 ? 'gray' : 'black' }}>이전</Text>
             </TouchableOpacity>
         </View>
     </View>
+    </>
   );
 
 
@@ -337,7 +342,7 @@ export default DiagnosisScreen;
 
 const styles = StyleSheet.create({
     selfContainer: {
-        flex:1,
+      flex:0.6,
         justifyContent:"center",
         alignItems:"center",
         
@@ -352,5 +357,67 @@ const styles = StyleSheet.create({
     radioGroupBox:{
         flexDirection:'row'
     },
+    memberContainer: {
+
+      marginTop:SCREEN_HEIGHT /12,
+      marginLeft:SCREEN_WIDTH / 12,
+      height: SCREEN_HEIGHT /6.3,
+    },
+    memberTop: {
+      fontSize:SCREEN_HEIGHT / 24,
+      fontWeight:"bold",
+    },
+    memberBottom:{
+      fontSize:SCREEN_HEIGHT / 24,
+      fontWeight:"bold",
+    },
+    questionBox:{
+      flex:0.16,
+      fontWeight:'bold',
+      alignItems:'center',
+      // justifyContent:"center"
+
+    },
+
+    selectBox:{
+      
+      flexDirection: "column"
+    },
+
+    touchStyle:{
+      // borderWidth: 1,
+      // borderColor: scores[currentQuestionIndex] === index-1 ? 'green' : 'black',
+      padding: SCREEN_HEIGHT / 30,
+      marginVertical: 14,
+      borderRadius: SCREEN_HEIGHT / 1,
+      width:SCREEN_WIDTH/1.4,
+      alignItems:"center",
+      shadowOffset:{width:2,height:4},
+      backgroundColor: '#2699fb'
+      // shadowColor:"black",
+      // shadowOpacity: 0.26,
+      // shadowRadius: 10 ,
+            
+    },
+
+    shadowStyle: {
+      shadowColor: 'black',
+      shadowOpacity: 1,
+      shadowRadius: 8,
+      elevation: 1,
+    },
+    buttonStyle: {
+      padding: 10,
+      // backgroundColor: '#2699fb',
+      borderRadius: 5,
+    },
+
+
+    naviButton:{
+      flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' ,
+      paddingTop:30
+    },
+
+    
 
 })

@@ -456,12 +456,15 @@ function MyDrawer() {
 
 function MyStack() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName="Home">
+
+      
       <Stack.Screen
         name="Login"
         component={LoginScreen}
         options={{ headerShown: false, headerTintColor: "black" }}
       />
+
 
       {/*드로워 네비게이터 스택에 등록  */}
       <Stack.Screen
@@ -540,7 +543,8 @@ function MyStack() {
       <Stack.Screen
         name="ResultScreen"
         component={ResultScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
+        options={{ headerTintColor: "black", headerShown: false,     gestureEnabled: false,
+        animation: 'none',}}
       />
 
       <Stack.Screen

@@ -37,6 +37,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
 import { API } from "../config.js";
+
 import PieTop from "./component/chartsRe/PieTop";
 import LineYear from "./component/chartsRe/LineYear";
 import RingMonth from "./component/chartsRe/RingMonth";
