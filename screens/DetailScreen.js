@@ -43,8 +43,9 @@ import ImageModal from "react-native-image-modal";
 
 import HorizontalBarGraph from "@chartiful/react-native-horizontal-bar-graph";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
-import { Entypo } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 function DetailScreen(card) {
@@ -302,19 +303,8 @@ function DetailScreen(card) {
   // bottom sheet 테스트
   // ref
   const sheetRef = useRef(null);
-  const [isOpen, setIsOpen] = useState(true);
   // variables
-  const snapPoints = ["10%", "80%"];
-
-  // View 컴포넌트의 너비와 높이를 저장하기 위한 state 생성
-  const [viewWidth, setViewWidth] = useState(0);
-  const [viewHeight, setViewHeight] = useState(0);
-
-  // onLayout 이벤트에서 View의 너비와 높이를 가져와서 state 업데이트
-  const onViewLayout = (event) => {
-    setViewWidth(event.nativeEvent.layout.width);
-    setViewHeight(event.nativeEvent.layout.height);
-  };
+  const snapPoints = ["10%", "98%"];
 
   return (
     <View style={{ ...styles.container, backgroundColor: nowTheme.cardBg }}>
@@ -433,56 +423,255 @@ function DetailScreen(card) {
           ref={sheetRef} // bottomSheet 참조
           snapPoints={snapPoints} // 슬라이드 올릴 시, 보여주는 화면 %
           enablePanDownToClose={false} // 슬라이드 올리고 다시 닫으면 사리지게 하는 기능
+          style={{
+            shadowColor: "#000",
+            shadowOffset: {
+              width: 0,
+              height: -2,
+            },
+            shadowOpacity: 0.7,
+            shadowRadius: 2.62,
+            elevation: 4,
+          }}
         >
-          <BottomSheetView style={styles.bottomSheetView}>
+          <BottomSheetView
+            style={{
+              ...styles.bottomSheetView,
+            }}
+          >
             {/* 차트 제목용 텍스트 */}
             <View style={styles.chartTitle}>
-              <Text style={styles.chartTitleText}>
-                {"[ "}감정분석 결과{" ]"}
-              </Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-around",
+                  alignItems: "center",
+                  width: SCREEN_WIDTH,
+                  marginHorizontal: 16,
+                }}
+              >
+                <View
+                  style={{
+                    padding: 4,
+                    backgroundColor: "#404040",
+                    borderRadius: 100,
+                  }}
+                ></View>
+                <View
+                  style={{
+                    padding: 4,
+                    backgroundColor: "#404040",
+                    borderRadius: 100,
+                  }}
+                ></View>
+              </View>
+
+              <Text style={styles.chartTitleText}>감정분석 결과</Text>
             </View>
 
             {/* 차트 그래프 뷰 */}
-            <View onLayout={onViewLayout} style={styles.barGraph}>
-              {/* 차트 그래프 */}
-              <HorizontalBarGraph
-                data={datas}
-                labels={labels}
-                // width={viewWidth*0.75}
-                // height={viewHeight*0.65}
-                width={330}
-                height={300}
-                baseConfig={{
-                  xAxisLabelStyle: {
-                    rotation: 0,
-                    fontSize: 12,
-                    // width: 70,
-                    yOffset: 4,
-                    // xOffset: -15
-                  },
-
-                  yAxisLabelStyle: {
-                    rotation: 0,
-                    fontSize: 13,
-                    position: "bottom",
-                    xOffset: 0,
-                    height: 0,
-                    decimals: 1,
-                  },
-                  hasYAxisBackgroundLines: true,
-                }}
-                barRadius={10}
-                barColor="green"
-                barWidthPercentage="0.15"
-              />
+            <View style={styles.barContents}>
+              <View style={styles.barGraph}>
+                {/* 기쁨 */}
+                <View style={styles.emotionView}>
+                  <View
+                    style={{
+                      ...styles.emtionImage,
+                      backgroundColor: "#fdeebb",
+                    }}
+                  ></View>
+                  <View style={{ ...styles.columnView }}>
+                    <View style={{ ...styles.emotionDic }}>
+                      <Text style={{ ...styles.emotionKey }}>기쁨</Text>
+                      <Text style={{ ...styles.emotionValue }}>60%</Text>
+                    </View>
+                    <View style={{ ...styles.emotionBarView }}>
+                      <View style={{ ...styles.emotionBarKey }}>
+                        <LinearGradient
+                          style={{
+                            ...styles.emotionBarValue,
+                            width: "60%", // 이 값이 유동적이여야 함.
+                          }}
+                          start={{ x: 0, y: 0 }}
+                          end={{ x: 1, y: 0 }}
+                          colors={["#ffad06", "#ffcd06", "#ffdd06"]}
+                        ></LinearGradient>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+                {/* 슬픔  */}
+                <View style={styles.emotionView}>
+                  <View
+                    style={{
+                      ...styles.emtionImage,
+                      backgroundColor: "#d5f0ff",
+                    }}
+                  ></View>
+                  <View style={{ ...styles.columnView }}>
+                    <View style={{ ...styles.emotionDic }}>
+                      <Text style={{ ...styles.emotionKey }}>슬픔</Text>
+                      <Text style={{ ...styles.emotionValue }}>80%</Text>
+                    </View>
+                    <View style={{ ...styles.emotionBarView }}>
+                      <View style={{ ...styles.emotionBarKey }}>
+                        <LinearGradient
+                          style={{
+                            ...styles.emotionBarValue,
+                            width: "80%", // 이 값이 유동적이여야 함.
+                          }}
+                          start={{ x: 0, y: 0 }}
+                          end={{ x: 1, y: 0 }}
+                          colors={["#00b1f0", "#00d1f0", "#00e1f0"]}
+                        ></LinearGradient>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+                {/* 분노 */}
+                <View style={styles.emotionView}>
+                  <View
+                    style={{
+                      ...styles.emtionImage,
+                      backgroundColor: "#ffd5fd",
+                    }}
+                  ></View>
+                  <View style={{ ...styles.columnView }}>
+                    <View style={{ ...styles.emotionDic }}>
+                      <Text style={{ ...styles.emotionKey }}>분노</Text>
+                      <Text style={{ ...styles.emotionValue }}>20%</Text>
+                    </View>
+                    <View style={{ ...styles.emotionBarView }}>
+                      <View style={{ ...styles.emotionBarKey }}>
+                        <LinearGradient
+                          style={{
+                            ...styles.emotionBarValue,
+                            width: "20%", // 이 값이 유동적이여야 함.
+                          }}
+                          start={{ x: 0, y: 0 }}
+                          end={{ x: 1, y: 0 }}
+                          colors={["#f00080", "#f04080", "#f08080"]}
+                        ></LinearGradient>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+                {/* 당황 */}
+                <View style={styles.emotionView}>
+                  <View
+                    style={{
+                      ...styles.emtionImage,
+                      backgroundColor: "#d5ffe0",
+                    }}
+                  ></View>
+                  <View style={{ ...styles.columnView }}>
+                    <View style={{ ...styles.emotionDic }}>
+                      <Text style={{ ...styles.emotionKey }}>당황</Text>
+                      <Text style={{ ...styles.emotionValue }}>40%</Text>
+                    </View>
+                    <View style={{ ...styles.emotionBarView }}>
+                      <View style={{ ...styles.emotionBarKey }}>
+                        <LinearGradient
+                          style={{
+                            ...styles.emotionBarValue,
+                            width: "40%", // 이 값이 유동적이여야 함.
+                          }}
+                          start={{ x: 0, y: 0 }}
+                          end={{ x: 1, y: 0 }}
+                          colors={["#43c900", "#43d900", "#43f900"]}
+                        ></LinearGradient>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+                {/* 상처 */}
+                <View style={styles.emotionView}>
+                  <View
+                    style={{
+                      ...styles.emtionImage,
+                      backgroundColor: "#CBA2DB",
+                    }}
+                  ></View>
+                  <View style={{ ...styles.columnView }}>
+                    <View style={{ ...styles.emotionDic }}>
+                      <Text style={{ ...styles.emotionKey }}>상처</Text>
+                      <Text style={{ ...styles.emotionValue }}>70%</Text>
+                    </View>
+                    <View style={{ ...styles.emotionBarView }}>
+                      <View style={{ ...styles.emotionBarKey }}>
+                        <LinearGradient
+                          style={{
+                            ...styles.emotionBarValue,
+                            width: "70%", // 이 값이 유동적이여야 함.
+                          }}
+                          start={{ x: 0, y: 0 }}
+                          end={{ x: 1, y: 0 }}
+                          colors={["#CB6ADB", "#CB9ADB", "#CBbADB"]}
+                        ></LinearGradient>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+                {/* 불안 */}
+                <View style={styles.emotionView}>
+                  <View
+                    style={{
+                      ...styles.emtionImage,
+                      backgroundColor: "#BDC4FF",
+                    }}
+                  ></View>
+                  <View style={{ ...styles.columnView }}>
+                    <View style={{ ...styles.emotionDic }}>
+                      <Text style={{ ...styles.emotionKey }}>불안</Text>
+                      <Text style={{ ...styles.emotionValue }}>40%</Text>
+                    </View>
+                    <View style={{ ...styles.emotionBarView }}>
+                      <View style={{ ...styles.emotionBarKey }}>
+                        <LinearGradient
+                          style={{
+                            ...styles.emotionBarValue,
+                            width: "40%", // 이 값이 유동적이여야 함.
+                          }}
+                          start={{ x: 0, y: 0 }}
+                          end={{ x: 1, y: 0 }}
+                          colors={["#ACA0E8", "#ACb0E8", "#ACd0E8"]}
+                        ></LinearGradient>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+                {/* 평온 */}
+                <View style={styles.emotionView}>
+                  <View
+                    style={{
+                      ...styles.emtionImage,
+                      backgroundColor: "#FFBDBF",
+                    }}
+                  ></View>
+                  <View style={{ ...styles.columnView }}>
+                    <View style={{ ...styles.emotionDic }}>
+                      <Text style={{ ...styles.emotionKey }}>평온</Text>
+                      <Text style={{ ...styles.emotionValue }}>60%</Text>
+                    </View>
+                    <View style={{ ...styles.emotionBarView }}>
+                      <View style={{ ...styles.emotionBarKey }}>
+                        <LinearGradient
+                          style={{
+                            ...styles.emotionBarValue,
+                            width: "60%", // 이 값이 유동적이여야 함.
+                          }}
+                          start={{ x: 0, y: 0 }}
+                          end={{ x: 1, y: 0 }}
+                          colors={["#FFBDBD", "#FFcDBD", "#FFdDBD"]}
+                        ></LinearGradient>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+              </View>
             </View>
           </BottomSheetView>
         </BottomSheet>
-        {/* : */}
-        {/* <Text>
-              데이터가 없습니다.
-            </Text> */}
-        {/* } */}
       </KeyboardAvoidingView>
     </View>
   );
@@ -618,14 +807,13 @@ const styles = StyleSheet.create({
   bottomSheetView: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
   },
 
   chartTitle: {
-    height: "10%",
+    flex: 0.1,
     alignItems: "center",
     justifyContent: "center",
-    // backgroundColor: "blue",
+    backgroundColor: "white",
     width: SCREEN_WIDTH,
   },
 
@@ -633,14 +821,19 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
   },
+  barContents: {
+    flex: 1,
+    backgroundColor: "red",
+    borderRadius: 20,
+    backgroundColor: "#F9F9F9",
+    borderColor: "#ccc",
+    borderWidth: 1,
+  },
 
   barGraph: {
-    width: SCREEN_WIDTH,
-    height: "90%",
+    flex: 0.9,
     alignItems: "center",
-    paddingTop: 20,
-    // justifyContent: 'center',
-    // backgroundColor: 'green',
+    margin: 18,
   },
 
   shadowView: {
@@ -663,5 +856,64 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.7,
     shadowRadius: 2.62,
     elevation: 4,
+  },
+
+  emotionView: {
+    alignItems: "center",
+    backgroundColor: "white",
+    flexDirection: "row",
+    borderRadius: 10,
+    width: SCREEN_WIDTH / 1.2,
+    height: SCREEN_HEIGHT / 13,
+    padding: 8,
+    margin: 6,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 2,
+      height: 2,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 2.62,
+    elevation: 4,
+  },
+
+  emtionImage: {
+    padding: 12,
+    borderRadius: 100,
+  },
+
+  columnView: {
+    flex: 1,
+    margin: 4,
+  },
+
+  emotionDic: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    flex: 0.6,
+  },
+
+  emotionKey: {
+    fontWeight: "400",
+  },
+
+  emotionValue: {
+    color: "#a6a6a6",
+  },
+
+  emotionBarView: {
+    flex: 0.4,
+    borderRadius: 100,
+  },
+
+  emotionBarKey: {
+    flex: 0.6,
+    borderRadius: 100,
+    backgroundColor: "#F2F2F2",
+  },
+
+  emotionBarValue: {
+    height: "100%",
+    borderRadius: 100,
   },
 });

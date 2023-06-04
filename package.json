@@ -25,6 +25,7 @@
     "expo-av": "~13.0.2",
     "expo-calendar": "~11.0.1",
     "expo-image-picker": "~14.0.2",
+    "expo-linear-gradient": "~12.0.1",
     "expo-splash-screen": "~0.17.5",
     "expo-status-bar": "~1.4.2",
     "global": "^4.4.0",
