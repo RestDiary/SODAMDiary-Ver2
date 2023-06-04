@@ -54,7 +54,37 @@ function PictureScreen({ navigation }) {
 
   useEffect(() => {
     getAlbumData();
+    getAlbumCount();
   }, []);
+
+  //앨범 개수 요청
+  const getAlbumCount = async () => {
+    setLoading(true);
+    const userId = await AsyncStorage.getItem("id");
+    try {
+      await axios(
+        {
+          method: "post",
+          url: `${API.ALBUMCNT}`,
+          params: {
+            id: userId, //****작성자 id
+          },
+        },
+        null
+      )
+        .then((res) => {
+          console.log("앨범개수", res.data[0].cnt);
+          setAlbumCnt(res.data[0].cnt);
+        })
+        .catch(function (error) {
+          Alert.alert("❗error : bad response");
+          console.log(error);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
+  };
 
   //앨범 data 요청
   const getAlbumData = async () => {
@@ -85,43 +115,107 @@ function PictureScreen({ navigation }) {
     setLoading(false);
   };
 
+  const [scrollOffset, setScrollOffset] = useState(0);
+  const [currentPictureIndex, setCurrentPictureIndex] = useState(0);
+  const [albumCnt, setAlbumCnt] = useState();
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: nowTheme.cardBg }}>
-      <ScrollView>
+    <>
+      <SafeAreaView style={{ flex: 1, backgroundColor: nowTheme.cardBg }}>
         <View
           style={{
-            flexDirection: "row",
-            flexWrap: "wrap",
-            justifyContent: "flex-start",
-            margin: 5,
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 60,
           }}
         >
-          {albumData.map((al, index) => {
-            return (
-              <TouchableOpacity
-                key={index}
-                onPress={() =>
-                  navigation.navigate("Album", { album: al.diarykey })
-                }
-              >
-                {al.img !== null && al.img !== "" && (
-                  <Image
-                    source={{ uri: al.img }}
-                    style={{
-                      width: SCREEN_WIDTH / 3.3,
-                      height: SCREEN_WIDTH / 3.3,
-                      margin: 4,
-                      borderRadius: 10,
-                      borderWidth: 1,
-                    }}
-                  />
-                )}
-              </TouchableOpacity>
-            );
-          })}
+          <Text style={{ fontSize: 24, fontWeight: "bold" }}>
+            앨범 : {currentPictureIndex + 1} / {albumCnt}
+          </Text>
         </View>
-      </ScrollView>
-    </SafeAreaView>
+        <ScrollView
+          horizontal={true}
+          onScroll={(event) => {
+            const contentOffsetX = event.nativeEvent.contentOffset.x;
+            const contentWidth = event.nativeEvent.contentSize.width;
+            const screenWidth = event.nativeEvent.layoutMeasurement.width;
+            const index = Math.floor(
+              (contentOffsetX / (contentWidth - screenWidth)) * albumData.length
+            );
+            setCurrentPictureIndex(index);
+          }}
+        >
+          <View style={{ padding: 30 }}></View>
+
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              margin: 16,
+            }}
+          >
+            {albumData.map((al, index) => {
+              const isCurrentPicture = index === currentPictureIndex;
+              const pictureStyle = isCurrentPicture
+                ? {
+                    width: SCREEN_WIDTH / 1.6,
+                    height: (SCREEN_WIDTH / 1.6) * 1.6,
+                    margin: 8,
+                    borderRadius: 10,
+                  }
+                : {
+                    width: SCREEN_WIDTH / 2.2,
+                    height: (SCREEN_WIDTH / 2.2) * 1.6,
+                    margin: 30,
+                    borderRadius: 10,
+                  };
+
+              return (
+                <View style={{ flexDirection: "column" }}>
+                  <TouchableOpacity
+                    style={{
+                      shadowColor: "#000",
+                      shadowOffset: {
+                        width: 4,
+                        height: 4,
+                      },
+                      shadowOpacity: 0.7,
+                      shadowRadius: 2.62,
+                      elevation: 4,
+                    }}
+                    key={index}
+                    onPress={() =>
+                      navigation.navigate("Album", { Album: al.diarykey })
+                    }
+                  >
+                    {al.img !== null && al.img !== "" && (
+                      <Image
+                        source={{ uri: al.img }}
+                        resizeMode={"stretch"}
+                        style={pictureStyle}
+                      />
+                    )}
+                  </TouchableOpacity>
+                  <View
+                    style={{
+                      justifyContent: "center",
+                      alignItems: "center",
+                      marginTop: 16,
+                    }}
+                  >
+                    <Text style={{ fontSize: 28, fontWeight: "800" }}>
+                      {al.year}.{al.month}.{al.day}
+                    </Text>
+                    <Text style={{ fontSize: 18 }}>{al.title}</Text>
+                  </View>
+                </View>
+              );
+            })}
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </>
   );
 }
 

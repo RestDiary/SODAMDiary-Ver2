@@ -169,117 +169,12 @@ function Card({ data }) {
         <Animated.View
           style={{
             ...styles.front,
-            backgroundColor: nowTheme.front,
+            backgroundColor: nowTheme.bg,
             ...flipToFrontStyle,
           }}
         >
-          <ImageBackground
-            style={{
-              backgroundColor: nowTheme.front,
-              height: (SCREEN_WIDTH / 1.8) * 1.6,
-            }}
-            source={nowTheme.image}
-            resizeMode={"cover"}
-          >
-            {/* 키워드 */}
-            <View style={{ ...styles.frontKeyWordBox }}>
-              {/* <Text style={{ color: nowTheme.font, fontSize: SCREEN_WIDTH / 20 }}>{emotionKor}: {maxValue}%</Text> */}
-              {/* {
-              props.data.keyword.map(function(id,index){
-                return(
-                <Text style={{color: "#ED7C58"}}>
-                {props.data.keyword[index]}
-              </Text>
-              )
-              })
-            } */}
-            </View>
-            {/* 아이콘  (아이콘은 테마마다 사용하는 아이콘이 다르다)*/}
-            <View style={{ ...styles.frontIcon }}>{nowTheme.icon}</View>
-            {/* 제목  */}
-            <View style={{ ...styles.frontTitle }}>
-              <Text
-                numberOfLines={1}
-                ellipsizeMode="tail"
-                style={{
-                  color: nowTheme.bg,
-                  fontWeight: "bold",
-                  fontSize: SCREEN_WIDTH / 14,
-                  borderBottomWidth: 1,
-                  borderBottomColor: nowTheme.font,
-                  marginLeft: 16,
-                  marginRight: 16,
-                }}
-              >
-                {data.title}
-              </Text>
-
-              {/* {(data.keyword2 == null) ?
-               <Text style={{ color: nowTheme.font, fontSize: SCREEN_WIDTH / 20, marginTop:4 }}>#{data.keyword}</Text> :
-               (data.keyword3 == null) ?
-               <Text style={{ color: nowTheme.font, fontSize: SCREEN_WIDTH / 20, marginTop:4 }}>#{data.keyword} #{data.keyword2}</Text> :
-               <Text style={{ color: nowTheme.font, fontSize: SCREEN_WIDTH / 20, marginTop:4 }}>#{data.keyword} #{data.keyword2} #{data.keyword3}</Text>
-              } */}
-              {/* <BarChart
-
-                style={{...styles.graphStyle}}
-
-                data={chart}
-                width={300}
-                height={220}
-                chartConfig={chartConfig}
-                verticalLabelRotation={0}
-                showValuesOnTopOfBars
-                withHorizontalLabels={false}
-                withInnerLines={false}
-
-                fromZero={true}\
-              /> */}
-            </View>
-          </ImageBackground>
-
-          {/* <HorizontalBarGraph
-                data={datas}
-                labels={labels}
-                width={375}
-                height={350}
-                barRadius={15}
-                baseConfig={{
-                  hasYAxisBackgroundLines: false,
-                  xAxisLabelStyle: {
-                    rotation: 0,
-                    fontSize: 12,
-                    width: 70,
-                    yOffset: 4,
-                    xOffset: -15
-                  },
-                  yAxisLabelStyle: {
-                    rotation: 0,
-                    fontSize: 13,
-                    position: 'bottom',
-                    xOffset: 0,
-                    height: 100,
-                    decimals: 0
-                  },
-                  hasYAxisBackgroundLines: true,
-                }}
-                style={styles.chart}
-                barColor='black'
-                barWidthPercentage="0.3"
-              /> */}
-        </Animated.View>
-
-        {/* 뒷면 */}
-        <Animated.View
-          style={{
-            ...styles.back,
-            backgroundColor: nowTheme.back,
-            borderColor: nowTheme.cardBorder,
-            ...flipToBackStyle,
-          }}
-        >
           {/* 대표 이미지 */}
-          <View style={{ ...styles.backImageBox }}>
+          <View style={{ ...styles.frontImageBox }}>
             {data.img !== null && data.img !== "" ? (
               <Image
                 source={{ uri: data.img }}
@@ -289,23 +184,40 @@ function Card({ data }) {
             ) : (
               <Image
                 source={nowTheme.logo}
-                style={styles.imageSize}
+                style={{ ...styles.imageSize, opacity: 0.8 }}
                 resizeMode={"contain"}
               ></Image>
             )}
           </View>
-          {/* 내용 */}
-          <View
-            style={{ ...styles.backTextView, borderColor: nowTheme.cardBorder }}
-          >
+
+          {/* 제목  */}
+          <View style={{ ...styles.frontTitle }}>
             <Text
-              style={{ ...styles.backText, color: nowTheme.font }}
-              numberOfLines={7}
+              numberOfLines={1}
               ellipsizeMode="tail"
+              style={{
+                ...styles.frontTitleText,
+                color: nowTheme.font,
+              }}
             >
-              {/* {props.data.content} */}
-              {data.content}
+              {data.title}
             </Text>
+          </View>
+        </Animated.View>
+
+        {/* 뒷면 */}
+        <Animated.View
+          style={{
+            ...styles.back,
+            ...flipToBackStyle,
+          }}
+        >
+          <View style={styles.backView}>
+            <Image
+              style={styles.backImage}
+              source={nowTheme.image}
+              resizeMode="cover"
+            />
           </View>
         </Animated.View>
       </Pressable>
@@ -314,32 +226,16 @@ function Card({ data }) {
 }
 
 const styles = StyleSheet.create({
-  chart: {
-    marginBottom: 30,
-    padding: 10,
-    paddingTop: 20,
-    borderRadius: 20,
-    width: 375,
-    backgroundColor: "white",
-  },
-
   container: {
     fontSize: "3%",
-    height: (SCREEN_WIDTH / 1.8) * 1.86,
+    height: (SCREEN_WIDTH / 3) * 1.86,
     alignItems: "center",
     justifyContent: "center",
   },
 
-  graphStyle: {
-    alignSelf: "center",
-  },
-
   front: {
-    width: SCREEN_WIDTH / 1.8,
-    height: (SCREEN_WIDTH / 1.8) * 1.6,
-    backgroundColor: "#152F5E",
-    marginRight: 16,
-    marginLeft: 16,
+    width: SCREEN_WIDTH / 3,
+    height: (SCREEN_WIDTH / 3) * 1.6,
     position: "absolute",
     backfaceVisibility: "hidden",
     //IOS
@@ -348,42 +244,43 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 4, height: 4 }, //그림자 위치
     // ANDROID
     elevation: 3,
-    // alignItems: "center",
-    // justifyContent: "center",
+    borderRadius: 30,
   },
 
-  frontKeyWordBox: {
-    //
-    justifyContent: "space-between",
-    marginTop: 10,
-    marginRight: 10,
-    marginLeft: 10,
-    minHeight: "20%",
-    flexDirection: "row",
+  frontImageBox: {
+    flex: 1,
   },
 
-  frontIcon: {
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: "50%",
+  imageSize: {
+    flex: 1,
+    width: null,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    backgroundColor: "black",
   },
 
   frontTitle: {
-    minHeight: "20%",
+    flex: 1,
     alignItems: "center",
-    justifyContent: "center",
+    margin: 16,
+  },
+
+  frontTitleText: {
+    fontSize: SCREEN_WIDTH / 20,
+    borderBottomWidth: 1,
+    marginLeft: 16,
+    marginRight: 16,
+    fontWeight: "bold",
   },
 
   back: {
-    width: SCREEN_WIDTH / 1.8,
-    height: (SCREEN_WIDTH / 1.8) * 1.6,
-    backgroundColor: "#274180",
+    width: SCREEN_WIDTH / 3,
+    height: (SCREEN_WIDTH / 3) * 1.6,
     marginRight: 16,
     marginLeft: 16,
     alignItems: "center",
     position: "relative",
     backfaceVisibility: "hidden",
-
     //IOS
     shadowColor: "#000", //그림자색
     shadowOpacity: 0.7, //그림자 투명도
@@ -392,52 +289,15 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
 
-  backTitle: {
-    minHeight: "20%",
+  backView: {
+    width: "100%",
+    height: "100%",
   },
 
-  backText: {
-    color: "white",
-  },
-
-  backImageBox: {
-    margin: 8,
-    minHeight: "30%",
-    width: "90%",
-    height: "40%",
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 2,
-      height: 2,
-    },
-    shadowOpacity: 0.7,
-    shadowRadius: 2.62,
-    elevation: 4,
-  },
-  imageSize: {
-    alignItems: "center",
-    justifyContent: "center",
-    width: "95%",
-    height: "93%",
-    borderRadius: 10,
-  },
-
-  backTextView: {
-    margin: 6,
-    alignItems: "center",
-    width: "90%",
-    borderTopWidth: 1,
-    borderColor: "white",
-    paddingTop: 10,
-    paddingBottom: 10,
-  },
-
-  backVoiceView: {
-    alignItems: "flex-end",
-    justifyContent: "center",
-    minHeight: "10%",
+  backImage: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 30,
   },
 });
 export default Card;
