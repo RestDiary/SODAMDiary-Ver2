@@ -43,6 +43,7 @@ function RingMonth(props) {
         {ring.length > 0 ? (
           <>
             <ProgressChart
+            key={1}
               data={{
                 labels: ring.map((item) => item.emotion_value),
                 data: ring.map((item) => item.count / 5),
@@ -69,8 +70,8 @@ function RingMonth(props) {
                 // justifyContent: "center",
               }}
             >
-              {ring.map((item, index) => (
-                <View>
+              {ring.map((item, index) => (  //key값 임시 지정
+                <View  key={index}>
                   <Text key={index} style={{ fontSize: 18 }}>
                     {item.emotion_value}
                     {" : "}
