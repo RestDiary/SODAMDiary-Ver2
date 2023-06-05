@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, ScrollView, SafeAreaView, Dimensions, Animated,
 import { PieChart } from "react-native-chart-kit";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-const color = ["lightgreen", "lightskyblue", "orangered", "darkslateblue", "gold"];
+const color = ["lightgreen", "lightskyblue", "orangered", "darkslateblue", "gold"]; //1위부터 순서대로 색상
 
 function PieTop(props) {
   const [pie, setPie] = useState([])
