@@ -65,17 +65,17 @@ function HomeScreen({ navigation }) {
     console.log("Pie차트 실행");
     getPieData();
     getRandomDate();
-  }, []);
+  }, [isFocused]);
 
   useEffect(() => {
     console.log("Line차트 실행");
     getLineData();
-  }, [yearData]);
+  }, [yearData, isFocused]);
 
   useEffect(() => {
     console.log("Ring차트 실행");
     getRingData();
-  }, [monthData]);
+  }, [monthData, isFocused]);
 
   const getRandomDate = async () => {
     setLoading(true);
