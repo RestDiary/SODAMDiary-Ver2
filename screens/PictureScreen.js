@@ -161,7 +161,7 @@ function PictureScreen({ navigation }) {
                           height: SCREEN_WIDTH / 3.3,
                           margin: 4,
                           borderRadius: 10,
-                          borderWidth: 1,
+                          // borderWidth: 1,
                         }}
                       />
                     )}
@@ -257,7 +257,7 @@ function PictureScreen({ navigation }) {
                       {al.img !== null && al.img !== "" && (
                         <Image
                           source={{ uri: al.img }}
-                          resizeMode={"stretch"}
+                          resizeMode={"cover"}
                           style={pictureStyle}
                         />
                       )}
