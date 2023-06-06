@@ -30,6 +30,7 @@ import {
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import HorizontalBarGraph from "@chartiful/react-native-horizontal-bar-graph";
+import { useIsFocused } from "@react-navigation/native";
 
 function Card({ data }) {
   //테마
@@ -38,7 +39,7 @@ function Card({ data }) {
   }, []);
 
   const [nowTheme, setNowTheme] = useState({});
-
+  const isFocused = useIsFocused();
   const getTheme = async () => {
     let selectedTheme = await AsyncStorage.getItem("theme");
 
@@ -52,6 +53,10 @@ function Card({ data }) {
     else if (selectedTheme.includes("magazine")) setNowTheme(magazine);
     else if (selectedTheme.includes("winter")) setNowTheme(winter);
   };
+  useEffect(() => {
+    getTheme();
+  }, [isFocused]);
+
   const [newContent, setNewContent] = useState("");
   const navigation = useNavigation();
 

@@ -26,6 +26,8 @@ import {
   winter,
 } from "./css/globalStyles";
 import { not } from "react-native-reanimated";
+import { useIsFocused } from "@react-navigation/native";
+
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -34,7 +36,7 @@ function CalenderScreen({ navigation }) {
   useEffect(() => {
     getTheme();
   }, []);
-
+  const isFocused = useIsFocused();
   const [nowTheme, setNowTheme] = useState({});
 
   const getTheme = async () => {
