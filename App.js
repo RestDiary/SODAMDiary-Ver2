@@ -61,6 +61,7 @@ import DetailScreen from "./screens/DetailScreen";
 import ModifyScreen from "./screens/ModifyScreen";
 import PictureDeailScreen from "./screens/PictureDeailScreen";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { API } from "./config.js";
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();

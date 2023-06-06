@@ -23,6 +23,7 @@ import {
 import { MaterialIcons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { Chip } from "react-native-paper";
+import Modal from "react-native-modal";
 import { API } from "../config.js";
 import * as ImagePicker from "expo-image-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -45,6 +46,8 @@ import { FontAwesome } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
+
+
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -214,24 +217,28 @@ function DetailScreen(card) {
   // 챗봇과 연결2
   const chatBotRink = async () => {
     // 특정 문자가 입력되었을 때 작동
-    console.log("챗봇과 연결2");
+    // console.log("챗봇과 연결2");
 
     let message = use_content3.split(/[.!?~]/);
     let text = message[message.length - 1];
-    console.log("text: " + message);
-    console.log("text2: " + text);
+    // console.log("text: " + message);
+    // console.log("text2: " + text);
 
     await axios
-      .post("http://192.168.0.18:3001/flask", null, {
+      .post("http://192.168.1.13:3001/flask", null, {
         params: {
           text: text,
         },
       })
       .then((res) => {
-        console.log("결과", res.data.sentence);
-        setCb_answer(cb_answer + "##" + res.data.sentence);
+        console.log("res: ", res.data.sentence);
+        if (res.data.sentence === ".") {
+          setShowA("끄덕끄덕, 얘기를 잘 듣고 있어요!");
+        } else {
+          setShowA(res.data.sentence);
+        }
+        // console.log("결과", res.data.sentence);
         setCb_emotion(cb_emotion + "##" + res.data.emotion);
-        setShowA(res.data.sentence);
         setShowE(res.data.emotion);
         setUse_content3("");
       });
@@ -327,17 +334,6 @@ function DetailScreen(card) {
     navigation.navigate(screen);
   };
 
-  //Modal
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible);
-  };
-
-  //키워드 제거
-  const delEmotion = (keyword) => {
-    let temp = [...Emotions];
-    setEmotions(temp.filter((i) => i !== keyword));
-  };
-
   //이미지 제거
   const delImg = () => {
     Alert.alert(
@@ -371,16 +367,20 @@ function DetailScreen(card) {
   //서버 요청 로딩
   const [loading, setLoading] = useState(false);
 
+  // 로딩 페이지
+  const [modalLoading, setModalLoading] = useState(false);
+
   //저장 버튼
   const submitContentHandle = async () => {
+    setModalLoading(true);
+    Keyboard.dismiss();
+
     if (titleText.length <= 0) {
-      setShowDescError(true);
       Alert.alert("제목을 입력해 주세요.");
       return;
     }
 
     if (content.length <= 0) {
-      setShowDescError(true);
       Alert.alert("내용을 입력해 주세요.");
       return;
     }
@@ -412,8 +412,8 @@ function DetailScreen(card) {
       await axios(
         {
           method: "post",
-          url: "http://people-env.eba-35362bbh.ap-northeast-2.elasticbeanstalk.com:3001/diaryModify",
-          // url: 'http://192.168.1.13:3001/diaryModify',
+          // url: `${API.MODIFY}`,
+          url: 'http://Sodamre-env.eba-6bpsyspp.ap-northeast-2.elasticbeanstalk.com:3001/diaryModify',
           params: {
             diarykey: card.route.params.card.route.params.card.diarykey,
             title: titleText,
@@ -429,13 +429,22 @@ function DetailScreen(card) {
         null
       )
         .then((res) => {
-          console.log("성공", res.data);
-          Alert.alert("일기가 수정되었어요.");
-          moveNavigate("Diary");
+          console.log("작성 결과: ", res.data[0]["diarykey"]);
+          if (res.data === "3") {
+            let diarykey = card.route.params.card.route.params.card.diarykey;
+            setModalLoading(false);
+            navigation.navigate("AnalysisDetailScreen", {
+              diaryKey: diarykey,
+            });
+            console.log("1");
+          } else {
+            Alert.alert("❗");
+          }
         })
         .catch(function (error) {
-          console.log(error.response.data);
+          // console.log(error.response.data);
           Alert.alert("❗error : bad response");
+          console.log("에러확인: ", error);
         });
     } catch (error) {
       console.log(error.response.data);
@@ -446,6 +455,21 @@ function DetailScreen(card) {
 
   return (
     <View style={{ ...styles.container, backgroundColor: nowTheme.cardBg }}>
+      {/* 로딩 모달 */}
+      <Modal
+        style={{ justifyContent: "center", alignItems: "center" }}
+        visible={modalLoading}
+        animationType="fade"
+        transparent={true}
+      >
+        <View style={{ ...styles.gifView, flex: 1 }}>
+          <Image
+            style={{ ...styles.gif }}
+            source={require("../assets/images/loading.gif")}
+          />
+        </View>
+      </Modal>
+
       <View style={styles.topView}>
         {/* 제목 */}
         <SafeAreaView

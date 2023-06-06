@@ -32,4 +32,5 @@ export const API = {
   DETAILMONTH: `${BASE_URL}/detailMonth`,
   DETAILWEEK: `${BASE_URL}/detailWeek`,
   ALBUMCNT: `${BASE_URL}/albumCnt`,
+  MODIFY: `${BASE_URL}/diaryModify`,
 };

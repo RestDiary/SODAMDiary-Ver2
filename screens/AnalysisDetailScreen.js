@@ -497,7 +497,7 @@ function AnalysisDetailScreen(diaryKey2) {
             }}
           >
             <SafeAreaView>
-              <ScrollView horizontal={true} pagingEnabled={true}>
+              <ScrollView pagingEnabled={true}>
                 <View>
                   {/* 차트 제목용 텍스트 */}
                   <View style={styles.chartTitle}>

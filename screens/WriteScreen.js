@@ -9,12 +9,13 @@ import {
   Dimensions,
   TextInput,
   TouchableOpacity,
-  KeyboardAvoidingView,
+  // KeyboardAvoidingView,
   RichText,
   Alert,
   Image,
   Keyboard,
 } from "react-native";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import {
   actions,
   RichEditor,
@@ -191,8 +192,8 @@ function WriteScreen({ navigation }) {
     hideDatePicker();
   };
 
-  // 챗봇과 연결2
-  const chatBotRink = async () => {
+   // 챗봇과 연결2
+   const chatBotRink = async () => {
     // 특정 문자가 입력되었을 때 작동
     // console.log("챗봇과 연결2");
 
@@ -202,20 +203,20 @@ function WriteScreen({ navigation }) {
     // console.log("text2: " + text);
 
     await axios
-      .post("http://192.168.0.15:3001/flask", null, {
+      .post("http://192.168.1.13:3001/flask", null, {
         params: {
           text: text,
         },
       })
       .then((res) => {
+        console.log("res: ", res.data.sentence)
         if (res.data.sentence === ".") {
-          setCb_answer("끄덕끄덕, 얘기를 잘 듣고 있어요!");
+          setShowA("끄덕끄덕, 얘기를 잘 듣고 있어요!");
         } else {
-          setCb_answer(cb_answer + "##" + res.data.sentence);
+          setShowA(res.data.sentence);
         }
         // console.log("결과", res.data.sentence);
         setCb_emotion(cb_emotion + "##" + res.data.emotion);
-        setShowA(res.data.sentence);
         setShowE(res.data.emotion);
         setUse_content3("");
       });
@@ -559,10 +560,13 @@ function WriteScreen({ navigation }) {
         </View>
       </View>
 
-      {/* 스크롤 뷰 시작 */}
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 0.9 }}
+      {/* 스크롤 뷰 시작      => KeyboardAvoidingView 사용했었는데  KeyboardAwareScrollView로 교체*/}
+      <KeyboardAwareScrollView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{ flexGrow: 1 }}
+    extraScrollHeight={100} // 키보드 아래에 추가적인 여백 설정
+    enableOnAndroid={true} // 안드로이드에서도 동작하도록 설정
       >
         <ScrollView>
           {/* {이미지 보이는 곳} */}
@@ -597,7 +601,7 @@ function WriteScreen({ navigation }) {
             multiline={true}
           />
         </ScrollView>
-      </KeyboardAvoidingView>
+      </KeyboardAwareScrollView>
     </View>
   );
 }
