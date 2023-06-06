@@ -262,18 +262,20 @@ function PictureScreen({ navigation }) {
                         />
                       )}
                     </TouchableOpacity>
-                    <View
-                      style={{
-                        justifyContent: "center",
-                        alignItems: "center",
-                        marginTop: 16,
-                      }}
-                    >
-                      <Text style={{ fontSize: 28, fontWeight: "800" }}>
-                        {al.year}.{al.month}.{al.day}
-                      </Text>
-                      <Text style={{ fontSize: 18 }}>{al.title}</Text>
-                    </View>
+                    {al.img !== null && al.img !== "" && (
+                      <View
+                        style={{
+                          justifyContent: "center",
+                          alignItems: "center",
+                          marginTop: 16,
+                        }}
+                      >
+                        <Text style={{ fontSize: 28, fontWeight: "800" }}>
+                          {al.year}.{al.month}.{al.day}
+                        </Text>
+                        <Text style={{ fontSize: 18 }}>{al.title}</Text>
+                      </View>
+                    )}
                   </View>
                 );
               })}

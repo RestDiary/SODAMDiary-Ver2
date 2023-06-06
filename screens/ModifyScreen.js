@@ -9,7 +9,7 @@ import {
   Dimensions,
   TextInput,
   TouchableOpacity,
-  KeyboardAvoidingView,
+  //KeyboardAvoidingView,
   RichText,
   Alert,
   Image,
@@ -20,6 +20,7 @@ import {
   RichEditor,
   RichToolbar,
 } from "react-native-pell-rich-editor";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { Chip } from "react-native-paper";
@@ -46,8 +47,6 @@ import { FontAwesome } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
-
-
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -413,7 +412,7 @@ function DetailScreen(card) {
         {
           method: "post",
           // url: `${API.MODIFY}`,
-          url: 'http://Sodamre-env.eba-6bpsyspp.ap-northeast-2.elasticbeanstalk.com:3001/diaryModify',
+          url: "http://Sodamre-env.eba-6bpsyspp.ap-northeast-2.elasticbeanstalk.com:3001/diaryModify",
           params: {
             diarykey: card.route.params.card.route.params.card.diarykey,
             title: titleText,
@@ -451,6 +450,20 @@ function DetailScreen(card) {
 
     setLoading(false);
   };
+
+  const source = cb_emotion.includes("기쁨")
+    ? require("../assets/images/happy.png")
+    : cb_emotion.includes("슬픔")
+    ? require("../assets/images/sad.png")
+    : cb_emotion.includes("당황") || cb_emotion.includes("불안")
+    ? require("../assets/images/panic.png")
+    : cb_emotion.includes("상처")
+    ? require("../assets/images/hurt.png")
+    : cb_emotion.includes("화남")
+    ? require("../assets/images/angry.png")
+    : cb_emotion.includes("평온")
+    ? require("../assets/images/neutral.png")
+    : require("../assets/images/neutral.png");
 
   return (
     <View style={{ ...styles.container, backgroundColor: nowTheme.cardBg }}>
@@ -565,8 +578,12 @@ function DetailScreen(card) {
           {/* 챗봇 이미지 뷰 */}
           <View style={{ ...styles.chatBotImageView }}>
             <Image
-              source={require("../assets/images/SodamBot.png")}
-              style={styles.imageSize}
+              source={source}
+              style={
+                cb_emotion.includes("평온") || cb_emotion.includes("기쁨")
+                  ? styles.imageSize2
+                  : styles.imageSize
+              }
               resizeMode={"contain"}
             ></Image>
           </View>
@@ -609,10 +626,13 @@ function DetailScreen(card) {
         </View>
       </View>
 
-      {/* 스크롤 뷰 시작 */}
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 0.9 }}
+      {/* 스크롤 뷰 시작      => KeyboardAvoidingView 사용했었는데  KeyboardAwareScrollView로 교체*/}
+      <KeyboardAwareScrollView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{ flexGrow: 1 }}
+        extraScrollHeight={100} // 키보드 아래에 추가적인 여백 설정
+        enableOnAndroid={true} // 안드로이드에서도 동작하도록 설정
       >
         <ScrollView>
           {/* {이미지 보이는 곳} */}
@@ -647,7 +667,7 @@ function DetailScreen(card) {
             multiline={true}
           />
         </ScrollView>
-      </KeyboardAvoidingView>
+      </KeyboardAwareScrollView>
     </View>
   );
 }
@@ -798,8 +818,8 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10,
     marginRight: 16,
-    height: SCREEN_HEIGHT / 12,
-    maxHeight: SCREEN_HEIGHT / 12,
+    height: SCREEN_HEIGHT / 11,
+    maxHeight: SCREEN_HEIGHT / 11,
     shadowColor: "#000",
     shadowOffset: {
       width: 2,
@@ -822,7 +842,20 @@ const styles = StyleSheet.create({
   },
 
   imageSize: {
-    width: "110%",
-    height: "110%",
+    width: "115%",
+    height: "115%",
   },
+
+  imageSize2: {
+    width: "115%",
+    height: "115%",
+  },
+  gifView: {
+    width: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#008773",
+  },
+  gif: { width: 150, height: 150 },
 });

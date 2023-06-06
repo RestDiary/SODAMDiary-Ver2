@@ -15,7 +15,7 @@ import {
   Image,
   Keyboard,
 } from "react-native";
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import {
   actions,
   RichEditor,
@@ -192,8 +192,8 @@ function WriteScreen({ navigation }) {
     hideDatePicker();
   };
 
-   // 챗봇과 연결2
-   const chatBotRink = async () => {
+  // 챗봇과 연결2
+  const chatBotRink = async () => {
     // 특정 문자가 입력되었을 때 작동
     // console.log("챗봇과 연결2");
 
@@ -209,7 +209,7 @@ function WriteScreen({ navigation }) {
         },
       })
       .then((res) => {
-        console.log("res: ", res.data.sentence)
+        console.log("res: ", res.data.sentence);
         if (res.data.sentence === ".") {
           setShowA("끄덕끄덕, 얘기를 잘 듣고 있어요!");
         } else {
@@ -404,6 +404,20 @@ function WriteScreen({ navigation }) {
     setLoading(false);
   };
 
+  const source = cb_emotion.includes("기쁨")
+    ? require("../assets/images/happy.png")
+    : cb_emotion.includes("슬픔")
+    ? require("../assets/images/sad.png")
+    : cb_emotion.includes("당황") || cb_emotion.includes("불안")
+    ? require("../assets/images/panic.png")
+    : cb_emotion.includes("상처")
+    ? require("../assets/images/hurt.png")
+    : cb_emotion.includes("화남")
+    ? require("../assets/images/angry.png")
+    : cb_emotion.includes("평온")
+    ? require("../assets/images/neutral.png")
+    : require("../assets/images/neutral.png");
+
   return (
     <View style={{ ...styles.container, backgroundColor: nowTheme.cardBg }}>
       {/* 로딩 모달 */}
@@ -516,8 +530,12 @@ function WriteScreen({ navigation }) {
           {/* 챗봇 이미지 뷰 */}
           <View style={{ ...styles.chatBotImageView }}>
             <Image
-              source={require("../assets/images/SodamBot.png")}
-              style={styles.imageSize}
+              source={source}
+              style={
+                cb_emotion.includes("평온") || cb_emotion.includes("기쁨")
+                  ? styles.imageSize2
+                  : styles.imageSize
+              }
               resizeMode={"contain"}
             ></Image>
           </View>
@@ -562,11 +580,11 @@ function WriteScreen({ navigation }) {
 
       {/* 스크롤 뷰 시작      => KeyboardAvoidingView 사용했었는데  KeyboardAwareScrollView로 교체*/}
       <KeyboardAwareScrollView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ flexGrow: 1 }}
-    extraScrollHeight={100} // 키보드 아래에 추가적인 여백 설정
-    enableOnAndroid={true} // 안드로이드에서도 동작하도록 설정
+        extraScrollHeight={100} // 키보드 아래에 추가적인 여백 설정
+        enableOnAndroid={true} // 안드로이드에서도 동작하도록 설정
       >
         <ScrollView>
           {/* {이미지 보이는 곳} */}
@@ -752,8 +770,8 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10,
     marginRight: 16,
-    height: SCREEN_HEIGHT / 12,
-    maxHeight: SCREEN_HEIGHT / 12,
+    height: SCREEN_HEIGHT / 11,
+    maxHeight: SCREEN_HEIGHT / 11,
     shadowColor: "#000",
     shadowOffset: {
       width: 2,
@@ -776,8 +794,13 @@ const styles = StyleSheet.create({
   },
 
   imageSize: {
-    width: "110%",
-    height: "110%",
+    width: "160%",
+    height: "160%",
+  },
+
+  imageSize2: {
+    width: "115%",
+    height: "115%",
   },
   gifView: {
     width: SCREEN_WIDTH,

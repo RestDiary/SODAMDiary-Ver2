@@ -233,11 +233,9 @@ function PictureDetailScreen(Album) {
     // console.log("topNum: ", topNum)
 
     if (emotionData.second_number === 0) {
-
       setLabels([emotionData.top_emotion]);
       setData([100]);
     } else if (emotionData.third_number === 0) {
-
       let one = emotionData.top_number;
       let two = emotionData.second_number;
 
@@ -247,7 +245,6 @@ function PictureDetailScreen(Album) {
       setLabels([emotionData.top_emotion, emotionData.second_emotion]);
       setData([Math.round(oneData), Math.round(twoData)]);
     } else {
-
       let one = emotionData.top_number;
       let two = emotionData.second_number;
       let three = emotionData.third_number;
@@ -256,7 +253,11 @@ function PictureDetailScreen(Album) {
       let twoData = (two / (one + two + three)) * 100;
       let threeData = (three / (one + two + three)) * 100;
 
-      setLabels([emotionData.top_emotion, emotionData.second_emotion, emotionData.third_emotion]);
+      setLabels([
+        emotionData.top_emotion,
+        emotionData.second_emotion,
+        emotionData.third_emotion,
+      ]);
       setData([
         Math.round(oneData),
         Math.round(twoData),
@@ -386,7 +387,7 @@ function PictureDetailScreen(Album) {
             }}
           >
             <SafeAreaView>
-              <ScrollView horizontal={true} pagingEnabled={true}>
+              <ScrollView pagingEnabled={true}>
                 <View>
                   {/* 차트 제목용 텍스트 */}
                   <View style={styles.chartTitle}>
@@ -434,7 +435,7 @@ function PictureDetailScreen(Album) {
 
                       <View style={{ ...styles.chatBotImageView }}>
                         <Image
-                          source={require("../assets/images/SodamBot.png")}
+                          source={require("../assets/images/neutral.png")}
                           style={styles.imageSize}
                           resizeMode={"contain"}
                         ></Image>
@@ -449,115 +450,84 @@ function PictureDetailScreen(Album) {
                     </View>
                   </View>
                 </View>
-                <View>
-                  {/* 차트 제목용 텍스트 */}
-                  <View style={styles.chartTitle}>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "space-around",
-                        alignItems: "center",
-                        width: SCREEN_WIDTH,
-                        marginHorizontal: 16,
-                      }}
-                    >
-                      <View
-                        style={{
-                          padding: 4,
-                          backgroundColor: "#404040",
-                          borderRadius: 100,
-                        }}
-                      ></View>
-                      <View
-                        style={{
-                          padding: 4,
-                          backgroundColor: "#404040",
-                          borderRadius: 100,
-                        }}
-                      ></View>
-                    </View>
+                {/* 차트 그래프 뷰 */}
+                <View style={styles.barContents}>
+                  {/* 기쁨 */}
+                  <View style={styles.barGraph}>
+                    {labels.map((label, index) => {
+                      return (
+                        <View key={index} style={styles.emotionView}>
+                          {index === 0 ? (
+                            <View
+                              style={{
+                                ...styles.emtionImage,
+                                backgroundColor: "#fdeebb",
+                              }}
+                            ></View>
+                          ) : index === 1 ? (
+                            <View
+                              style={{
+                                ...styles.emtionImage,
+                                backgroundColor: "#d5f0ff",
+                              }}
+                            ></View>
+                          ) : (
+                            <View
+                              style={{
+                                ...styles.emtionImage,
+                                backgroundColor: "#ffd5fd",
+                              }}
+                            ></View>
+                          )}
+                          <View style={{ ...styles.columnView }}>
+                            <View style={{ ...styles.emotionDic }}>
+                              <Text style={{ ...styles.emotionKey }}>
+                                {label}
+                              </Text>
+                              <Text style={{ ...styles.emotionValue }}>
+                                {datas[index]}%
+                              </Text>
+                            </View>
 
-                    <Text style={styles.chartTitleText}>감정분석 결과</Text>
-                  </View>
-                  {/* 차트 그래프 뷰 */}
-                  <View style={styles.barContents}>
-                    {/* 기쁨 */}
-                    <View style={styles.barGraph}>
-                      {labels.map((label, index) => {
-                        return (
-                          <View key={index} style={styles.emotionView}>
-                            {index === 0 ? (
-                              <View
-                                style={{
-                                  ...styles.emtionImage,
-                                  backgroundColor: "#fdeebb",
-                                }}
-                              ></View>
-                            ) : index === 1 ? (
-                              <View
-                                style={{
-                                  ...styles.emtionImage,
-                                  backgroundColor: "#d5f0ff",
-                                }}
-                              ></View>
-                            ) : (
-                              <View
-                                style={{
-                                  ...styles.emtionImage,
-                                  backgroundColor: "#ffd5fd",
-                                }}
-                              ></View>
-                            )}
-                            <View style={{ ...styles.columnView }}>
-                              <View style={{ ...styles.emotionDic }}>
-                                <Text style={{ ...styles.emotionKey }}>
-                                  {label}
-                                </Text>
-                                <Text style={{ ...styles.emotionValue }}>
-                                  {datas[index]}%
-                                </Text>
-                              </View>
-
-                              <View style={{ ...styles.emotionBarView }}>
-                                <View style={{ ...styles.emotionBarKey }}>
-                                  {index === 0 ? (
-                                    <LinearGradient
-                                      style={{
-                                        ...styles.emotionBarValue,
-                                        width: `${datas[index]}%`, // 이 값이 유동적이여야 함.
-                                      }}
-                                      start={{ x: 0, y: 0 }}
-                                      end={{ x: 1, y: 0 }}
-                                      colors={["#ffad06", "#ffcd06", "#ffdd06"]}
-                                    ></LinearGradient>
-                                  ) : index === 1 ? (
-                                    <LinearGradient
-                                      style={{
-                                        ...styles.emotionBarValue,
-                                        width: `${datas[index]}%`, // 이 값이 유동적이여야 함.
-                                      }}
-                                      start={{ x: 0, y: 0 }}
-                                      end={{ x: 1, y: 0 }}
-                                      colors={["#00b1f0", "#00d1f0", "#00e1f0"]}
-                                    ></LinearGradient>
-                                  ) : (
-                                    <LinearGradient
-                                      style={{
-                                        ...styles.emotionBarValue,
-                                        width: `${datas[index]}%`, // 이 값이 유동적이여야 함.
-                                      }}
-                                      start={{ x: 0, y: 0 }}
-                                      end={{ x: 1, y: 0 }}
-                                      colors={["#f00080", "#f04080", "#f08080"]}
-                                    ></LinearGradient>
-                                  )}
-                                </View>
+                            <View style={{ ...styles.emotionBarView }}>
+                              <View style={{ ...styles.emotionBarKey }}>
+                                {index === 0 ? (
+                                  <LinearGradient
+                                    style={{
+                                      ...styles.emotionBarValue,
+                                      width: `${datas[index]}%`, // 이 값이 유동적이여야 함.
+                                    }}
+                                    start={{ x: 0, y: 0 }}
+                                    end={{ x: 1, y: 0 }}
+                                    colors={["#ffad06", "#ffcd06", "#ffdd06"]}
+                                  ></LinearGradient>
+                                ) : index === 1 ? (
+                                  <LinearGradient
+                                    style={{
+                                      ...styles.emotionBarValue,
+                                      width: `${datas[index]}%`, // 이 값이 유동적이여야 함.
+                                    }}
+                                    start={{ x: 0, y: 0 }}
+                                    end={{ x: 1, y: 0 }}
+                                    colors={["#00b1f0", "#00d1f0", "#00e1f0"]}
+                                  ></LinearGradient>
+                                ) : (
+                                  <LinearGradient
+                                    style={{
+                                      ...styles.emotionBarValue,
+                                      width: `${datas[index]}%`, // 이 값이 유동적이여야 함.
+                                    }}
+                                    start={{ x: 0, y: 0 }}
+                                    end={{ x: 1, y: 0 }}
+                                    colors={["#f00080", "#f04080", "#f08080"]}
+                                  ></LinearGradient>
+                                )}
                               </View>
                             </View>
                           </View>
-                        );
-                      })}
-                    </View>
+                        </View>
+                      );
+                    })}
                   </View>
                 </View>
               </ScrollView>
@@ -568,6 +538,7 @@ function PictureDetailScreen(Album) {
     </View>
   );
 }
+
 export default PictureDetailScreen;
 
 const styles = StyleSheet.create({
@@ -594,7 +565,7 @@ const styles = StyleSheet.create({
     width: "25%",
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#fff",
+    shadowColor: "#000",
     shadowOffset: {
       width: 2,
       height: 2,
@@ -694,6 +665,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+
   bottomSheetView: {
     flex: 1,
     alignItems: "center",
@@ -705,6 +677,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "white",
     width: SCREEN_WIDTH,
+    marginBottom: 16,
   },
 
   chartTitleText: {
@@ -720,6 +693,7 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderWidth: 1,
     maxWidth: SCREEN_WIDTH,
+    margin: 8,
   },
 
   barGraph: {
@@ -824,7 +798,6 @@ const styles = StyleSheet.create({
   },
 
   sodamView: {
-    flex: 0.15,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
     borderBottomWidth: 1,
@@ -832,15 +805,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-evenly",
+    maxHeight: SCREEN_HEIGHT / 12,
   },
 
   sodamTitleView: {
     alignItems: "center",
     justifyContent: "center",
     marginLeft: 8,
+    maxHeight: SCREEN_HEIGHT / 12,
   },
   sodamText: {
-    fontSize: 20,
+    fontSize: SCREEN_HEIGHT / 46,
     fontWeight: "bold",
   },
 
@@ -850,5 +825,5 @@ const styles = StyleSheet.create({
     margin: 16,
   },
 
-  sodamChat: { fontSize: 17, fontWeight: "600" },
+  sodamChat: { fontSize: SCREEN_HEIGHT / 50, fontWeight: "600" },
 });
