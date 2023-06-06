@@ -45,6 +45,8 @@ import { FontAwesome } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
+import { WebView } from "react-native-webview";
+import { API } from "../config.js";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -200,14 +202,18 @@ function WriteScreen({ navigation }) {
     // console.log("text2: " + text);
 
     await axios
-      .post("http://192.168.0.10:3001/flask", null, {
+      .post("http://192.168.0.15:3001/flask", null, {
         params: {
           text: text,
         },
       })
       .then((res) => {
+        if (res.data.sentence === ".") {
+          setCb_answer("끄덕끄덕, 얘기를 잘 듣고 있어요!");
+        } else {
+          setCb_answer(cb_answer + "##" + res.data.sentence);
+        }
         // console.log("결과", res.data.sentence);
-        setCb_answer(cb_answer + "##" + res.data.sentence);
         setCb_emotion(cb_emotion + "##" + res.data.emotion);
         setShowA(res.data.sentence);
         setShowE(res.data.emotion);
@@ -299,10 +305,21 @@ function WriteScreen({ navigation }) {
   //서버 요청 로딩
   const [loading, setLoading] = useState(false);
 
+  const [diaryKey2, setDiaryKey] = useState();
+
+  // 로딩 페이지
+  const [modalLoading, setModalLoading] = useState(false);
+
+  // 분석 확인
+  const handleConfirm2 = () => {
+    navigation.navigate("DetailScreen2", { diaryKey: diaryKey2 });
+  };
+
   //저장 버튼
   const submitContentHandle = async () => {
     let score;
-
+    setModalLoading(true);
+    Keyboard.dismiss();
     if (titleText.length <= 0) {
       setShowDescError(true);
       Alert.alert("제목을 입력해 주세요.");
@@ -314,12 +331,6 @@ function WriteScreen({ navigation }) {
       Alert.alert("내용을 입력해 주세요.");
       return;
     }
-
-    // if (replaceWhiteSpace.length <= 0) {
-    //   setShowDescError(true);
-    //   Alert.alert("내용을 입력해 주세요.");
-    //   return;
-    // }
 
     if (image != "") {
       // formData.append('multipartFileList' , {uri: localUri, name: filename, type});
@@ -344,7 +355,7 @@ function WriteScreen({ navigation }) {
     // console.log("일단 여기까진 옴");
 
     // 서버 데이터 전송
-    setLoading(true);
+    // setLoading(true);
     try {
       await axios(
         {
@@ -366,13 +377,24 @@ function WriteScreen({ navigation }) {
         null
       )
         .then((res) => {
-          Alert.alert("%");
-
-          moveNavigate("Home");
+          console.log("작성 결과: ", res.data[0]["diarykey"]);
+          // setDiaryKey(res.data[0]["diarykey"]);
+          if (res.data[0]["diarykey"] > 0) {
+            // console.log("작성 결과 diarykey: ", res.data[0]["diarykey"]);
+            // 로딩 끝
+            setModalLoading(false);
+            navigation.navigate("AnalysisDetailScreen", {
+              diaryKey: res.data[0]["diarykey"],
+            });
+            console.log("1");
+          } else {
+            Alert.alert("❗");
+          }
         })
         .catch(function (error) {
           // console.log(error.response.data);
           Alert.alert("❗error : bad response");
+          console.log("에러확인: ", error);
         });
     } catch (error) {
       // console.log(error.response.data);
@@ -383,6 +405,21 @@ function WriteScreen({ navigation }) {
 
   return (
     <View style={{ ...styles.container, backgroundColor: nowTheme.cardBg }}>
+      {/* 로딩 모달 */}
+      <Modal
+        style={{ justifyContent: "center", alignItems: "center" }}
+        visible={modalLoading}
+        animationType="fade"
+        transparent={true}
+      >
+        <View style={{ ...styles.gifView, flex: 1 }}>
+          <Image
+            style={{ ...styles.gif }}
+            source={require("../assets/images/loading.gif")}
+          />
+        </View>
+      </Modal>
+
       <View style={styles.topView}>
         {/* 제목 */}
         <SafeAreaView
@@ -493,17 +530,31 @@ function WriteScreen({ navigation }) {
             }}
           >
             {/* 챗봇 텍스트 */}
-            <Text
-              style={{
-                margin: 8,
-                color: nowTheme.font,
-                fontWeight: "bold",
-                fontSize: 16,
-                alignSelf: "center",
-              }}
-            >
-              끄덕끄덕, 듣고있어요~{showA} (평온){showE}
-            </Text>
+            {showE !== "" ? (
+              <Text
+                style={{
+                  margin: 8,
+                  color: nowTheme.font,
+                  fontWeight: "bold",
+                  fontSize: 16,
+                  alignSelf: "center",
+                }}
+              >
+                {showA} ( {showE} )
+              </Text>
+            ) : (
+              <Text
+                style={{
+                  margin: 8,
+                  color: nowTheme.font,
+                  fontWeight: "bold",
+                  fontSize: 16,
+                  alignSelf: "center",
+                }}
+              >
+                만나서 반가워요! 저는 소담이라고 해요!
+              </Text>
+            )}
           </View>
         </View>
       </View>
@@ -724,4 +775,12 @@ const styles = StyleSheet.create({
     width: "110%",
     height: "110%",
   },
+  gifView: {
+    width: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#008773",
+  },
+  gif: { width: 150, height: 150 },
 });

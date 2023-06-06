@@ -32,7 +32,7 @@ import {
   magazine,
   winter,
 } from "./css/globalStyles";
-import { SearchBar } from '@rneui/themed';
+import { SearchBar } from "@rneui/themed";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { YearPicker } from "react-native-propel-kit";
 
@@ -171,9 +171,9 @@ function DiaryScreen({ navigation }) {
           onChangeText={(search) => updateSearch(search)}
           lightTheme={true}
           placeholder=" 내용을 검색해보세요 "
-          containerStyle={{backgroundColor: 'white'}}
-          // inputContainerStyle={{color: 'white',backgroundColor: '#379947'}}
-          searchIcon={{ color: 'white', }}
+          containerStyle={{ backgroundColor: nowTheme.btn }}
+          inputContainerStyle={{ color: "black", backgroundColor: "white" }}
+          searchIcon={{ color: nowTheme.btn }}
           // inputStyle={{ backgroundColor: '#379947' }}
         ></SearchBar>
       </SafeAreaView>
@@ -258,7 +258,9 @@ const styles = StyleSheet.create({
   moon: {},
 
   moonText: {
-    margin: 4,
+    marginLeft: SCREEN_WIDTH / 16,
+    marginTop: SCREEN_WIDTH / 16,
+    fontWeight: "bold",
   },
 
   cardContainer: {

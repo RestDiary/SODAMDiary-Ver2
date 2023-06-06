@@ -557,17 +557,31 @@ function DetailScreen(card) {
             }}
           >
             {/* 챗봇 텍스트 */}
-            <Text
-              style={{
-                margin: 8,
-                color: nowTheme.font,
-                fontWeight: "bold",
-                fontSize: 16,
-                alignSelf: "center",
-              }}
-            >
-              끄덕끄덕, 듣고있어요~{showA} (평온){showE}
-            </Text>
+            {showE !== "" ? (
+              <Text
+                style={{
+                  margin: 8,
+                  color: nowTheme.font,
+                  fontWeight: "bold",
+                  fontSize: 16,
+                  alignSelf: "center",
+                }}
+              >
+                {showA} ( {showE} )
+              </Text>
+            ) : (
+              <Text
+                style={{
+                  margin: 8,
+                  color: nowTheme.font,
+                  fontWeight: "bold",
+                  fontSize: 16,
+                  alignSelf: "center",
+                }}
+              >
+                만나서 반가워요! 저는 소담이라고 해요!
+              </Text>
+            )}
           </View>
         </View>
       </View>

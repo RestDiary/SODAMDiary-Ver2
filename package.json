@@ -54,8 +54,9 @@
     "react-native-shadow": "^1.2.2",
     "react-native-status-bar-height": "^2.6.0",
     "react-native-svg": "13.4.0",
-    "react-native-webview": "11.23.1",
+    "react-native-webview": "^11.23.1",
     "react-scripts": "^5.0.1",
+    "victory-native": "^36.6.10",
     "yarn": "^1.22.19"
   },
   "devDependencies": {

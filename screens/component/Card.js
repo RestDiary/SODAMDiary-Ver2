@@ -29,9 +29,7 @@ import {
 } from "./../css/globalStyles";
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import DayChart from "./chartsRe/DayChart";
 import HorizontalBarGraph from "@chartiful/react-native-horizontal-bar-graph";
-
 
 function Card({ data }) {
   //테마
@@ -73,29 +71,6 @@ function Card({ data }) {
   //Top3 감정 키워드 각각의 개수
   const [labels, setLabels] = useState([]);
   const [datas, setData] = useState([]);
-
-  // // 차트 데이터 받아오기 및 차트 생성
-  // useEffect(() => {
-  //   if (data.second_number === 0) {
-  //     let first = data.top_emotion.split("/");
-
-  //     setLabels([first[0]]);
-  //     setData([data.top_number]);
-  //   } else if (data.third_number === 0) {
-  //     let first = data.top_emotion.split("/");
-  //     let second = data.second_emotion.split("/");
-
-  //     setLabels([first[0], second[0]]);
-  //     setData([data.top_number, data.second_number]);
-
-  //   } else {
-  //     let first = data.top_emotion.split("/");
-  //     let second = data.second_emotion.split("/");
-  //     let third = data.third_emotion.split("/");
-
-  //     setLabels([first[0], second[0], third[0]]);
-  //     setData([data.top_number, data.second_number, data.third_number]);
-  //   }
 
   // 리렌더링 시 값이 초기화 되는 것을 막기 위해 ref 사용.
   const flipAnimation = useRef(new Animated.Value(0)).current;
@@ -179,7 +154,7 @@ function Card({ data }) {
               <Image
                 source={{ uri: data.img }}
                 style={styles.imageSize}
-                resizeMode={"stretch"}
+                resizeMode={"cover"}
               ></Image>
             ) : (
               <Image
@@ -228,14 +203,14 @@ function Card({ data }) {
 const styles = StyleSheet.create({
   container: {
     fontSize: "3%",
-    height: (SCREEN_WIDTH / 3) * 1.86,
+    height: (SCREEN_WIDTH / 2.5) * 1.86,
     alignItems: "center",
     justifyContent: "center",
   },
 
   front: {
-    width: SCREEN_WIDTH / 3,
-    height: (SCREEN_WIDTH / 3) * 1.6,
+    width: SCREEN_WIDTH / 2.5,
+    height: (SCREEN_WIDTH / 2.5) * 1.6,
     position: "absolute",
     backfaceVisibility: "hidden",
     //IOS
@@ -243,12 +218,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.7, //그림자 투명도
     shadowOffset: { width: 4, height: 4 }, //그림자 위치
     // ANDROID
-    elevation: 3,
+    elevation: 30,
     borderRadius: 30,
+    flex: 1,
   },
 
   frontImageBox: {
-    flex: 1,
+    flex: 0.8,
   },
 
   imageSize: {
@@ -260,7 +236,7 @@ const styles = StyleSheet.create({
   },
 
   frontTitle: {
-    flex: 1,
+    flex: 0.2,
     alignItems: "center",
     margin: 16,
   },
@@ -274,8 +250,8 @@ const styles = StyleSheet.create({
   },
 
   back: {
-    width: SCREEN_WIDTH / 3,
-    height: (SCREEN_WIDTH / 3) * 1.6,
+    width: SCREEN_WIDTH / 2.5,
+    height: (SCREEN_WIDTH / 2.5) * 1.6,
     marginRight: 16,
     marginLeft: 16,
     alignItems: "center",
@@ -286,7 +262,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.7, //그림자 투명도
     shadowOffset: { width: 4, height: 4 }, //그림자 위치
     // ANDROID
-    elevation: 3,
+    elevation: 30,
   },
 
   backView: {

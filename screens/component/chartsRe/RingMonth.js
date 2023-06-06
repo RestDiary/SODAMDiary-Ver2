@@ -56,7 +56,7 @@ function RingMonth(props) {
                 backgroundGradientFromOpacity: 0,
                 backgroundGradientTo: "#08130D",
                 backgroundGradientToOpacity: 0,
-                color: (opacity = 1) => `rgba(55, 153, 71, ${opacity})`,
+                color: (opacity = 1) => `rgba(0, 84, 72, ${opacity})`,
                 strokeWidth: 2, // optional, default 3
                 barPercentage: 0.5,
                 useShadowColorFromDataset: false, // optional
@@ -95,7 +95,7 @@ function RingMonth(props) {
               backgroundGradientFromOpacity: 0,
               backgroundGradientTo: "#08130D",
               backgroundGradientToOpacity: 0,
-              color: (opacity = 1) => `rgba(55, 153, 71, ${opacity})`,
+              color: (opacity = 1) => `rgba(0, 84, 72, ${opacity})`,
               strokeWidth: 2, // optional, default 3
               barPercentage: 0.5,
               useShadowColorFromDataset: false, // optional

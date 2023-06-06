@@ -56,7 +56,7 @@ import ResultScreen from "./screens/ResultScreen";
 import LoginScreen from "./screens/LoginScreen";
 import ThemeScreen from "./screens/ThemeScreen";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import AnalysisDetailScreen from "./screens/AnalysisDetailScreen";
 import DetailScreen from "./screens/DetailScreen";
 import ModifyScreen from "./screens/ModifyScreen";
 import PictureDeailScreen from "./screens/PictureDeailScreen";
@@ -236,7 +236,7 @@ function CustomDrawerContent(props) {
       >
         <Image
           resizeMode="contain"
-          style={{ height: SCREEN_HEIGHT / 5 }}
+          style={{ height: SCREEN_HEIGHT / 4 }}
           source={nowTheme.logo}
         />
       </View>
@@ -469,14 +469,11 @@ function MyDrawer() {
 function MyStack() {
   return (
     <Stack.Navigator initialRouteName="Home">
-
-      
       <Stack.Screen
         name="Login"
         component={LoginScreen}
         options={{ headerShown: false, headerTintColor: "black" }}
       />
-
 
       {/*드로워 네비게이터 스택에 등록  */}
       <Stack.Screen
@@ -550,8 +547,12 @@ function MyStack() {
       <Stack.Screen
         name="ResultScreen"
         component={ResultScreen}
-        options={{ headerTintColor: "black", headerShown: false,     gestureEnabled: false,
-        animation: 'none',}}
+        options={{
+          headerTintColor: "black",
+          headerShown: false,
+          gestureEnabled: false,
+          animation: "none",
+        }}
       />
 
       <Stack.Screen
@@ -577,6 +578,11 @@ function MyStack() {
       <Stack.Screen
         name="Album"
         component={PictureDeailScreen}
+        options={{ headerTintColor: "black", headerShown: false }}
+      />
+      <Stack.Screen
+        name="AnalysisDetailScreen"
+        component={AnalysisDetailScreen}
         options={{ headerTintColor: "black", headerShown: false }}
       />
     </Stack.Navigator>
