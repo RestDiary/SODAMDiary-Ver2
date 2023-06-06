@@ -215,6 +215,9 @@ function HomeScreen({ navigation }) {
     else if (selectedTheme.includes("pattern")) setNowTheme(pattern);
     else if (selectedTheme.includes("magazine")) setNowTheme(magazine);
     else if (selectedTheme.includes("winter")) setNowTheme(winter);
+    else {
+      setNowTheme(votanical);
+    }
   };
 
   //로그인 여부 확인
@@ -249,7 +252,9 @@ function HomeScreen({ navigation }) {
           </View>
 
           <View>
-            <Text>최근 다이어리 (작명 필요)</Text>
+            <Text style={{ marginLeft: SCREEN_WIDTH / 16, fontWeight: "bold" }}>
+              최근 다이어리
+            </Text>
             <ScrollView showsHorizontalScrollIndicator={false} horizontal>
               <View style={styles.notCard}></View>
               {loading && <ActivityIndicator size="large" color="white" />}
@@ -264,7 +269,15 @@ function HomeScreen({ navigation }) {
             </ScrollView>
           </View>
 
-          <Text>나의 감정 통계</Text>
+          <Text
+            style={{
+              marginLeft: SCREEN_WIDTH / 16,
+              marginTop: SCREEN_WIDTH / 16,
+              fontWeight: "bold",
+            }}
+          >
+            나의 감정 통계
+          </Text>
           <ScrollView
             showsHorizontalScrollIndicator={false}
             horizontal
@@ -354,10 +367,12 @@ const styles = StyleSheet.create({
     height: SCREEN_HEIGHT / 6.3,
   },
   memberTop: {
-    fontSize: SCREEN_HEIGHT / 24,
+    fontSize: SCREEN_HEIGHT / 22,
+    fontWeight: "bold",
   },
   memberBottom: {
-    fontSize: SCREEN_HEIGHT / 24,
+    fontSize: SCREEN_HEIGHT / 22,
+    fontWeight: "bold",
   },
 
   year: {

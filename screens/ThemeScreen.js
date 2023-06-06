@@ -105,8 +105,8 @@ function ThemeScreen({ navigation }) {
                                 <Text
                                   style={{
                                     ...styles.themeApply,
-                                    backgroundColor: "white",
-                                    color: "black",
+                                    backgroundColor: "#008773",
+                                    color: "white",
                                   }}
                                 >
                                   적용중
@@ -185,7 +185,6 @@ const styles = StyleSheet.create({
   themeApply: {
     fontWeight: "bold",
     color: "white",
-    borderWidth: 1,
     padding: 6,
     fontSize: 20,
     textAlign: "center",

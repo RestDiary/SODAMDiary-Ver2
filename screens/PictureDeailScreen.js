@@ -359,7 +359,7 @@ function PictureDetailScreen(Album) {
               style={{
                 marginLeft: 10,
                 marginTop: 16,
-                fontSize: 20,
+                fontSize: 17,
                 color: nowTheme.font,
                 fontWeight: "bold",
               }}
@@ -856,5 +856,5 @@ const styles = StyleSheet.create({
     margin: 16,
   },
 
-  sodamChat: { fontSize: 22 },
+  sodamChat: { fontSize: 17, fontWeight: "600" },
 });
