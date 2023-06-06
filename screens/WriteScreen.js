@@ -64,7 +64,7 @@ function WriteScreen({ navigation }) {
   const [editorColor, setEditorColor] = useState({});
 
 
-  const inputRef = createRef();
+  // const inputRef = createRef();
 
   const allClear =()=>{
     onChangeTitleText("")
@@ -74,7 +74,7 @@ function WriteScreen({ navigation }) {
     setMonth(new Date().getMonth() + 1);
     setDay(new Date().getDate());
     setImage("")
-    inputRef.current.clear();
+    // inputRef.current.clear();
   }
   
   //테마, 에디터 컬러 가져오기
@@ -467,7 +467,7 @@ function WriteScreen({ navigation }) {
             value={titleText}
             returnKeyType="next"
             maxLength={30}
-            inputRef={inputRef}
+            // inputRef={inputRef}
           />
         </SafeAreaView>
         <View
