@@ -429,7 +429,6 @@ function DetailScreen(card) {
         null
       )
         .then((res) => {
-          console.log("작성 결과: ", res.data[0]["diarykey"]);
           if (res.data === "3") {
             let diarykey = card.route.params.card.route.params.card.diarykey;
             setModalLoading(false);

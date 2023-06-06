@@ -277,13 +277,10 @@ function DetailScreen(card) {
   // 차트 값 설정
   const chartDataSet = () => {
     if (card.route.params.card.second_number === 0) {
-      let first = card.route.params.card.top_emotion.split("/");
 
-      setLabels([first[0]]);
+      setLabels([card.route.params.card.top_emotion]);
       setData([100]);
     } else if (card.route.params.card.third_number === 0) {
-      let first = card.route.params.card.top_emotion.split("/");
-      let second = card.route.params.card.second_emotion.split("/");
 
       let one = card.route.params.card.top_number;
       let two = card.route.params.card.second_number;
@@ -291,13 +288,9 @@ function DetailScreen(card) {
       let oneData = (one / (one + two)) * 100;
       let twoData = (two / (one + two)) * 100;
 
-      setLabels([first[0], second[0]]);
+      setLabels([card.route.params.card.top_emotion, card.route.params.card.second_emotion]);
       setData([Math.round(oneData), Math.round(twoData)]);
     } else {
-      let first = card.route.params.card.top_emotion.split("/");
-      let second = card.route.params.card.second_emotion.split("/");
-      let third = card.route.params.card.third_emotion.split("/");
-
       let one = card.route.params.card.top_number;
       let two = card.route.params.card.second_number;
       let three = card.route.params.card.third_number;
@@ -306,13 +299,14 @@ function DetailScreen(card) {
       let twoData = (two / (one + two + three)) * 100;
       let threeData = (three / (one + two + three)) * 100;
 
-      setLabels([first[0], second[0], third[0]]);
+      setLabels([card.route.params.card.top_emotion, card.route.params.card.second_emotion,card.route.params.card.third_emotion]);
       setData([
         Math.round(oneData),
         Math.round(twoData),
         Math.round(threeData),
       ]);
     }
+    console.log("label", labels);
   };
 
   // bottom sheet 테스트

@@ -22,7 +22,7 @@ const PieTop = (props) => {
     ["#caa31f", "#cad31f"],
     ["#6b9647", "#6bd647"],
   ];
-  console.log("dddddd", pie);
+  
   return (
     <View style={styles}>
       {pie.length > 0 ? (
