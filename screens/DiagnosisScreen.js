@@ -359,7 +359,7 @@ const styles = StyleSheet.create({
     },
     memberContainer: {
 
-      marginTop:SCREEN_HEIGHT /12,
+      marginTop:SCREEN_HEIGHT /40,
       marginLeft:SCREEN_WIDTH / 12,
       height: SCREEN_HEIGHT /6.3,
     },
@@ -387,7 +387,7 @@ const styles = StyleSheet.create({
     touchStyle:{
       // borderWidth: 1,
       // borderColor: scores[currentQuestionIndex] === index-1 ? 'green' : 'black',
-      padding: SCREEN_HEIGHT / 30,
+      padding: SCREEN_HEIGHT / 40,
       marginVertical: 14,
       borderRadius: SCREEN_HEIGHT / 1,
       width:SCREEN_WIDTH/1.4,
@@ -397,7 +397,6 @@ const styles = StyleSheet.create({
       // shadowColor:"black",
       // shadowOpacity: 0.26,
       // shadowRadius: 10 ,
-            
     },
 
     shadowStyle: {

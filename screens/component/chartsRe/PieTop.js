@@ -8,6 +8,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const PieTop = (props) => {
   const [pie, setPie] = useState([]);
 
+
   useEffect(() => {
     if (props.data === "0") {
       setPie([]);

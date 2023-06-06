@@ -308,10 +308,10 @@ function HomeScreen({ navigation }) {
                   onChange={setYearData}
                 />
               </TouchableOpacity>
-              {lineData.length > 0 ? (
-                <LineYear data={lineData} yearData={yearData} />
+              {lineData.length > 0 ? ( //key 값주라는 주의를 줘서 임시 지정
+                <LineYear key={1} data={lineData} yearData={yearData} />
               ) : (
-                <LineYear data={"0"} />
+                <LineYear key={1} data={"0"} />
               )}
             </View>
 
@@ -338,10 +338,10 @@ function HomeScreen({ navigation }) {
                 </Picker>
               </TouchableOpacity> */}
 
-              {ringData.length > 0 ? (
-                <RingMonth data={ringData} />
+              {ringData.length > 0 ? ( //key값 주라는 주의가 떠서 줬더니 안사라진다.
+                <RingMonth key = {1} data={ringData} />
               ) : (
-                <RingMonth data={"0"} />
+                <RingMonth key = {1}data={"0"} />
               )}
             </View>
           </ScrollView>
@@ -359,7 +359,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "black",
     flexDirection: "column",
-    width: SCREEN_WIDTH,
+    // width: SCREEN_WIDTH,
   },
   memberContainer: {
     marginTop: SCREEN_HEIGHT / 12,

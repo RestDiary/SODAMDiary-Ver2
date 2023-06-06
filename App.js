@@ -358,9 +358,10 @@ function CustomDrawerContent(props) {
 
 //바텀 탭 네비게이터
 const TabComponent = () => {
+  const navigation = useNavigation();
   return (
     <Tab.Navigator
-      initialRouteName="home"
+      backBehavior="history"
       screenOptions={({ route }) => ({
         tabBarLabel: route.name,
         tabBarIcon: ({ focused }) => TabBarIcon(focused, route.name),
@@ -374,12 +375,17 @@ const TabComponent = () => {
         headerShown: false,
       })}
     >
-      <Tab.Screen name="home" component={HomeScreen} />
+      <Tab.Screen name="home" component={MyDrawer}  listeners={() =>({
+        tabPress:(e) =>{
+          e.preventDefault();
+          navigation.navigate("Home");
+        }
+      })}/>
       {/* option options={{tabBarStyle : {display:'none'}}} 으로 조작하면 특정 네비게이터에서 안보인다. */}
       <Tab.Screen
         name="write"
         component={WriteScreen}
-        options={{ tabBarStyle: { display: "none" } }}
+        options={{ tabBarHideOnKeyboard:true}} //키보드 꺼내면 안보이게
       />
       <Tab.Screen name="calender" component={CalenderScreen} />
     </Tab.Navigator>
@@ -448,7 +454,13 @@ function MyDrawer() {
         options={{
           headerShown: true,
         }}
-        component={TabComponent}
+        component={MyStack}
+      />
+
+      <Drawer.Screen
+        name="Diary"
+        component={DiaryScreen}
+        options={{ headerTintColor: "black", headerShown: false }}
       />
     </Drawer.Navigator>
   );
@@ -466,7 +478,7 @@ function MyStack() {
       {/*드로워 네비게이터 스택에 등록  */}
       <Stack.Screen
         name="Home"
-        component={MyDrawer}
+        component={HomeScreen}
         options={{
           headerShown: false,
           headerTintColor: "black",
@@ -477,17 +489,12 @@ function MyStack() {
       {/* Home */}
       <Stack.Screen
         name="Calender"
-        component={MyDrawer}
+        component={CalenderScreen}
         options={{ headerTintColor: "black", headerShown: false }}
       />
       <Stack.Screen
         name="Write"
         component={WriteScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
-      />
-      <Stack.Screen
-        name="Diary"
-        component={DiaryScreen}
         options={{ headerTintColor: "black", headerShown: false }}
       />
       <Stack.Screen
@@ -596,7 +603,7 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <MyStack />
+      <TabComponent />
     </NavigationContainer>
   );
 }
