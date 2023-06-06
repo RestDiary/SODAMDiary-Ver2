@@ -101,7 +101,7 @@ function HomeScreen({ navigation }) {
       )
         .then((res) => {
           setRandomDiaryData(res.data);
-          console.log(res.data);
+          // console.log(res.data);
         })
         .catch(function (error) {
           Alert.alert("❗error : bad response");
@@ -160,8 +160,6 @@ function HomeScreen({ navigation }) {
       )
         .then((res) => {
           setLineData(res.data);
-          console.log("axios 후, lindData 길이: ", lineData.length);
-          console.log("axios 후, line_response 길이: ", res.data.length);
           // console.log("2: ", res.data.length);
         })
         .catch(function (error) {
