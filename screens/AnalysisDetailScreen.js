@@ -180,7 +180,7 @@ function AnalysisDetailScreen(diaryKey2) {
 
   useEffect(() => {
     detail(); // 일기 내용 가져오기
-  }, []);
+  }, [diaryKey2]);
 
   useEffect(() => {
     if (emotionData && Object.keys(emotionData).length > 0) {
