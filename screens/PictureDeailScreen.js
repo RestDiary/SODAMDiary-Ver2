@@ -233,13 +233,10 @@ function PictureDetailScreen(Album) {
     // console.log("topNum: ", topNum)
 
     if (emotionData.second_number === 0) {
-      let first = emotionData.top_emotion.split("/");
 
-      setLabels([first[0]]);
+      setLabels([emotionData.top_emotion]);
       setData([100]);
     } else if (emotionData.third_number === 0) {
-      let first = emotionData.top_emotion.split("/");
-      let second = emotionData.second_emotion.split("/");
 
       let one = emotionData.top_number;
       let two = emotionData.second_number;
@@ -247,12 +244,9 @@ function PictureDetailScreen(Album) {
       let oneData = (one / (one + two)) * 100;
       let twoData = (two / (one + two)) * 100;
 
-      setLabels([first[0], second[0]]);
+      setLabels([emotionData.top_emotion, emotionData.second_emotion]);
       setData([Math.round(oneData), Math.round(twoData)]);
     } else {
-      let first = emotionData.top_emotion.split("/");
-      let second = emotionData.second_emotion.split("/");
-      let third = emotionData.third_emotion.split("/");
 
       let one = emotionData.top_number;
       let two = emotionData.second_number;
@@ -262,7 +256,7 @@ function PictureDetailScreen(Album) {
       let twoData = (two / (one + two + three)) * 100;
       let threeData = (three / (one + two + three)) * 100;
 
-      setLabels([first[0], second[0], third[0]]);
+      setLabels([emotionData.top_emotion, emotionData.second_emotion, emotionData.third_emotion]);
       setData([
         Math.round(oneData),
         Math.round(twoData),
