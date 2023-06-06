@@ -376,7 +376,7 @@ const TabComponent = () => {
         headerShown: false,
       })}
     >
-      <Tab.Screen name="home" component={MyDrawer}  listeners={() =>({
+      <Tab.Screen name="home" component={MyDrawer}   listeners={() =>({
         tabPress:(e) =>{
           e.preventDefault();
           navigation.navigate("Home");
