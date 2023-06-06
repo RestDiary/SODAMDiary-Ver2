@@ -77,6 +77,13 @@ function HomeScreen({ navigation }) {
     getRingData();
   }, [monthData, isFocused]);
 
+  //테마 값 가져오기
+  useEffect(() =>{
+    if(isFocused){
+      getRandomDate()
+    }
+  },[isFocused])
+
   const getRandomDate = async () => {
     setLoading(true);
     const userId = await AsyncStorage.getItem("id");
@@ -194,12 +201,12 @@ function HomeScreen({ navigation }) {
     setLoading(false);
   };
 
+  const [nowTheme, setNowTheme] = useState({});
   //테마 isFocused 변화 시 렌더링
   useEffect(() => {
     getTheme();
   }, [isFocused]);
 
-  const [nowTheme, setNowTheme] = useState({});
 
   const getTheme = async () => {
     let selectedTheme = await AsyncStorage.getItem("theme");
@@ -286,9 +293,9 @@ function HomeScreen({ navigation }) {
               {/* [ Top5 감정분석 차트 View ] */}
               {loading && <ActivityIndicator size="large" color="white" />}
               {pieData.length > 0 ? (
-                <PieTop data={pieData} />
+                <PieTop key={1} data={pieData} />
               ) : (
-                <PieTop data={"0"} />
+                <PieTop key={1} data={"0"} />
               )}
             </View>
 
