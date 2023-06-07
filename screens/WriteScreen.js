@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef , createRef } from "react";
+import React, { useState, useEffect, useRef, createRef } from "react";
 import {
   View,
   Text,
@@ -63,20 +63,19 @@ function WriteScreen({ navigation }) {
   const [nowTheme, setNowTheme] = useState({});
   const [editorColor, setEditorColor] = useState({});
 
-
   // const inputRef = createRef();
 
-  const allClear =()=>{
-    onChangeTitleText("")
-    setContent("")
-    setShowE("")
+  const allClear = () => {
+    onChangeTitleText("");
+    setContent("");
+    setShowE("");
     setYear(new Date().getFullYear());
     setMonth(new Date().getMonth() + 1);
     setDay(new Date().getDate());
-    setImage("")
+    setImage("");
     // inputRef.current.clear();
-  }
-  
+  };
+
   //테마, 에디터 컬러 가져오기
   const getTheme = async () => {
     let selectedTheme = await AsyncStorage.getItem("theme");
@@ -207,14 +206,8 @@ function WriteScreen({ navigation }) {
     hideDatePicker();
   };
 
-
-
-
-
-
-   // 챗봇과 연결2
-   const chatBotRink = async () => {
-
+  // 챗봇과 연결2
+  const chatBotRink = async () => {
     // 특정 문자가 입력되었을 때 작동
     // console.log("챗봇과 연결2");
 
@@ -224,7 +217,7 @@ function WriteScreen({ navigation }) {
     // console.log("text2: " + text);
 
     await axios
-      .post("http://192.168.0.15:3001/flask", null, {
+      .post("http://10.20.39.27:3001/flask", null, {
         params: {
           text: text,
         },
@@ -410,7 +403,6 @@ function WriteScreen({ navigation }) {
             });
             allClear();
             console.log("[1]diaryKey: ", res.data[0]["diarykey"]);
-
           } else {
             Alert.alert("❗");
           }
@@ -427,8 +419,6 @@ function WriteScreen({ navigation }) {
     setLoading(false);
 
     // wrhite input reset And navigation reset'
-
-
   };
 
   const source = cb_emotion.includes("기쁨")
@@ -560,7 +550,9 @@ function WriteScreen({ navigation }) {
             <Image
               source={source}
               style={
-                cb_emotion.includes("평온") || cb_emotion.includes("기쁨")
+                cb_emotion.includes("평온") ||
+                cb_emotion.includes("기쁨") ||
+                cb_emotion.length < 1
                   ? styles.imageSize2
                   : styles.imageSize
               }
@@ -822,8 +814,8 @@ const styles = StyleSheet.create({
   },
 
   imageSize: {
-    width: "160%",
-    height: "160%",
+    width: "200%",
+    height: "200%",
   },
 
   imageSize2: {

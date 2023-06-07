@@ -319,49 +319,51 @@ function CustomDrawerContent(props) {
       </View>
 
       {/* 초기화 기능 */}
-      {id !== null ?
-      <View>
-        <TouchableOpacity
-          style={{ ...styles.drawerItem, backgroundColor: nowTheme.btn }}
-          // label="Close drawer"
-          onPress={() => deleteAll()}
-        >
-          <Ionicons name="refresh" size={24} color="red" />
-          <Text style={styles.drawerItemText}>초기화</Text>
-        </TouchableOpacity>
-      </View> :
-      <View></View>
-}
+      {id !== null ? (
+        <View>
+          <TouchableOpacity
+            style={{ ...styles.drawerItem, backgroundColor: nowTheme.btn }}
+            // label="Close drawer"
+            onPress={() => deleteAll()}
+          >
+            <Ionicons name="refresh" size={24} color="red" />
+            <Text style={styles.drawerItemText}>초기화</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <View></View>
+      )}
       {/* 로그아웃 기능 */}
-      {id !== null ?
-      <View style={{}}>
-        <TouchableOpacity
-          style={{ ...styles.drawerItem, backgroundColor: nowTheme.btn }}
-          // label="Close drawer"
-          onPress={() => logOut()}
-        >
-          <MaterialIcons name="logout" size={24} color="white" />
-          <Text style={styles.drawerItemText}>로그아웃</Text>
-        </TouchableOpacity>
-      </View> :
-      <View></View>
-}
+      {id !== null ? (
+        <View style={{}}>
+          <TouchableOpacity
+            style={{ ...styles.drawerItem, backgroundColor: nowTheme.btn }}
+            // label="Close drawer"
+            onPress={() => logOut()}
+          >
+            <MaterialIcons name="logout" size={24} color="white" />
+            <Text style={styles.drawerItemText}>로그아웃</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <View></View>
+      )}
 
       {/* 계정탈퇴 기능 */}
-      {id !== null ?
-      <View>
-        <TouchableOpacity
-          style={{ ...styles.drawerItem, backgroundColor: nowTheme.btn }}
-          // label="Close drawer"
-          onPress={() => withdrawal()}
-        >
-          <AntDesign name="deleteuser" size={24} color="red" />
-          <Text style={styles.drawerItemText}>계정탈퇴</Text>
-        </TouchableOpacity>
-      </View> :
-      <View></View>
-}
-
+      {id !== null ? (
+        <View>
+          <TouchableOpacity
+            style={{ ...styles.drawerItem, backgroundColor: nowTheme.btn }}
+            // label="Close drawer"
+            onPress={() => withdrawal()}
+          >
+            <AntDesign name="deleteuser" size={24} color="red" />
+            <Text style={styles.drawerItemText}>계정탈퇴</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <View></View>
+      )}
     </DrawerContentScrollView>
   );
 }
@@ -410,7 +412,6 @@ const TabComponent = () => {
         // tabBarLabelPosition: 'beside-icon',
         tabBarLabelPosition: "below-icon",
         headerShown: false,
-        gestureEnabled: true,
       })}
     >
       <Tab.Screen
@@ -427,7 +428,7 @@ const TabComponent = () => {
       <Tab.Screen
         name="write"
         component={WriteScreen}
-        options={{ tabBarHideOnKeyboard: true, gestureEnabled: true }} //키보드 꺼내면 안보이게
+        options={{ tabBarHideOnKeyboard: true }} //키보드 꺼내면 안보이게
       />
       <Tab.Screen name="calender" component={CalenderScreen} />
     </Tab.Navigator>
@@ -496,7 +497,13 @@ function MyDrawer() {
   //테마
   const [nowTheme, setNowTheme] = useState(votanical);
 
+  const navigation = useNavigation();
+  const [id, setId] = useState();
   useEffect(() => {
+    AsyncStorage.getItem("id", (err, result) => {
+      console.log("id: ", result);
+      setId(result);
+    });
     getTheme();
   }, [isFocused]);
 
@@ -518,22 +525,12 @@ function MyDrawer() {
     else if (selectedTheme.includes("winter")) setNowTheme(winter);
   };
 
-  const navigation = useNavigation();
-    const [id, setId] = useState();
-  const isFocused = useIsFocused();
-  useEffect(() => {
-    AsyncStorage.getItem("id", (err, result) => {
-      console.log("id: ", result);
-      setId(result);
-    });
-  }, [isFocused]);
   return (
-
     <Drawer.Navigator
       useLegacyImplementation
       drawerContent={(props) => <CustomDrawerContent {...props} />}
       drawerStyle={{ backgroundColor: nowTheme.btn }}
-      options={{ gestureEnabled: true }}
+      options={{}}
       drawerContentStyle={{
         activeTintColor: "red",
         inactiveTintColor: "red",
@@ -591,7 +588,7 @@ function MyDrawer() {
         name="SoDam"
         options={{
           headerShown: true,
-          gestureEnabled: true,
+
           headerTintColor: nowTheme.btn,
         }}
         component={MyStack}
@@ -603,7 +600,6 @@ function MyDrawer() {
         options={{
           headerTintColor: "black",
           headerShown: false,
-          gestureEnabled: true,
         }}
       />
     </Drawer.Navigator>
@@ -611,7 +607,6 @@ function MyDrawer() {
 }
 
 function MyStack() {
-
   const [id, setId] = useState();
   const isFocused = useIsFocused();
   useEffect(() => {
@@ -620,7 +615,7 @@ function MyStack() {
       setId(result);
     });
   }, [isFocused]);
-  
+
   // useEffect(() => {
   //   getPieData();
   // }, []);
@@ -639,7 +634,6 @@ function MyStack() {
     else if (selectedTheme.includes("winter")) setNowTheme(winter);
   };
 
-
   //스크린 이동할 때 lifecycle 실행
 
   //테마
@@ -657,74 +651,82 @@ function MyStack() {
         options={{
           headerShown: false,
           headerTintColor: "black",
-          gestureEnabled: true,
         }}
       />
 
       {/*드로워 네비게이터 스택에 등록  */}
-      {id !== null ?
-      <Stack.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{
-          headerShown: false,
-          headerTintColor: "black",
-          gestureEnabled: true,
-        }}
-      /> :
-      <Stack.Screen
-      name="Home"
-      component={LoginScreen}
-      options={{
-        headerShown: false,
-        headerTintColor: "black",
-        gestureEnabled: true,
-      }}
-    />
-}
+      {id !== null ? (
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{
+            headerShown: false,
+            headerTintColor: "black",
+          }}
+        />
+      ) : (
+        <Stack.Screen
+          name="Home"
+          component={LoginScreen}
+          options={{
+            headerShown: false,
+            headerTintColor: "black",
+          }}
+        />
+      )}
 
       {/* Home */}
-      {id !== null ?
-      <Stack.Screen
-        name="Calender"
-        component={CalenderScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
-      /> :
-      <Stack.Screen
-      name="Calender"
-      component={LoginScreen}
-      options={{ headerTintColor: "black", headerShown: false }}
-    /> 
-
-      }
-      {id !== null ?
-      <Stack.Screen
-        name="Write"
-        component={WriteScreen}
-        options={{ headerTintColor: "black", headerShown: false,gestureEnabled: true }}
-      /> :
-      <Stack.Screen
-        name="Write"
-        component={LoginScreen}
-        options={{ headerTintColor: "black", headerShown: false,gestureEnabled: true, }}
-
-      />
-}
-      {id !== null ?
-      <Stack.Screen
-        name="Picture"
-        component={PictureScreen}
-        options={{ headerTintColor: "black", headerShown: false ,gestureEnabled: true,}}
-      /> :
-      <Stack.Screen
-        name="Picture"
-        component={LoginScreen}
-        options={{ headerTintColor: "black", headerShown: false,gestureEnabled: true, }}
-      /> 
-      }
-
-
-
+      {id !== null ? (
+        <Stack.Screen
+          name="Calender"
+          component={CalenderScreen}
+          options={{ headerTintColor: "black", headerShown: false }}
+        />
+      ) : (
+        <Stack.Screen
+          name="Calender"
+          component={LoginScreen}
+          options={{ headerTintColor: "black", headerShown: false }}
+        />
+      )}
+      {id !== null ? (
+        <Stack.Screen
+          name="Write"
+          component={WriteScreen}
+          options={{
+            headerTintColor: "black",
+            headerShown: false,
+          }}
+        />
+      ) : (
+        <Stack.Screen
+          name="Write"
+          component={LoginScreen}
+          options={{
+            headerTintColor: "black",
+            headerShown: false,
+          }}
+        />
+      )}
+      {id !== null ? (
+        <Stack.Screen
+          name="Picture"
+          component={PictureScreen}
+          options={{
+            headerTintColor: "black",
+            headerShown: false,
+          }}
+        />
+      ) : (
+        <Stack.Screen
+          name="Picture"
+          component={LoginScreen}
+          options={{
+            headerTintColor: "black",
+            headerShown: false,
+          }}
+        />
+      )}
 
       {/* 기타 스크린 */}
 
@@ -735,7 +737,6 @@ function MyStack() {
           title: "회원가입",
           headerTintColor: "black",
           headerShown: false,
-          gestureEnabled: true,
         }}
       />
       <Stack.Screen
@@ -745,7 +746,6 @@ function MyStack() {
           title: "비밀번호 찾기",
           headerTintColor: "black",
           headerShown: false,
-          gestureEnabled: true,
         }}
       />
       <Stack.Screen
@@ -754,7 +754,6 @@ function MyStack() {
         options={{
           headerTintColor: "black",
           headerShown: false,
-          gestureEnabled: true,
         }}
       />
       <Stack.Screen
@@ -763,7 +762,6 @@ function MyStack() {
         options={{
           headerTintColor: "black",
           headerShown: false,
-          gestureEnabled: true,
         }}
       />
       <Stack.Screen
@@ -772,7 +770,6 @@ function MyStack() {
         options={{
           headerTintColor: "black",
           headerShown: false,
-          gestureEnabled: true,
         }}
       />
       <Stack.Screen
@@ -781,7 +778,6 @@ function MyStack() {
         options={{
           headerTintColor: "black",
           headerShown: false,
-          gestureEnabled: true,
         }}
       />
 
@@ -791,39 +787,51 @@ function MyStack() {
         options={{
           headerTintColor: "black",
           headerShown: false,
-          gestureEnabled: true,
+
           animation: "none",
         }}
       />
 
       {/* {개인 정보} */}
-      {id !== null ?
-      <Stack.Screen
-        name="UserInfo"
-        component={UserInfoScreen}
-        options={{ headerTintColor: "black", headerShown: false,gestureEnabled: true, }}
-      /> :
-      <Stack.Screen
-        name="UserInfo"
-        component={LoginScreen}
-        options={{ headerTintColor: "black", headerShown: false,gestureEnabled: true, }}
+      {id !== null ? (
+        <Stack.Screen
+          name="UserInfo"
+          component={UserInfoScreen}
+          options={{
+            headerTintColor: "black",
+            headerShown: false,
+          }}
+        />
+      ) : (
+        <Stack.Screen
+          name="UserInfo"
+          component={LoginScreen}
+          options={{
+            headerTintColor: "black",
+            headerShown: false,
+          }}
+        />
+      )}
 
-      />
-}
-
-      {id !== null ?
-      <Stack.Screen
-        name="Theme"
-        component={ThemeScreen}
-        options={{ headerTintColor: "black", headerShown: false,gestureEnabled: true, }}
-      /> :
-      <Stack.Screen
-        name="Theme"
-        component={LoginScreen}
-        options={{ headerTintColor: "black", headerShown: false,gestureEnabled: true, }}
-      /> 
-      }
-
+      {id !== null ? (
+        <Stack.Screen
+          name="Theme"
+          component={ThemeScreen}
+          options={{
+            headerTintColor: "black",
+            headerShown: false,
+          }}
+        />
+      ) : (
+        <Stack.Screen
+          name="Theme"
+          component={LoginScreen}
+          options={{
+            headerTintColor: "black",
+            headerShown: false,
+          }}
+        />
+      )}
 
       <Stack.Screen
         name="Detail"
@@ -831,7 +839,6 @@ function MyStack() {
         options={{
           headerTintColor: "black",
           headerShown: false,
-          gestureEnabled: true,
         }}
       />
       <Stack.Screen
@@ -840,7 +847,6 @@ function MyStack() {
         options={{
           headerTintColor: "black",
           headerShown: false,
-          gestureEnabled: true,
         }}
       />
       <Stack.Screen
@@ -849,7 +855,6 @@ function MyStack() {
         options={{
           headerTintColor: "black",
           headerShown: false,
-          gestureEnabled: true,
         }}
       />
       <Stack.Screen
@@ -858,7 +863,6 @@ function MyStack() {
         options={{
           headerTintColor: "black",
           headerShown: false,
-          gestureEnabled: true,
         }}
       />
     </Stack.Navigator>

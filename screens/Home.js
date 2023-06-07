@@ -78,11 +78,11 @@ function HomeScreen({ navigation }) {
   }, [monthData, isFocused]);
 
   //테마 값 가져오기
-  useEffect(() =>{
-    if(isFocused){
-      getRandomDate()
+  useEffect(() => {
+    if (isFocused) {
+      getRandomDate();
     }
-  },[isFocused])
+  }, [isFocused]);
 
   const getRandomDate = async () => {
     setLoading(true);
@@ -130,7 +130,7 @@ function HomeScreen({ navigation }) {
       )
         .then((res) => {
           setPieData(res.data);
-          console.log("vkdl: ",res.data)
+          console.log("vkdl: ", res.data);
         })
         .catch(function (error) {
           Alert.alert("❗error : bad response");
@@ -208,7 +208,6 @@ function HomeScreen({ navigation }) {
     getTheme();
   }, [isFocused]);
 
-
   const getTheme = async () => {
     let selectedTheme = await AsyncStorage.getItem("theme");
 
@@ -284,12 +283,7 @@ function HomeScreen({ navigation }) {
           >
             나의 감정 통계
           </Text>
-          <ScrollView
-            showsHorizontalScrollIndicator={false}
-            horizontal
-            pagingEnabled={true}
-            style={styles.chartScrollView}
-          >
+          <ScrollView pagingEnabled={true} style={styles.chartScrollView}>
             <View style={styles.topChartView}>
               {/* [ Top5 감정분석 차트 View ] */}
               {loading && <ActivityIndicator size="large" color="white" />}
@@ -345,9 +339,9 @@ function HomeScreen({ navigation }) {
               </TouchableOpacity> */}
 
               {ringData.length > 0 ? ( //key값 주라는 주의가 떠서 줬더니 안사라진다.
-                <RingMonth key = {1} data={ringData} />
+                <RingMonth key={1} data={ringData} />
               ) : (
-                <RingMonth key = {1}data={"0"} />
+                <RingMonth key={1} data={"0"} />
               )}
             </View>
           </ScrollView>
