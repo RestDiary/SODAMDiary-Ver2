@@ -28,7 +28,6 @@ import {
 import { not } from "react-native-reanimated";
 import { useIsFocused } from "@react-navigation/native";
 
-
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 function CalenderScreen({ navigation }) {
@@ -142,7 +141,7 @@ function CalenderScreen({ navigation }) {
   //===================================================================================
 
   return (
-    <View
+    <SafeAreaView
       style={{
         ...styles.container,
         backgroundColor: nowTheme.cardBg,
@@ -273,7 +272,7 @@ function CalenderScreen({ navigation }) {
           </View>
         )}
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 

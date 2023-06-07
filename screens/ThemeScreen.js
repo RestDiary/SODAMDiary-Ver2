@@ -35,6 +35,17 @@ function ThemeScreen({ navigation }) {
     require("../assets/images/magazineTheme.png"),
     require("../assets/images/winterTheme.png"),
   ]);
+  const [bgColor, setBgColor] = useState([
+    "#456185",
+    "#008773",
+    "#D9D0C0",
+    "#B28B58",
+    "#1F0630",
+    "#013E98",
+    "#9E9789",
+    "#5B3920",
+    "#F2F3ED",
+  ]);
   const [themeTitle, setThemeTitle] = useState([
     "dark",
     "votanical",
@@ -85,8 +96,10 @@ function ThemeScreen({ navigation }) {
                           {/* 테마 이미지 */}
                           <View style={{ ...styles.cardImageBox }}>
                             <Image
-                              source={themeData[index]}
-                              style={styles.imageSize}
+                              style={{
+                                ...styles.imageSize,
+                                backgroundColor: bgColor[index],
+                              }}
                               resizeMode={"stretch"}
                             ></Image>
                           </View>
@@ -153,11 +166,11 @@ const styles = StyleSheet.create({
   },
 
   card: {
-    width: SCREEN_WIDTH / 1.3,
+    width: SCREEN_WIDTH / 1.5,
     marginTop: 80,
     marginRight: 10,
     marginLeft: 10,
-    marginBottom: 220,
+    marginBottom: 180,
     borderWidth: 3,
     borderRadius: 20,
   },
