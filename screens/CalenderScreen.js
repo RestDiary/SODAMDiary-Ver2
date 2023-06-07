@@ -28,7 +28,6 @@ import {
 import { not } from "react-native-reanimated";
 import { useIsFocused } from "@react-navigation/native";
 
-
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 function CalenderScreen({ navigation }) {
@@ -92,7 +91,7 @@ function CalenderScreen({ navigation }) {
   //로그인 여부 확인 및 일기 불러오기
   useEffect(() => {
     getDiaryData();
-  }, [year]);
+  }, [isFocused,year]);
 
   //데이터 불러오고 난후 캘린더에 쓴날 표시 → 객체 state에 집넣기
   useEffect(() => {
@@ -142,7 +141,7 @@ function CalenderScreen({ navigation }) {
   //===================================================================================
 
   return (
-    <View
+    <SafeAreaView
       style={{
         ...styles.container,
         backgroundColor: nowTheme.cardBg,
@@ -273,7 +272,7 @@ function CalenderScreen({ navigation }) {
           </View>
         )}
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 

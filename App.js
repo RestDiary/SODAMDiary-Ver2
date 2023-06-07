@@ -75,7 +75,7 @@ function CustomDrawerContent(props) {
   //스크린 이동할 때 lifecycle 실행
   const isFocused = useIsFocused();
   //테마
-  const [nowTheme, setNowTheme] = useState(dark);
+  const [nowTheme, setNowTheme] = useState(votanical);
 
   useEffect(() => {
     getTheme();
@@ -222,7 +222,7 @@ function CustomDrawerContent(props) {
       style={{
         ...styles.drawerBox,
         backgroundColor: nowTheme.drawer,
-        borderColor: nowTheme.cardBg,
+        borderColor: nowTheme.btn,
       }}
       {...props}
       contentContainerStyle={{ flex: 1 }}
@@ -368,6 +368,33 @@ function CustomDrawerContent(props) {
 
 //바텀 탭 네비게이터
 const TabComponent = () => {
+  //스크린 이동할 때 lifecycle 실행
+  const isFocused = useIsFocused();
+  //테마
+  const [nowTheme, setNowTheme] = useState(votanical);
+
+  useEffect(() => {
+    getTheme();
+  }, [isFocused]);
+
+  // useEffect(() => {
+  //   getPieData();
+  // }, []);
+
+  const getTheme = async () => {
+    let selectedTheme = await AsyncStorage.getItem("theme");
+
+    if (selectedTheme.includes("dark")) setNowTheme(dark);
+    else if (selectedTheme.includes("votanical")) setNowTheme(votanical);
+    else if (selectedTheme.includes("town")) setNowTheme(town);
+    else if (selectedTheme.includes("classic")) setNowTheme(classic);
+    else if (selectedTheme.includes("purple")) setNowTheme(purple);
+    else if (selectedTheme.includes("block")) setNowTheme(block);
+    else if (selectedTheme.includes("pattern")) setNowTheme(pattern);
+    else if (selectedTheme.includes("magazine")) setNowTheme(magazine);
+    else if (selectedTheme.includes("winter")) setNowTheme(winter);
+  };
+
   const navigation = useNavigation();
   return (
     <Tab.Navigator
@@ -383,19 +410,24 @@ const TabComponent = () => {
         // tabBarLabelPosition: 'beside-icon',
         tabBarLabelPosition: "below-icon",
         headerShown: false,
+        gestureEnabled: true,
       })}
     >
-      <Tab.Screen name="home" component={MyDrawer}   listeners={() =>({
-        tabPress:(e) =>{
-          e.preventDefault();
-          navigation.navigate("Home");
-        }
-      })}/>
+      <Tab.Screen
+        name="home"
+        component={MyDrawer}
+        listeners={() => ({
+          tabPress: (e) => {
+            e.preventDefault();
+            navigation.navigate("Home");
+          },
+        })}
+      />
       {/* option options={{tabBarStyle : {display:'none'}}} 으로 조작하면 특정 네비게이터에서 안보인다. */}
       <Tab.Screen
         name="write"
         component={WriteScreen}
-        options={{ tabBarHideOnKeyboard:true}} //키보드 꺼내면 안보이게
+        options={{ tabBarHideOnKeyboard: true, gestureEnabled: true }} //키보드 꺼내면 안보이게
       />
       <Tab.Screen name="calender" component={CalenderScreen} />
     </Tab.Navigator>
@@ -405,6 +437,33 @@ const TabComponent = () => {
 //바텀탭 아이콘
 const TabBarIcon = (focused, name) => {
   let iconName, iconSize;
+
+  //스크린 이동할 때 lifecycle 실행
+  const isFocused = useIsFocused();
+  //테마
+  const [nowTheme, setNowTheme] = useState(votanical);
+
+  useEffect(() => {
+    getTheme();
+  }, [isFocused]);
+
+  // useEffect(() => {
+  //   getPieData();
+  // }, []);
+
+  const getTheme = async () => {
+    let selectedTheme = await AsyncStorage.getItem("theme");
+
+    if (selectedTheme.includes("dark")) setNowTheme(dark);
+    else if (selectedTheme.includes("votanical")) setNowTheme(votanical);
+    else if (selectedTheme.includes("town")) setNowTheme(town);
+    else if (selectedTheme.includes("classic")) setNowTheme(classic);
+    else if (selectedTheme.includes("purple")) setNowTheme(purple);
+    else if (selectedTheme.includes("block")) setNowTheme(block);
+    else if (selectedTheme.includes("pattern")) setNowTheme(pattern);
+    else if (selectedTheme.includes("magazine")) setNowTheme(magazine);
+    else if (selectedTheme.includes("winter")) setNowTheme(winter);
+  };
 
   if (name == "home") {
     iconName = "home-outline";
@@ -419,7 +478,7 @@ const TabBarIcon = (focused, name) => {
   iconSize = focused ? 22 : 24;
   return (
     <>
-      <Ionicons name={iconName} size={iconSize} />
+      <Ionicons name={iconName} size={iconSize} color={nowTheme.btn} />
       <Image
         style={{
           height: focused ? -2 : -2,
@@ -432,6 +491,33 @@ const TabBarIcon = (focused, name) => {
 
 //드로워 네비게이터 컴포넌트 (바텀탭 네비게이터)
 function MyDrawer() {
+  //스크린 이동할 때 lifecycle 실행
+  const isFocused = useIsFocused();
+  //테마
+  const [nowTheme, setNowTheme] = useState(votanical);
+
+  useEffect(() => {
+    getTheme();
+  }, [isFocused]);
+
+  // useEffect(() => {
+  //   getPieData();
+  // }, []);
+
+  const getTheme = async () => {
+    let selectedTheme = await AsyncStorage.getItem("theme");
+
+    if (selectedTheme.includes("dark")) setNowTheme(dark);
+    else if (selectedTheme.includes("votanical")) setNowTheme(votanical);
+    else if (selectedTheme.includes("town")) setNowTheme(town);
+    else if (selectedTheme.includes("classic")) setNowTheme(classic);
+    else if (selectedTheme.includes("purple")) setNowTheme(purple);
+    else if (selectedTheme.includes("block")) setNowTheme(block);
+    else if (selectedTheme.includes("pattern")) setNowTheme(pattern);
+    else if (selectedTheme.includes("magazine")) setNowTheme(magazine);
+    else if (selectedTheme.includes("winter")) setNowTheme(winter);
+  };
+
   const navigation = useNavigation();
     const [id, setId] = useState();
   const isFocused = useIsFocused();
@@ -446,25 +532,58 @@ function MyDrawer() {
     <Drawer.Navigator
       useLegacyImplementation
       drawerContent={(props) => <CustomDrawerContent {...props} />}
-      drawerStyle={{ backgroundColor: "#C6CBEF" }}
+      drawerStyle={{ backgroundColor: nowTheme.btn }}
       options={{ gestureEnabled: true }}
+      drawerContentStyle={{
+        activeTintColor: "red",
+        inactiveTintColor: "red",
+      }}
       screenOptions={{
         swipeEnabled: false,
         headerShown: true,
         headerStyle: {
-          backgroundColor: "transparent",
-          elevation: 0,
-          shadowOpacity: 0,
+          backgroundColor: nowTheme.bg,
+          shadowColor: "#000",
+          shadowOffset: {
+            width: 2,
+            height: 2,
+          },
+          shadowOpacity: 0.7,
+          shadowRadius: 2.62,
+          elevation: 4,
         },
+
         headerTitle: "",
         headerRight: () => (
           // 오르쪽에 검색, 프로필 보기 네비게이터 만들기
-          <Button
-            title="일기 검색 하기"
+          <TouchableOpacity
             // onPress={(...props) => props.navigation.navigate("diary")}
             onPress={() => navigation.navigate("Diary")}
-            color="black"
-          />
+            style={{
+              backgroundColor: nowTheme.btn,
+              margin: 8,
+              padding: 8,
+              borderRadius: 10,
+              shadowColor: "#000",
+              shadowOffset: {
+                width: 2,
+                height: 2,
+              },
+              shadowOpacity: 0.7,
+              shadowRadius: 2.62,
+              elevation: 4,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: SCREEN_WIDTH / 26,
+                fontWeight: "bold",
+                color: nowTheme.bg,
+              }}
+            >
+              다이어리
+            </Text>
+          </TouchableOpacity>
         ),
       }}
     >
@@ -472,6 +591,8 @@ function MyDrawer() {
         name="SoDam"
         options={{
           headerShown: true,
+          gestureEnabled: true,
+          headerTintColor: nowTheme.btn,
         }}
         component={MyStack}
       />
@@ -479,13 +600,18 @@ function MyDrawer() {
       <Drawer.Screen
         name="Diary"
         component={DiaryScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
+        options={{
+          headerTintColor: "black",
+          headerShown: false,
+          gestureEnabled: true,
+        }}
       />
     </Drawer.Navigator>
   );
 }
 
 function MyStack() {
+
   const [id, setId] = useState();
   const isFocused = useIsFocused();
   useEffect(() => {
@@ -494,13 +620,45 @@ function MyStack() {
       setId(result);
     });
   }, [isFocused]);
+  
+  // useEffect(() => {
+  //   getPieData();
+  // }, []);
+
+  const getTheme = async () => {
+    let selectedTheme = await AsyncStorage.getItem("theme");
+
+    if (selectedTheme.includes("dark")) setNowTheme(dark);
+    else if (selectedTheme.includes("votanical")) setNowTheme(votanical);
+    else if (selectedTheme.includes("town")) setNowTheme(town);
+    else if (selectedTheme.includes("classic")) setNowTheme(classic);
+    else if (selectedTheme.includes("purple")) setNowTheme(purple);
+    else if (selectedTheme.includes("block")) setNowTheme(block);
+    else if (selectedTheme.includes("pattern")) setNowTheme(pattern);
+    else if (selectedTheme.includes("magazine")) setNowTheme(magazine);
+    else if (selectedTheme.includes("winter")) setNowTheme(winter);
+  };
+
+
+  //스크린 이동할 때 lifecycle 실행
+
+  //테마
+  const [nowTheme, setNowTheme] = useState(votanical);
+
+  useEffect(() => {
+    getTheme();
+  }, [isFocused]);
 
   return (
     <Stack.Navigator initialRouteName="Home">
       <Stack.Screen
         name="Login"
         component={LoginScreen}
-        options={{ headerShown: false, headerTintColor: "black" }}
+        options={{
+          headerShown: false,
+          headerTintColor: "black",
+          gestureEnabled: true,
+        }}
       />
 
       {/*드로워 네비게이터 스택에 등록  */}
@@ -543,26 +701,31 @@ function MyStack() {
       <Stack.Screen
         name="Write"
         component={WriteScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
+        options={{ headerTintColor: "black", headerShown: false,gestureEnabled: true }}
       /> :
       <Stack.Screen
         name="Write"
         component={LoginScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
+        options={{ headerTintColor: "black", headerShown: false,gestureEnabled: true, }}
+
       />
 }
       {id !== null ?
       <Stack.Screen
         name="Picture"
         component={PictureScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
+        options={{ headerTintColor: "black", headerShown: false ,gestureEnabled: true,}}
       /> :
       <Stack.Screen
         name="Picture"
         component={LoginScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
+        options={{ headerTintColor: "black", headerShown: false,gestureEnabled: true, }}
       /> 
       }
+
+
+
+
       {/* 기타 스크린 */}
 
       <Stack.Screen
@@ -572,6 +735,7 @@ function MyStack() {
           title: "회원가입",
           headerTintColor: "black",
           headerShown: false,
+          gestureEnabled: true,
         }}
       />
       <Stack.Screen
@@ -581,27 +745,44 @@ function MyStack() {
           title: "비밀번호 찾기",
           headerTintColor: "black",
           headerShown: false,
+          gestureEnabled: true,
         }}
       />
       <Stack.Screen
         name="ChangePw"
         component={ChangePwScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
+        options={{
+          headerTintColor: "black",
+          headerShown: false,
+          gestureEnabled: true,
+        }}
       />
       <Stack.Screen
         name="NewPw"
         component={NewPwScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
+        options={{
+          headerTintColor: "black",
+          headerShown: false,
+          gestureEnabled: true,
+        }}
       />
       <Stack.Screen
         name="ChangeEmail"
         component={ChangeEmailScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
+        options={{
+          headerTintColor: "black",
+          headerShown: false,
+          gestureEnabled: true,
+        }}
       />
       <Stack.Screen
         name="Diagnosis"
         component={DiagnosisScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
+        options={{
+          headerTintColor: "black",
+          headerShown: false,
+          gestureEnabled: true,
+        }}
       />
 
       <Stack.Screen
@@ -610,7 +791,7 @@ function MyStack() {
         options={{
           headerTintColor: "black",
           headerShown: false,
-          gestureEnabled: false,
+          gestureEnabled: true,
           animation: "none",
         }}
       />
@@ -620,12 +801,13 @@ function MyStack() {
       <Stack.Screen
         name="UserInfo"
         component={UserInfoScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
+        options={{ headerTintColor: "black", headerShown: false,gestureEnabled: true, }}
       /> :
       <Stack.Screen
         name="UserInfo"
         component={LoginScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
+        options={{ headerTintColor: "black", headerShown: false,gestureEnabled: true, }}
+
       />
 }
 
@@ -633,34 +815,51 @@ function MyStack() {
       <Stack.Screen
         name="Theme"
         component={ThemeScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
+        options={{ headerTintColor: "black", headerShown: false,gestureEnabled: true, }}
       /> :
       <Stack.Screen
         name="Theme"
         component={LoginScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
+        options={{ headerTintColor: "black", headerShown: false,gestureEnabled: true, }}
       /> 
       }
+
 
       <Stack.Screen
         name="Detail"
         component={DetailScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
+        options={{
+          headerTintColor: "black",
+          headerShown: false,
+          gestureEnabled: true,
+        }}
       />
       <Stack.Screen
         name="Modify"
         component={ModifyScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
+        options={{
+          headerTintColor: "black",
+          headerShown: false,
+          gestureEnabled: true,
+        }}
       />
       <Stack.Screen
         name="Album"
         component={PictureDeailScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
+        options={{
+          headerTintColor: "black",
+          headerShown: false,
+          gestureEnabled: true,
+        }}
       />
       <Stack.Screen
         name="AnalysisDetailScreen"
         component={AnalysisDetailScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
+        options={{
+          headerTintColor: "black",
+          headerShown: false,
+          gestureEnabled: true,
+        }}
       />
     </Stack.Navigator>
   );
@@ -674,7 +873,7 @@ export default function App() {
   const defaultTheme = async () => {
     let theme = await AsyncStorage.getItem("theme");
     if (!theme) {
-      await AsyncStorage.setItem("theme", "dark");
+      await AsyncStorage.setItem("theme", "votanical");
     }
   };
 
