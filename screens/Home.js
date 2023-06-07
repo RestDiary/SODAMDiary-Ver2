@@ -130,6 +130,7 @@ function HomeScreen({ navigation }) {
       )
         .then((res) => {
           setPieData(res.data);
+          console.log("vkdl: ",res.data)
         })
         .catch(function (error) {
           Alert.alert("❗error : bad response");
