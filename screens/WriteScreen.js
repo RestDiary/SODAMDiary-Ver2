@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef , createRef } from "react";
 import {
   View,
   Text,
@@ -55,6 +55,7 @@ function WriteScreen({ navigation }) {
   //스크린 이동할 때 lifecycle 실행
   const isFocused = useIsFocused();
   //테마
+  //테마
   useEffect(() => {
     getTheme();
   }, [isFocused]);
@@ -62,6 +63,20 @@ function WriteScreen({ navigation }) {
   const [nowTheme, setNowTheme] = useState({});
   const [editorColor, setEditorColor] = useState({});
 
+
+  // const inputRef = createRef();
+
+  const allClear =()=>{
+    onChangeTitleText("")
+    setContent("")
+    setShowE("")
+    setYear(new Date().getFullYear());
+    setMonth(new Date().getMonth() + 1);
+    setDay(new Date().getDate());
+    setImage("")
+    // inputRef.current.clear();
+  }
+  
   //테마, 에디터 컬러 가져오기
   const getTheme = async () => {
     let selectedTheme = await AsyncStorage.getItem("theme");
@@ -192,8 +207,14 @@ function WriteScreen({ navigation }) {
     hideDatePicker();
   };
 
-  // 챗봇과 연결2
-  const chatBotRink = async () => {
+
+
+
+
+
+   // 챗봇과 연결2
+   const chatBotRink = async () => {
+
     // 특정 문자가 입력되었을 때 작동
     // console.log("챗봇과 연결2");
 
@@ -203,7 +224,7 @@ function WriteScreen({ navigation }) {
     // console.log("text2: " + text);
 
     await axios
-      .post("http://192.168.1.13:3001/flask", null, {
+      .post("http://192.168.0.15:3001/flask", null, {
         params: {
           text: text,
         },
@@ -353,7 +374,7 @@ function WriteScreen({ navigation }) {
         });
     }
 
-    // console.log("일단 여기까진 옴");
+    console.log("일단 여기까진 옴");
 
     // 서버 데이터 전송
     // setLoading(true);
@@ -362,7 +383,7 @@ function WriteScreen({ navigation }) {
         {
           method: "post",
           url: `${API.WRITE}`,
-          // url: "http://192.168.0.18:3001/write",
+          // url: "http://192.168.0.15:3001/write",
           params: {
             id: id, //****작성자 id
             title: titleText,
@@ -387,7 +408,9 @@ function WriteScreen({ navigation }) {
             navigation.navigate("AnalysisDetailScreen", {
               diaryKey: res.data[0]["diarykey"],
             });
-            console.log("1");
+            allClear();
+            console.log("[1]diaryKey: ", res.data[0]["diarykey"]);
+
           } else {
             Alert.alert("❗");
           }
@@ -402,6 +425,10 @@ function WriteScreen({ navigation }) {
     }
 
     setLoading(false);
+
+    // wrhite input reset And navigation reset'
+
+
   };
 
   const source = cb_emotion.includes("기쁨")
@@ -456,6 +483,7 @@ function WriteScreen({ navigation }) {
             value={titleText}
             returnKeyType="next"
             maxLength={30}
+            // inputRef={inputRef}
           />
         </SafeAreaView>
         <View
