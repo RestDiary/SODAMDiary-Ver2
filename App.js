@@ -99,7 +99,7 @@ function CustomDrawerContent(props) {
     else if (selectedTheme.includes("winter")) setNowTheme(winter);
   };
 
-  const [id, setId] = useState("");
+  const [id, setId] = useState();
   const navigation = useNavigation();
   const [pieData, setPieData] = useState([]);
 
@@ -319,6 +319,7 @@ function CustomDrawerContent(props) {
       </View>
 
       {/* 초기화 기능 */}
+      {id !== null ?
       <View>
         <TouchableOpacity
           style={{ ...styles.drawerItem, backgroundColor: nowTheme.btn }}
@@ -328,9 +329,11 @@ function CustomDrawerContent(props) {
           <Ionicons name="refresh" size={24} color="red" />
           <Text style={styles.drawerItemText}>초기화</Text>
         </TouchableOpacity>
-      </View>
-
+      </View> :
+      <View></View>
+}
       {/* 로그아웃 기능 */}
+      {id !== null ?
       <View style={{}}>
         <TouchableOpacity
           style={{ ...styles.drawerItem, backgroundColor: nowTheme.btn }}
@@ -340,9 +343,12 @@ function CustomDrawerContent(props) {
           <MaterialIcons name="logout" size={24} color="white" />
           <Text style={styles.drawerItemText}>로그아웃</Text>
         </TouchableOpacity>
-      </View>
+      </View> :
+      <View></View>
+}
 
       {/* 계정탈퇴 기능 */}
+      {id !== null ?
       <View>
         <TouchableOpacity
           style={{ ...styles.drawerItem, backgroundColor: nowTheme.btn }}
@@ -352,7 +358,10 @@ function CustomDrawerContent(props) {
           <AntDesign name="deleteuser" size={24} color="red" />
           <Text style={styles.drawerItemText}>계정탈퇴</Text>
         </TouchableOpacity>
-      </View>
+      </View> :
+      <View></View>
+}
+
     </DrawerContentScrollView>
   );
 }
@@ -424,7 +433,16 @@ const TabBarIcon = (focused, name) => {
 //드로워 네비게이터 컴포넌트 (바텀탭 네비게이터)
 function MyDrawer() {
   const navigation = useNavigation();
+    const [id, setId] = useState();
+  const isFocused = useIsFocused();
+  useEffect(() => {
+    AsyncStorage.getItem("id", (err, result) => {
+      console.log("id: ", result);
+      setId(result);
+    });
+  }, [isFocused]);
   return (
+
     <Drawer.Navigator
       useLegacyImplementation
       drawerContent={(props) => <CustomDrawerContent {...props} />}
@@ -468,6 +486,15 @@ function MyDrawer() {
 }
 
 function MyStack() {
+  const [id, setId] = useState();
+  const isFocused = useIsFocused();
+  useEffect(() => {
+    AsyncStorage.getItem("id", (err, result) => {
+      console.log("id: ", result);
+      setId(result);
+    });
+  }, [isFocused]);
+
   return (
     <Stack.Navigator initialRouteName="Home">
       <Stack.Screen
@@ -477,6 +504,7 @@ function MyStack() {
       />
 
       {/*드로워 네비게이터 스택에 등록  */}
+      {id !== null ?
       <Stack.Screen
         name="Home"
         component={HomeScreen}
@@ -485,25 +513,56 @@ function MyStack() {
           headerTintColor: "black",
           gestureEnabled: true,
         }}
-      />
+      /> :
+      <Stack.Screen
+      name="Home"
+      component={LoginScreen}
+      options={{
+        headerShown: false,
+        headerTintColor: "black",
+        gestureEnabled: true,
+      }}
+    />
+}
 
       {/* Home */}
+      {id !== null ?
       <Stack.Screen
         name="Calender"
         component={CalenderScreen}
         options={{ headerTintColor: "black", headerShown: false }}
-      />
+      /> :
+      <Stack.Screen
+      name="Calender"
+      component={LoginScreen}
+      options={{ headerTintColor: "black", headerShown: false }}
+    /> 
+
+      }
+      {id !== null ?
       <Stack.Screen
         name="Write"
         component={WriteScreen}
         options={{ headerTintColor: "black", headerShown: false }}
+      /> :
+      <Stack.Screen
+        name="Write"
+        component={LoginScreen}
+        options={{ headerTintColor: "black", headerShown: false }}
       />
+}
+      {id !== null ?
       <Stack.Screen
         name="Picture"
         component={PictureScreen}
         options={{ headerTintColor: "black", headerShown: false }}
-      />
-
+      /> :
+      <Stack.Screen
+        name="Picture"
+        component={LoginScreen}
+        options={{ headerTintColor: "black", headerShown: false }}
+      /> 
+      }
       {/* 기타 스크린 */}
 
       <Stack.Screen
@@ -556,16 +615,33 @@ function MyStack() {
         }}
       />
 
+      {/* {개인 정보} */}
+      {id !== null ?
       <Stack.Screen
         name="UserInfo"
         component={UserInfoScreen}
         options={{ headerTintColor: "black", headerShown: false }}
+      /> :
+      <Stack.Screen
+        name="UserInfo"
+        component={LoginScreen}
+        options={{ headerTintColor: "black", headerShown: false }}
       />
+}
+
+      {id !== null ?
       <Stack.Screen
         name="Theme"
         component={ThemeScreen}
         options={{ headerTintColor: "black", headerShown: false }}
-      />
+      /> :
+      <Stack.Screen
+        name="Theme"
+        component={LoginScreen}
+        options={{ headerTintColor: "black", headerShown: false }}
+      /> 
+      }
+
       <Stack.Screen
         name="Detail"
         component={DetailScreen}
