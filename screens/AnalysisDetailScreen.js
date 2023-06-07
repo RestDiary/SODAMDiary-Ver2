@@ -316,9 +316,11 @@ function AnalysisDetailScreen(diaryKey2) {
   // 차트 값 설정
   const chartDataSet = () => {
     if (emotionData.second_number === 0) {
+
       setLabels([emotionData.top_emotion]);
       setData([100]);
     } else if (emotionData.third_number === 0) {
+
       let one = emotionData.top_number;
       let two = emotionData.second_number;
 
@@ -330,6 +332,7 @@ function AnalysisDetailScreen(diaryKey2) {
       setLabels([emotionData.top_emotion, emotionData.second_emotion]);
       setData([Math.round(oneData), Math.round(twoData)]);
     } else {
+
       let one = emotionData.top_number;
       let two = emotionData.second_number;
       let three = emotionData.third_number;
@@ -337,6 +340,7 @@ function AnalysisDetailScreen(diaryKey2) {
       let oneData = (one / (one + two + three)) * 100;
       let twoData = (two / (one + two + three)) * 100;
       let threeData = (three / (one + two + three)) * 100;
+
 
       setLabels([
         emotionData.top_emotion,
