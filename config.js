@@ -1,7 +1,8 @@
-const BASE_URL = 'http://Sodamre-env.eba-6bpsyspp.ap-northeast-2.elasticbeanstalk.com:3001';
+const BASE_URL =
+  "http://Sodamre-env.eba-6bpsyspp.ap-northeast-2.elasticbeanstalk.com:3001";
 
 export const API = {
-  LOGIN : `${BASE_URL}/login`,
+  LOGIN: `${BASE_URL}/login`,
   SENTIMENT: `${BASE_URL}/sentiment`,
   UPLOAD: `${BASE_URL}/upload`,
   CHECKNUM: `${BASE_URL}/checkNum`,
@@ -24,4 +25,12 @@ export const API = {
   FLASK: `${BASE_URL}/flask`,
   PWCHECK: `${BASE_URL}/pwCheck`,
   DELETEALL: `${BASE_URL}/deleteAll`,
+  RANDOMDIARY: `${BASE_URL}/randomDiary`,
+  PIETOP_URL: `${BASE_URL}/pieTop`,
+  LINEYEAR_URL: `${BASE_URL}/lineYear`,
+  RINGMONTH_URL: `${BASE_URL}/ringMonth`,
+  DETAILMONTH: `${BASE_URL}/detailMonth`,
+  DETAILWEEK: `${BASE_URL}/detailWeek`,
+  ALBUMCNT: `${BASE_URL}/albumCnt`,
+  MODIFY: `${BASE_URL}/diaryModify`,
 };

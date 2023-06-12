@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   View,
   Text,
@@ -40,6 +40,11 @@ import {
   winter,
 } from "./css/globalStyles";
 import ImageModal from "react-native-image-modal";
+
+import HorizontalBarGraph from "@chartiful/react-native-horizontal-bar-graph";
+import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import { FontAwesome5 } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -142,16 +147,35 @@ function PictureDetailScreen(Album) {
   const [year, setYear] = useState("");
   const [day, setDay] = useState("");
   const [img, setImg] = useState("");
-  const [keyword, setKeyword] = useState("");
-  const [voice, setVoice] = useState("");
+  const [gptText, setGptText] = useState("");
   const [checkImage, setCheckImage] = useState(false);
 
-  const richText = React.useRef();
-  const [Emotions, setEmotions] = useState([]);
+  // 감정분석 키워드, 카운트 데이터
+  const [topEmot, setTopEmot] = useState("");
+  const [secEmot, setSecEmot] = useState("");
+  const [thirdEmot, setThirdEmot] = useState("");
+  const [topNum, setTopNum] = useState("");
+  const [secNum, setSecNum] = useState("");
+  const [thirdNum, setThirdNum] = useState("");
+  const [emotionData, setEmotionData] = useState({});
 
+  const richText = React.useRef();
+
+  //Top3 감정 키워드 각각의 개수
+  const [labels, setLabels] = useState([]);
+  const [datas, setData] = useState([]);
+
+  // 일기데이터 불러오기, 감정데이터 세팅
   useEffect(() => {
     detail();
   }, []);
+
+  // 차트 세팅
+  useEffect(() => {
+    if (emotionData && Object.keys(emotionData).length > 0) {
+      chartDataSet();
+    }
+  }, [emotionData]);
 
   const detail = async () => {
     try {
@@ -159,28 +183,34 @@ function PictureDetailScreen(Album) {
         {
           method: "post",
           url: `${API.DIARYINFO}`,
+          //url: 'http://192.168.0.18:3001/diaryInfo',
           params: {
-            diarykey: Album.route.params.album,
+            diarykey: Album.route.params.Album,
           },
         },
         null
-      )
-        .then((res) => {
-          setTitle(res.data[0]["title"]);
-          setContent(res.data[0]["content"]);
-          setMonth(res.data[0]["month"]);
-          setYear(res.data[0]["year"]);
-          setDay(res.data[0]["day"]);
-          setImg(res.data[0]["img"]);
-          setKeyword(res.data[0]["keyword"]);
-          setVoice(res.data[0]["voice"]);
-          // console.log(res)
-        })
-        .catch(function (error) {
-          console.log(error);
+      ).then((res) => {
+        console.log("헤이: ", res.data);
+        setTitle(res.data[0]["title"]);
+        setContent(res.data[0]["content"]);
+        setMonth(res.data[0]["month"]);
+        setYear(res.data[0]["year"]);
+        setDay(res.data[0]["day"]);
+        setImg(res.data[0]["img"]);
+        setGptText(res.data[0]["cb_sentence"]);
+
+        setEmotionData({
+          top_emotion: res.data[0]["top_emotion"],
+          second_emotion: res.data[0]["second_emotion"],
+          third_emotion: res.data[0]["third_emotion"],
+          top_number: res.data[0]["top_number"],
+          second_number: res.data[0]["second_number"],
+          third_number: res.data[0]["third_number"],
         });
+      });
     } catch (error) {
       console.log(error);
+      return {};
     }
   };
 
@@ -188,114 +218,323 @@ function PictureDetailScreen(Album) {
     setCheckImage(true);
   };
 
-  //키워드 제거
-  const delEmotion = (keyword) => {
-    let temp = [...Emotions];
-    setEmotions(temp.filter((i) => i !== keyword));
-  };
+  //서버 요청 로딩
+  const [loading, setLoading] = useState(false);
+  const [bgColor, setBgcolor] = ["#fdeebb", "#d5f0ff", "#ffd5fd"];
+  const [gdColor, setGdColor] = [
+    ["#ffad06", "#ffcd06", "#ffdd06"],
+    ["#00b1f0", "#00d1f0", "#00e1f0"],
+    ["#f00080", "#f04080", "#f08080"],
+  ];
 
-  //자식에서 부모에게 Audio 데이터 전달
-  const [audio, setAudio] = useState();
-  const [isRecording, setIsRecording] = useState(false);
-  const getAudio = (audio, isRecording) => {
-    setAudio(audio);
-    setIsRecording(isRecording);
-  };
+  // 차트 값 설정
+  const chartDataSet = () => {
+    console.log("emotionData: ", emotionData);
+    // console.log("topNum: ", topNum)
 
-  const richTextHandle = (descriptionText) => {
-    if (descriptionText) {
-      setShowDescError(false);
-      setDescHTML(descriptionText);
+    if (emotionData.second_number === 0) {
+      setLabels([emotionData.top_emotion]);
+      setData([100]);
+    } else if (emotionData.third_number === 0) {
+      let one = emotionData.top_number;
+      let two = emotionData.second_number;
+
+      let oneData = (one / (one + two)) * 100;
+      let twoData = (two / (one + two)) * 100;
+
+      setLabels([emotionData.top_emotion, emotionData.second_emotion]);
+      setData([Math.round(oneData), Math.round(twoData)]);
     } else {
-      setShowDescError(true);
-      setDescHTML("");
+      let one = emotionData.top_number;
+      let two = emotionData.second_number;
+      let three = emotionData.third_number;
+
+      let oneData = (one / (one + two + three)) * 100;
+      let twoData = (two / (one + two + three)) * 100;
+      let threeData = (three / (one + two + three)) * 100;
+
+      setLabels([
+        emotionData.top_emotion,
+        emotionData.second_emotion,
+        emotionData.third_emotion,
+      ]);
+      setData([
+        Math.round(oneData),
+        Math.round(twoData),
+        Math.round(threeData),
+      ]);
     }
   };
 
-  //서버 요청 로딩
-  const [loading, setLoading] = useState(false);
+  // bottom sheet 테스트
+  // ref
+  const sheetRef = useRef(null);
+  // variables
+  const snapPoints = ["10%", "98%"];
 
   return (
     <View style={{ ...styles.container, backgroundColor: nowTheme.cardBg }}>
-      {/* 제목 */}
-      <SafeAreaView
-        style={{
-          ...styles.titleLayout,
-          backgroundColor: nowTheme.btn,
-          borderColor: nowTheme.cardBorder,
-        }}
-      >
-        <Text
-          placeholder="제목:"
-          placeholderTextColor={"#456185"}
-          style={{ ...styles.title, color: nowTheme.font, fontWeight: "bold" }}
-          value={"title"}
-          returnKeyType="next"
-          maxLength={30}
-          editable={false} // 수정누른 경우 true로 state 바꿔야 텍스트 편집가능 함.
+      <View style={styles.topView}>
+        {/* 제목 */}
+        <SafeAreaView
+          style={{
+            ...styles.titleLayout,
+            backgroundColor: nowTheme.btn,
+            borderColor: nowTheme.cardBorder,
+          }}
         >
-          제목: {title}
-        </Text>
-      </SafeAreaView>
+          <Text
+            placeholder="제목:"
+            placeholderTextColor={"#456185"}
+            style={{ ...styles.title, color: nowTheme.bg, fontWeight: "bold" }}
+            value={"title"}
+            returnKeyType="next"
+            maxLength={30}
+            editable={false} // 수정누른 경우 true로 state 바꿔야 텍스트 편집가능 함.
+          >
+            제목: {title}
+          </Text>
+        </SafeAreaView>
 
-      {/* 감정선택 */}
-      <SafeAreaView
-        style={{
-          ...styles.feelingLayout,
-          backgroundColor: nowTheme.btn,
-          borderColor: nowTheme.cardBorder,
-        }}
+        <SafeAreaView
+          style={{
+            ...styles.feelingLayout,
+            backgroundColor: nowTheme.btn,
+            borderColor: nowTheme.cardBorder,
+          }}
+        >
+          {/* 날짜 */}
+          <Text style={{ ...styles.date, color: nowTheme.bg }}>
+            날짜: {year}년 {month}월 {day}일
+          </Text>
+        </SafeAreaView>
+
+        <View
+          style={{
+            ...styles.shadowView,
+          }}
+        ></View>
+      </View>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 0.95, borderColor: nowTheme.cardBorder }}
       >
-        {/* 날짜 */}
-        <Text style={{ ...styles.date, color: nowTheme.font }}>
-          날짜: {year}년 {month}월 {day}일
-        </Text>
-      </SafeAreaView>
+        <SafeAreaView>
+          <ScrollView>
+            {/* {이미지 보이는 곳} */}
+            <Pressable onPress={check}>
+              {img && (
+                <TouchableOpacity
+                  onPress={() => {
+                    setCheckImage(true);
+                  }}
+                >
+                  <ImageModal
+                    swipeToDismiss={false}
+                    resizeMode="stretch"
+                    style={{
+                      marginLeft: 10,
+                      marginTop: 16,
+                      width: SCREEN_WIDTH / 1.5,
+                      height: SCREEN_WIDTH / 1.5,
+                      borderWidth: 1,
+                      borderColor: nowTheme.font,
+                      borderRadius: 20,
+                    }}
+                    source={{
+                      uri: img,
+                    }}
+                  />
+                  {/* <Image source={{ uri: imageUri }} style={styles.asd} /> */}
+                </TouchableOpacity>
+              )}
+            </Pressable>
 
-      {/*--------------------- 에디터 --------------------- */}
-      {editorColor.backgroundColor && (
-        <>
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            style={{ flex: 0.95, borderColor: nowTheme.cardBorder }}
+            <Text
+              style={{
+                marginLeft: 10,
+                marginTop: 16,
+                fontSize: 17,
+                color: nowTheme.font,
+                fontWeight: "bold",
+              }}
+            >
+              {content}
+            </Text>
+          </ScrollView>
+        </SafeAreaView>
+
+        {/* bottom sheet 테스트 */}
+
+        <BottomSheet
+          ref={sheetRef} // bottomSheet 참조
+          snapPoints={snapPoints} // 슬라이드 올릴 시, 보여주는 화면 %
+          enablePanDownToClose={false} // 슬라이드 올리고 다시 닫으면 사리지게 하는 기능
+          style={{
+            shadowColor: "#000",
+            shadowOffset: {
+              width: 0,
+              height: -2,
+            },
+            shadowOpacity: 0.7,
+            shadowRadius: 2.62,
+            elevation: 4,
+          }}
+        >
+          <BottomSheetView
+            style={{
+              ...styles.bottomSheetView,
+            }}
           >
             <SafeAreaView>
-              <ScrollView>
-                {/* {이미지 보이는 곳} */}
-                <Pressable onPress={check}>
-                  {img && (
-                    <TouchableOpacity
-                      onPress={() => {
-                        setCheckImage(true);
+              <ScrollView pagingEnabled={true}>
+                <View>
+                  {/* 차트 제목용 텍스트 */}
+                  <View style={styles.chartTitle}>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-around",
+                        alignItems: "center",
+                        width: SCREEN_WIDTH,
+                        marginHorizontal: 16,
                       }}
                     >
-                      <ImageModal
-                        swipeToDismiss={false}
-                        resizeMode="contain"
-                        imageBackgroundColor={nowTheme.cardBg}
+                      <View
                         style={{
-                          marginLeft: 10,
-                          marginTop: 16,
-                          width: SCREEN_WIDTH / 1.5,
-                          height: SCREEN_WIDTH / 1.5,
-                          borderWidth: 1,
-                          borderColor: nowTheme.cardBorder,
-                          borderRadius: 20,
+                          padding: 4,
+                          backgroundColor: "#404040",
+                          borderRadius: 100,
                         }}
-                        source={{
-                          uri: img,
+                      ></View>
+                      <View
+                        style={{
+                          padding: 4,
+                          backgroundColor: "#404040",
+                          borderRadius: 100,
                         }}
-                      />
-                      {/* <Image source={{ uri: imageUri }} style={styles.asd} /> */}
-                    </TouchableOpacity>
-                  )}
-                </Pressable>
-                <Text style={{fontSize:20, color:"white", fontWeight:"bold"}}>{content}</Text>
+                      ></View>
+                    </View>
+
+                    <Text style={styles.chartTitleText}>챗봇분석 결과</Text>
+                  </View>
+                  <View style={styles.barContents}>
+                    <View
+                      style={{
+                        ...styles.sodamView,
+                        backgroundColor: nowTheme.btn,
+                      }}
+                    >
+                      <View style={{ ...styles.sodamTitleView }}>
+                        <Text
+                          style={{ ...styles.sodamText, color: nowTheme.bg }}
+                        >
+                          소담이가 하고 싶은 말이 있대요!
+                        </Text>
+                      </View>
+
+                      <View style={{ ...styles.chatBotImageView }}>
+                        <Image
+                          source={require("../assets/images/neutral.png")}
+                          style={styles.imageSize}
+                          resizeMode={"contain"}
+                        ></Image>
+                      </View>
+                    </View>
+                    <View
+                      style={{
+                        ...styles.sodamChatView,
+                      }}
+                    >
+                      <Text style={{ ...styles.sodamChat }}>{gptText}</Text>
+                    </View>
+                  </View>
+                </View>
+                {/* 차트 그래프 뷰 */}
+                <View style={styles.barContents}>
+                  {/* 기쁨 */}
+                  <View style={styles.barGraph}>
+                    {labels.map((label, index) => {
+                      return (
+                        <View key={index} style={styles.emotionView}>
+                          {index === 0 ? (
+                            <View
+                              style={{
+                                ...styles.emtionImage,
+                                backgroundColor: "#fdeebb",
+                              }}
+                            ></View>
+                          ) : index === 1 ? (
+                            <View
+                              style={{
+                                ...styles.emtionImage,
+                                backgroundColor: "#d5f0ff",
+                              }}
+                            ></View>
+                          ) : (
+                            <View
+                              style={{
+                                ...styles.emtionImage,
+                                backgroundColor: "#ffd5fd",
+                              }}
+                            ></View>
+                          )}
+                          <View style={{ ...styles.columnView }}>
+                            <View style={{ ...styles.emotionDic }}>
+                              <Text style={{ ...styles.emotionKey }}>
+                                {label}
+                              </Text>
+                              <Text style={{ ...styles.emotionValue }}>
+                                {datas[index]}%
+                              </Text>
+                            </View>
+
+                            <View style={{ ...styles.emotionBarView }}>
+                              <View style={{ ...styles.emotionBarKey }}>
+                                {index === 0 ? (
+                                  <LinearGradient
+                                    style={{
+                                      ...styles.emotionBarValue,
+                                      width: `${datas[index]}%`, // 이 값이 유동적이여야 함.
+                                    }}
+                                    start={{ x: 0, y: 0 }}
+                                    end={{ x: 1, y: 0 }}
+                                    colors={["#ffad06", "#ffcd06", "#ffdd06"]}
+                                  ></LinearGradient>
+                                ) : index === 1 ? (
+                                  <LinearGradient
+                                    style={{
+                                      ...styles.emotionBarValue,
+                                      width: `${datas[index]}%`, // 이 값이 유동적이여야 함.
+                                    }}
+                                    start={{ x: 0, y: 0 }}
+                                    end={{ x: 1, y: 0 }}
+                                    colors={["#00b1f0", "#00d1f0", "#00e1f0"]}
+                                  ></LinearGradient>
+                                ) : (
+                                  <LinearGradient
+                                    style={{
+                                      ...styles.emotionBarValue,
+                                      width: `${datas[index]}%`, // 이 값이 유동적이여야 함.
+                                    }}
+                                    start={{ x: 0, y: 0 }}
+                                    end={{ x: 1, y: 0 }}
+                                    colors={["#f00080", "#f04080", "#f08080"]}
+                                  ></LinearGradient>
+                                )}
+                              </View>
+                            </View>
+                          </View>
+                        </View>
+                      );
+                    })}
+                  </View>
+                </View>
               </ScrollView>
             </SafeAreaView>
-          </KeyboardAvoidingView>
-        </>
-      )}
+          </BottomSheetView>
+        </BottomSheet>
+      </KeyboardAvoidingView>
     </View>
   );
 }
@@ -326,7 +565,7 @@ const styles = StyleSheet.create({
     width: "25%",
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#fff",
+    shadowColor: "#000",
     shadowOffset: {
       width: 2,
       height: 2,
@@ -368,13 +607,14 @@ const styles = StyleSheet.create({
   title: {
     color: "white",
     fontSize: SCREEN_HEIGHT / 36,
-    height: SCREEN_HEIGHT / 20,
+    height: SCREEN_HEIGHT / 28,
     margin: 10,
   },
 
   titleLayout: {
     borderColor: "white",
-    justifyContent: "center",
+    justifyContent: "space-between",
+    flexDirection: "row",
   },
 
   extendLayout: {
@@ -383,7 +623,6 @@ const styles = StyleSheet.create({
 
   feelingLayout: {
     flexDirection: "row",
-
     borderColor: "white",
   },
 
@@ -426,4 +665,165 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+
+  bottomSheetView: {
+    flex: 1,
+    alignItems: "center",
+  },
+
+  chartTitle: {
+    flex: 0.1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "white",
+    width: SCREEN_WIDTH,
+    marginBottom: 16,
+  },
+
+  chartTitleText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#404040",
+  },
+  barContents: {
+    flex: 1,
+    backgroundColor: "red",
+    borderRadius: 20,
+    backgroundColor: "#F9F9F9",
+    borderColor: "#ccc",
+    borderWidth: 1,
+    maxWidth: SCREEN_WIDTH,
+    margin: 8,
+  },
+
+  barGraph: {
+    flex: 0.9,
+    alignItems: "center",
+    margin: 18,
+  },
+
+  shadowView: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 2,
+      height: 2,
+    },
+    shadowOpacity: 0.7,
+    shadowRadius: 2.62,
+    elevation: 4,
+  },
+
+  topView: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 2,
+      height: 2,
+    },
+    shadowOpacity: 0.7,
+    shadowRadius: 2.62,
+    elevation: 4,
+  },
+
+  emotionView: {
+    alignItems: "center",
+    backgroundColor: "white",
+    flexDirection: "row",
+    borderRadius: 10,
+    width: SCREEN_WIDTH / 1.2,
+    height: SCREEN_HEIGHT / 13,
+    padding: 8,
+    margin: 6,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 2,
+      height: 2,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 2.62,
+    elevation: 4,
+  },
+
+  emtionImage: {
+    padding: 12,
+    borderRadius: 100,
+  },
+
+  columnView: {
+    flex: 1,
+    margin: 4,
+  },
+
+  emotionDic: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    flex: 0.6,
+  },
+
+  emotionKey: {
+    fontWeight: "400",
+  },
+
+  emotionValue: {
+    color: "#a6a6a6",
+  },
+
+  emotionBarView: {
+    flex: 0.4,
+    borderRadius: 100,
+  },
+
+  emotionBarKey: {
+    flex: 0.6,
+    borderRadius: 100,
+    backgroundColor: "#F2F2F2",
+  },
+
+  emotionBarValue: {
+    height: "100%",
+    borderRadius: 100,
+  },
+  chatBotImageView: {
+    marginTop: 12,
+    marginRight: 12,
+    marginLeft: 12,
+    marginBottom: 12,
+    flex: 0.5,
+    justifyContent: "center",
+    height: SCREEN_HEIGHT / 12,
+    maxHeight: SCREEN_HEIGHT / 12,
+  },
+  imageSize: {
+    width: "85%",
+    height: "85%",
+  },
+
+  sodamView: {
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    borderBottomWidth: 1,
+    borderColor: "#c6c6c6",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-evenly",
+    maxHeight: SCREEN_HEIGHT / 12,
+  },
+
+  sodamTitleView: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: 8,
+    maxHeight: SCREEN_HEIGHT / 12,
+  },
+  sodamText: {
+    fontSize: SCREEN_HEIGHT / 46,
+    fontWeight: "bold",
+  },
+
+  sodamChatView: {
+    alignItems: "center",
+    justifyContent: "flex-start",
+    margin: 16,
+  },
+
+  sodamChat: { fontSize: SCREEN_HEIGHT / 50, fontWeight: "600" },
 });

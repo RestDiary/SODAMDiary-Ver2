@@ -9,19 +9,22 @@ import {
   Dimensions,
   TextInput,
   TouchableOpacity,
-  KeyboardAvoidingView,
+  //KeyboardAvoidingView,
   RichText,
   Alert,
   Image,
+  Keyboard,
 } from "react-native";
 import {
   actions,
   RichEditor,
   RichToolbar,
 } from "react-native-pell-rich-editor";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { Chip } from "react-native-paper";
+import Modal from "react-native-modal";
 import { API } from "../config.js";
 import * as ImagePicker from "expo-image-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -40,6 +43,10 @@ import {
   winter,
 } from "./css/globalStyles";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { FontAwesome } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
+import { Entypo } from "@expo/vector-icons";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -153,16 +160,18 @@ function DetailScreen(card) {
   const [id, setId] = useState("");
   const navigation = useNavigation();
 
-// 특정 행동 시 반응(글 내용)
-const [content, setContent] = useState(card.route.params.card.route.params.card.content);
-let user_Q = [""];
-// let cb_answer = [];
-const [cb_answer, setCb_answer] = useState([]);
-const [cb_emotion, setCb_emotion] = useState([]);
-const [showA, setShowA] = useState("안녕하세요~");
-const [showE, setShowE] = useState("");
-const [use_content3, setUse_content3] = useState("") // ., ?, !...등을 썼는지 확인하는 용도
-// let cb_emotion = [];
+  // 특정 행동 시 반응(글 내용)
+  const [content, setContent] = useState(
+    card.route.params.card.route.params.card.content
+  );
+  let user_Q = [""];
+  // let cb_answer = [];
+  const [cb_answer, setCb_answer] = useState([]);
+  const [cb_emotion, setCb_emotion] = useState([]);
+  const [showA, setShowA] = useState("안녕하세요~");
+  const [showE, setShowE] = useState("");
+  const [use_content3, setUse_content3] = useState(""); // ., ?, !...등을 썼는지 확인하는 용도
+  // let cb_emotion = [];
 
   //이미지 업로드용
   const [image, setImage] = useState(
@@ -204,44 +213,53 @@ const [use_content3, setUse_content3] = useState("") // ., ?, !...등을 썼는�
     getDiaryData();
   }, []);
 
-   // 챗봇과 연결2
-   const chatBotRink = async () => {
+  // 챗봇과 연결2
+  const chatBotRink = async () => {
     // 특정 문자가 입력되었을 때 작동
-    console.log("챗봇과 연결2");
+    // console.log("챗봇과 연결2");
 
     let message = use_content3.split(/[.!?~]/);
     let text = message[message.length - 1];
-    console.log("text: " + message);
-    console.log("text2: " + text);
+    // console.log("text: " + message);
+    // console.log("text2: " + text);
 
     await axios
-    .post('http://192.168.0.18:3001/flask', null, {
-      params: {
-        text: text
-      },
-    })
-    .then((res)=> {
-      console.log("결과",res.data.sentence);
-      setCb_answer(cb_answer + "##" + res.data.sentence);
-      setCb_emotion(cb_emotion + "##" + res.data.emotion);
-      setShowA(res.data.sentence);
-      setShowE(res.data.emotion);
-      setUse_content3("");
-    })
-  }
-
+      .post("http://192.168.1.13:3001/flask", null, {
+        params: {
+          text: text,
+        },
+      })
+      .then((res) => {
+        console.log("res: ", res.data.sentence);
+        if (res.data.sentence === ".") {
+          setShowA("끄덕끄덕, 얘기를 잘 듣고 있어요!");
+        } else {
+          setShowA(res.data.sentence);
+        }
+        // console.log("결과", res.data.sentence);
+        setCb_emotion(cb_emotion + "##" + res.data.emotion);
+        setShowE(res.data.emotion);
+        setUse_content3("");
+      });
+  };
 
   useEffect(() => {
-    console.log("content: ",content);
+    console.log("content: ", content);
     setUse_content3(content);
     let use_content4 = content.charAt(content.length - 1);
-    console.log("use_content3: ",use_content3);
-    console.log("use_content4: ",use_content4);
+    console.log("use_content3: ", use_content3);
+    console.log("use_content4: ", use_content4);
 
-    if(use_content4 === "." || use_content4 === "!" || use_content4 === "?" || use_content4 === "\n" || use_content4 === "?" || use_content4 === "~") {
+    if (
+      use_content4 === "." ||
+      use_content4 === "!" ||
+      use_content4 === "?" ||
+      use_content4 === "\n" ||
+      use_content4 === "?" ||
+      use_content4 === "~"
+    ) {
       console.log("들어왔어!");
-      chatBotRink()
-      
+      chatBotRink();
     }
   }, [content]);
 
@@ -315,17 +333,6 @@ const [use_content3, setUse_content3] = useState("") // ., ?, !...등을 썼는�
     navigation.navigate(screen);
   };
 
-  //Modal
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible);
-  };
-
-  //키워드 제거
-  const delEmotion = (keyword) => {
-    let temp = [...Emotions];
-    setEmotions(temp.filter((i) => i !== keyword));
-  };
-
   //이미지 제거
   const delImg = () => {
     Alert.alert(
@@ -359,16 +366,20 @@ const [use_content3, setUse_content3] = useState("") // ., ?, !...등을 썼는�
   //서버 요청 로딩
   const [loading, setLoading] = useState(false);
 
+  // 로딩 페이지
+  const [modalLoading, setModalLoading] = useState(false);
+
   //저장 버튼
   const submitContentHandle = async () => {
+    setModalLoading(true);
+    Keyboard.dismiss();
+
     if (titleText.length <= 0) {
-      setShowDescError(true);
       Alert.alert("제목을 입력해 주세요.");
       return;
     }
 
     if (content.length <= 0) {
-      setShowDescError(true);
       Alert.alert("내용을 입력해 주세요.");
       return;
     }
@@ -400,8 +411,8 @@ const [use_content3, setUse_content3] = useState("") // ., ?, !...등을 썼는�
       await axios(
         {
           method: "post",
-          url: "http://people-env.eba-35362bbh.ap-northeast-2.elasticbeanstalk.com:3001/diaryModify",
-          // url: 'http://192.168.1.13:3001/diaryModify',
+          // url: `${API.MODIFY}`,
+          url: "http://Sodamre-env.eba-6bpsyspp.ap-northeast-2.elasticbeanstalk.com:3001/diaryModify",
           params: {
             diarykey: card.route.params.card.route.params.card.diarykey,
             title: titleText,
@@ -411,19 +422,27 @@ const [use_content3, setUse_content3] = useState("") // ., ?, !...등을 썼는�
             day: day,
             img: url, //****이미지 추가
             cb_sentence: cb_answer,
-            cb_emotion: cb_emotion
+            cb_emotion: cb_emotion,
           },
         },
         null
       )
         .then((res) => {
-          console.log("성공", res.data);
-          Alert.alert("일기가 수정되었어요.");
-          moveNavigate("Diary");
+          if (res.data === "3") {
+            let diarykey = card.route.params.card.route.params.card.diarykey;
+            setModalLoading(false);
+            navigation.navigate("AnalysisDetailScreen", {
+              diaryKey: diarykey,
+            });
+            console.log("1");
+          } else {
+            Alert.alert("❗");
+          }
         })
         .catch(function (error) {
-          console.log(error.response.data);
+          // console.log(error.response.data);
           Alert.alert("❗error : bad response");
+          console.log("에러확인: ", error);
         });
     } catch (error) {
       console.log(error.response.data);
@@ -432,107 +451,223 @@ const [use_content3, setUse_content3] = useState("") // ., ?, !...등을 썼는�
     setLoading(false);
   };
 
+  const source = cb_emotion.includes("기쁨")
+    ? require("../assets/images/happy.png")
+    : cb_emotion.includes("슬픔")
+    ? require("../assets/images/sad.png")
+    : cb_emotion.includes("당황") || cb_emotion.includes("불안")
+    ? require("../assets/images/panic.png")
+    : cb_emotion.includes("상처")
+    ? require("../assets/images/hurt.png")
+    : cb_emotion.includes("화남")
+    ? require("../assets/images/angry.png")
+    : cb_emotion.includes("평온")
+    ? require("../assets/images/neutral.png")
+    : require("../assets/images/neutral.png");
+
   return (
     <View style={{ ...styles.container, backgroundColor: nowTheme.cardBg }}>
-      {/* 제목 */}
-      <SafeAreaView style={styles.titleLayout}>
-        <TextInput
-          placeholder="제목:"
-          placeholderTextColor={"#456185"}
-          style={{ ...styles.title, color: nowTheme.font, fontWeight: "bold" }}
-          onChangeText={onChangeTitleText}
-          value={titleText}
-          returnKeyType="next"
-          maxLength={30}
-          editable={true} // 수정누른 경우 true로 state 바꿔야 텍스트 편집가능 함.
-        />
-      </SafeAreaView>
+      {/* 로딩 모달 */}
+      <Modal
+        style={{ justifyContent: "center", alignItems: "center" }}
+        visible={modalLoading}
+        animationType="fade"
+        transparent={true}
+      >
+        <View style={{ ...styles.gifView, flex: 1 }}>
+          <Image
+            style={{ ...styles.gif }}
+            source={require("../assets/images/loading.gif")}
+          />
+        </View>
+      </Modal>
 
-      {/* 날짜 */}
-      <SafeAreaView style={styles.extendLayout}>
-        <View style={{ ...styles.dateLayout, backgroundColor: nowTheme.btn }}>
+      <View style={styles.topView}>
+        {/* 제목 */}
+        <SafeAreaView
+          style={{
+            ...styles.titleLayout,
+            backgroundColor: nowTheme.btn,
+            borderColor: nowTheme.cardBorder,
+          }}
+        >
+          <TextInput
+            placeholder="제목"
+            placeholderTextColor={"#456185"}
+            style={{
+              ...styles.title,
+              color: nowTheme.bg,
+              fontWeight: "bold",
+            }}
+            onChangeText={onChangeTitleText}
+            value={titleText}
+            returnKeyType="next"
+            maxLength={30}
+            editable={true}
+          />
+        </SafeAreaView>
+        <View
+          style={{
+            ...styles.feelingLayout,
+            backgroundColor: nowTheme.btn,
+            borderColor: nowTheme.cardBorder,
+          }}
+        >
+          {/* 날짜 */}
           <TouchableOpacity onPress={showDatePicker}>
-            <Text style={{ ...styles.date, color: nowTheme.font }}>
+            <Text
+              style={{
+                ...styles.date,
+                color: nowTheme.bg,
+                fontWeight: "bold",
+              }}
+            >
               {year + "년 " + month + "월 " + day + "일"}
             </Text>
           </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-      <DateTimePickerModal
-        isVisible={isDatePickerVisible}
-        mode="date"
-        onConfirm={handleConfirm}
-        onCancel={hideDatePicker}
-        date={date}
-      />
-
-      {/* 챗봇 대답 */}
-      <SafeAreaView style={styles.titleLayout}>
-        <Text
-          style={{ margin: 8, color: "#fff", fontWeight: "bold", fontSize: 16 }}
-        >
-          {showA}
-        </Text>
-      </SafeAreaView>
-
-      {/* 감정 보여주기 */}
-  <SafeAreaView style={styles.titleLayout}>
-        <Text style={{margin:8,color:"#fff", fontWeight:"bold", fontSize:16}}>{showE}</Text>
-      </SafeAreaView>
-
-      {/* 글 작성 */}
-      <SafeAreaView style={styles.titleLayout}>
-        <TextInput
-          autoFocus
-          placeholder="내용"
-          placeholderTextColor={"#456185"}
-          style={{ ...styles.title, color: nowTheme.font, fontWeight: "bold" }}
-          onChangeText={setContent}
-          value={content}
-          returnKeyType="next"
-        />
-      </SafeAreaView>
-
-      <>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={{ flex: 0.9 }}
-        >
-          <SafeAreaView>
-            <ScrollView>
-              {/* {이미지 보이는 곳} */}
-              <Pressable onLongPress={delImg}>
-                {image && (
-                  <Image
-                    source={{ uri: image }}
-                    style={{
-                      width: SCREEN_WIDTH / 1.5,
-                      height: SCREEN_WIDTH / 1.5,
-                      borderWidth: 1,
-                      borderColor: nowTheme.cardBorder,
-                      margin: 10,
-                      borderRadius: 20,
-                    }}
-                  />
-                )}
-              </Pressable>
-            </ScrollView>
-          </SafeAreaView>
-        </KeyboardAvoidingView>
-
-        {/* 수정 버튼 */}
-        <View style={styles.saveButtonView}>
-          <TouchableOpacity
+          <View
             style={{
-              ...styles.saveButtonStyle,
-              backgroundColor: nowTheme.btn,
+              flexDirection: "row",
+              position: "absolute",
+              right: 0,
             }}
-            onPress={submitContentHandle}
           >
-            <Text style={styles.textButtonStyle}>수정</Text>
-          </TouchableOpacity>
+            {/* 키보드 내리기 버튼 */}
+            <TouchableOpacity
+              style={{ padding: 10 }}
+              onPress={() => Keyboard.dismiss()}
+            >
+              <MaterialIcons
+                name="keyboard-hide"
+                size={24}
+                color={nowTheme.bg}
+              />
+            </TouchableOpacity>
+            {/* 갤러리 버튼 */}
+            <TouchableOpacity style={{ padding: 10 }} onPress={pickImage}>
+              <MaterialCommunityIcons
+                name="image-plus"
+                size={24}
+                color={nowTheme.bg}
+              />
+            </TouchableOpacity>
+            {/* 저장 버튼 */}
+            <TouchableOpacity
+              style={{ padding: 10 }}
+              onPress={submitContentHandle}
+            >
+              <Entypo name="save" size={24} color={nowTheme.bg} />
+            </TouchableOpacity>
+          </View>
         </View>
-      </>
+
+        <DateTimePickerModal
+          isVisible={isDatePickerVisible}
+          mode="date"
+          onConfirm={handleConfirm}
+          onCancel={hideDatePicker}
+          date={date}
+        />
+        {/* 챗봇 전체 뷰 */}
+        <View
+          style={{
+            ...styles.chatBotView,
+            backgroundColor: nowTheme.btn,
+          }}
+        >
+          {/* 챗봇 이미지 뷰 */}
+          <View style={{ ...styles.chatBotImageView }}>
+            <Image
+              source={source}
+              style={
+                cb_emotion.includes("평온") || cb_emotion.includes("기쁨")
+                  ? styles.imageSize2
+                  : styles.imageSize
+              }
+              resizeMode={"contain"}
+            ></Image>
+          </View>
+          {/* 챗봇 내용 뷰 */}
+          <View
+            style={{
+              ...styles.chatBotContents,
+              borderColor: nowTheme.btn,
+              backgroundColor: nowTheme.bg,
+              justifyContent: "center",
+            }}
+          >
+            {/* 챗봇 텍스트 */}
+            {showE !== "" ? (
+              <Text
+                style={{
+                  margin: 8,
+                  color: nowTheme.font,
+                  fontWeight: "bold",
+                  fontSize: 16,
+                  alignSelf: "center",
+                }}
+              >
+                {showA} ( {showE} )
+              </Text>
+            ) : (
+              <Text
+                style={{
+                  margin: 8,
+                  color: nowTheme.font,
+                  fontWeight: "bold",
+                  fontSize: 16,
+                  alignSelf: "center",
+                }}
+              >
+                만나서 반가워요! 저는 소담이라고 해요!
+              </Text>
+            )}
+          </View>
+        </View>
+      </View>
+
+      {/* 스크롤 뷰 시작      => KeyboardAvoidingView 사용했었는데  KeyboardAwareScrollView로 교체*/}
+      <KeyboardAwareScrollView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{ flexGrow: 1 }}
+        extraScrollHeight={100} // 키보드 아래에 추가적인 여백 설정
+        enableOnAndroid={true} // 안드로이드에서도 동작하도록 설정
+      >
+        <ScrollView>
+          {/* {이미지 보이는 곳} */}
+          <Pressable onLongPress={delImg}>
+            {image && (
+              <Image
+                source={{ uri: image }}
+                style={{
+                  width: SCREEN_WIDTH / 1.5,
+                  height: SCREEN_WIDTH / 1.5,
+                  borderWidth: 1,
+                  borderColor: nowTheme.font,
+                  margin: 8,
+                  borderRadius: 20,
+                }}
+              />
+            )}
+          </Pressable>
+
+          {/* 글 작성 */}
+          <TextInput
+            placeholder="내용"
+            placeholderTextColor={"#456185"}
+            style={{
+              ...styles.title,
+              color: nowTheme.font,
+              fontWeight: "bold",
+            }}
+            onChangeText={setContent}
+            value={content}
+            returnKeyType="next"
+            multiline={true}
+          />
+        </ScrollView>
+      </KeyboardAwareScrollView>
     </View>
   );
 }
@@ -560,7 +695,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#456185",
     borderRadius: 10,
     padding: 10,
-    width: "25%",
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",
@@ -571,11 +705,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
     elevation: 4,
-    fontSize: 20,
+    marginRight: 8,
   },
 
   textButtonStyle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "600",
     color: "#fff",
   },
@@ -601,17 +735,26 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
+  topView: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 2,
+      height: 2,
+    },
+    shadowOpacity: 0.7,
+    shadowRadius: 2.62,
+    elevation: 4,
+  },
+
   title: {
     color: "white",
-    fontSize: SCREEN_HEIGHT / 35,
-    height: SCREEN_HEIGHT / 16,
-    marginLeft: 10,
+    fontSize: SCREEN_HEIGHT / 43,
+    margin: 10,
   },
 
   titleLayout: {
-    marginTop: 10,
-    marginBottom: 30,
-    height: SCREEN_HEIGHT / 20,
+    borderColor: "white",
+    justifyContent: "center",
   },
 
   extendLayout: {
@@ -619,17 +762,13 @@ const styles = StyleSheet.create({
   },
 
   feelingLayout: {
-    marginTop: 10,
-    height: SCREEN_HEIGHT / 20,
-    width: SCREEN_WIDTH / 2,
     flexDirection: "row",
+    borderColor: "white",
   },
 
   feeling: {
     width: SCREEN_WIDTH / 3,
-    height: SCREEN_HEIGHT / 50,
     color: "#456185",
-    padding: 10,
   },
 
   feelingBtnBox: {
@@ -643,15 +782,15 @@ const styles = StyleSheet.create({
   },
 
   date: {
-    width: SCREEN_WIDTH / 3,
-    color: "#456185",
+    color: "white",
     padding: 10,
   },
 
   dateLayout: {
     height: SCREEN_HEIGHT / 20,
     width: SCREEN_WIDTH / 2,
-    marginTop: SCREEN_HEIGHT / 40,
+    borderBottomWidth: 1,
+    borderColor: "white",
   },
 
   contents: {
@@ -666,4 +805,57 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+
+  chatBotView: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+
+  chatBotContents: {
+    flex: 0.84,
+    borderTopRightRadius: 10,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    marginRight: 16,
+    height: SCREEN_HEIGHT / 11,
+    maxHeight: SCREEN_HEIGHT / 11,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 2,
+      height: 2,
+    },
+    shadowOpacity: 0.7,
+    shadowRadius: 2.62,
+    elevation: 4,
+  },
+
+  chatBotImageView: {
+    marginTop: 12,
+    marginRight: 12,
+    marginLeft: 12,
+    marginBottom: 12,
+    flex: 0.16,
+    justifyContent: "center",
+    height: SCREEN_HEIGHT / 12,
+    maxHeight: SCREEN_HEIGHT / 12,
+  },
+
+  imageSize: {
+    width: "115%",
+    height: "115%",
+  },
+
+  imageSize2: {
+    width: "115%",
+    height: "115%",
+  },
+  gifView: {
+    width: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#008773",
+  },
+  gif: { width: 150, height: 150 },
 });

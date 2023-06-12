@@ -48,9 +48,11 @@ import { LinearGradient } from "expo-linear-gradient";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
-function DetailScreen(card) {
+function AnalysisDetailScreen(diaryKey2) {
   //스크린 이동할 때 lifecycle 실행
   const isFocused = useIsFocused();
+
+  console.log("diaryKey2: ", diaryKey2.route.params.diaryKey);
 
   //테마
   useEffect(() => {
@@ -167,7 +169,10 @@ function DetailScreen(card) {
   const [year, setYear] = useState("");
   const [day, setDay] = useState("");
   const [img, setImg] = useState("");
+  const [emotionData, setEmotionData] = useState({});
   const [gptText, setGptText] = useState("");
+
+  const [modifyData, setModifyData] = useState({});
 
   //Top3 감정 키워드 각각의 개수
   const [labels, setLabels] = useState([]);
@@ -175,23 +180,32 @@ function DetailScreen(card) {
 
   useEffect(() => {
     detail(); // 일기 내용 가져오기
-    chartDataSet(); // 차트 데이터 값 set
-  }, []);
+  }, [diaryKey2]);
+
+  useEffect(() => {
+    if (emotionData && Object.keys(emotionData).length > 0) {
+      chartDataSet();
+    }
+  }, [emotionData]);
 
   // 일기 내용 가져오기(read)
   const detail = async () => {
+    console.log("나 일기내용 가지고 오려고 여기 왔어어");
+    console.log("diaryKey: " + diaryKey2.route.params.diaryKey);
     try {
       await axios(
         {
           method: "post",
           url: `${API.DIARYINFO}`,
+          //   url: "http://192.168.0.18:3001/diaryinfo",
           params: {
-            diarykey: card.route.params.card.diarykey,
+            diarykey: diaryKey2.route.params.diaryKey,
           },
         },
         null
       )
         .then((res) => {
+          console.log("res: " + res);
           setTitle(res.data[0]["title"]);
           setContent(res.data[0]["content"]);
           setMonth(res.data[0]["month"]);
@@ -199,6 +213,31 @@ function DetailScreen(card) {
           setDay(res.data[0]["day"]);
           setImg(res.data[0]["img"]);
           setGptText(res.data[0]["cb_sentence"]);
+
+          setEmotionData({
+            top_emotion: res.data[0]["top_emotion"],
+            second_emotion: res.data[0]["second_emotion"],
+            third_emotion: res.data[0]["third_emotion"],
+            top_number: res.data[0]["top_number"],
+            second_number: res.data[0]["second_number"],
+            third_number: res.data[0]["third_number"],
+          });
+
+          setModifyData({
+            title: res.data[0]["title"],
+            content: res.data[0]["content"],
+            month: res.data[0]["month"],
+            year: res.data[0]["year"],
+            day: res.data[0]["day"],
+            img: res.data[0]["img"],
+            keyword: res.data[0]["keyword"],
+            top_emotion: res.data[0]["top_emotion"],
+            second_emotion: res.data[0]["second_emotion"],
+            third_emotion: res.data[0]["third_emotion"],
+            top_number: res.data[0]["top_number"],
+            second_number: res.data[0]["second_number"],
+            third_number: res.data[0]["third_number"],
+          });
         })
         .catch(function (error) {
           console.log(error);
@@ -220,7 +259,7 @@ function DetailScreen(card) {
         method: "post",
         url: `${API.DELETE}`,
         params: {
-          diarykey: card.route.params.card.diarykey,
+          diarykey: diaryKey2,
           imgKey: lmgkey[1],
         },
       },
@@ -276,29 +315,27 @@ function DetailScreen(card) {
 
   // 차트 값 설정
   const chartDataSet = () => {
-    if (card.route.params.card.second_number === 0) {
-      setLabels([card.route.params.card.top_emotion]);
+    if (emotionData.second_number === 0) {
+
+      setLabels([emotionData.top_emotion]);
       setData([100]);
-    } else if (card.route.params.card.third_number === 0) {
+    } else if (emotionData.third_number === 0) {
 
-
-      let one = card.route.params.card.top_number;
-      let two = card.route.params.card.second_number;
+      let one = emotionData.top_number;
+      let two = emotionData.second_number;
 
       let oneData = (one / (one + two)) * 100;
       let twoData = (two / (one + two)) * 100;
 
+      // 소수점 둘째 자리까지 반올림
 
-      setLabels([
-        card.route.params.card.top_emotion,
-        card.route.params.card.second_emotion,
-      ]);
-
+      setLabels([emotionData.top_emotion, emotionData.second_emotion]);
       setData([Math.round(oneData), Math.round(twoData)]);
     } else {
-      let one = card.route.params.card.top_number;
-      let two = card.route.params.card.second_number;
-      let three = card.route.params.card.third_number;
+
+      let one = emotionData.top_number;
+      let two = emotionData.second_number;
+      let three = emotionData.third_number;
 
       let oneData = (one / (one + two + three)) * 100;
       let twoData = (two / (one + two + three)) * 100;
@@ -306,18 +343,16 @@ function DetailScreen(card) {
 
 
       setLabels([
-        card.route.params.card.top_emotion,
-        card.route.params.card.second_emotion,
-        card.route.params.card.third_emotion,
+        emotionData.top_emotion,
+        emotionData.second_emotion,
+        emotionData.third_emotion,
       ]);
-
       setData([
         Math.round(oneData),
         Math.round(twoData),
         Math.round(threeData),
       ]);
     }
-    console.log("label", labels);
   };
 
   // bottom sheet 테스트
@@ -350,13 +385,15 @@ function DetailScreen(card) {
             maxLength={30}
             editable={false} // 수정누른 경우 true로 state 바꿔야 텍스트 편집가능 함.
           >
-            제목: {card.route.params.card.title}
+            제목: {title}
           </Text>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             {/* 수정 버튼 */}
             <TouchableOpacity
               style={{ padding: 10 }}
-              onPress={() => navigation.navigate("Modify", { card: card })}
+              onPress={() =>
+                navigation.navigate("Modify", { card: modifyData })
+              }
             >
               <FontAwesome5 name="pen" size={18} color={nowTheme.bg} />
             </TouchableOpacity>
@@ -377,8 +414,7 @@ function DetailScreen(card) {
         >
           {/* 날짜 */}
           <Text style={{ ...styles.date, color: nowTheme.cardBg }}>
-            날짜: {card.route.params.card.year}년 {card.route.params.card.month}
-            월 {card.route.params.card.day}일
+            날짜: {year}년 {month}월 {day}일
           </Text>
         </SafeAreaView>
 
@@ -432,7 +468,7 @@ function DetailScreen(card) {
                 fontWeight: "bold",
               }}
             >
-              {card.route.params.card.content}
+              {content}
             </Text>
           </ScrollView>
         </SafeAreaView>
@@ -523,7 +559,6 @@ function DetailScreen(card) {
                     </View>
                   </View>
                 </View>
-
                 {/* 차트 그래프 뷰 */}
                 <View style={styles.barContents}>
                   {/* 기쁨 */}
@@ -613,7 +648,7 @@ function DetailScreen(card) {
   );
 }
 
-export default DetailScreen;
+export default AnalysisDetailScreen;
 
 const styles = StyleSheet.create({
   errorTextStyle: {

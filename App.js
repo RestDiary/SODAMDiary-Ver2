@@ -30,48 +30,52 @@ import {
   magazine,
   winter,
 } from "./screens/css/globalStyles";
-import { Ionicons } from "@expo/vector-icons";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Entypo } from "@expo/vector-icons";
-import { MaterialIcons } from "@expo/vector-icons";
+import {
+  AntDesign,
+  FontAwesome5,
+  MaterialIcons,
+  Entypo,
+  Ionicons,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 import { useNavigation, useIsFocused } from "@react-navigation/native";
-import { FontAwesome5 } from "@expo/vector-icons";
-import { AntDesign } from "@expo/vector-icons";
 //screen
 import CalenderScreen from "./screens/CalenderScreen";
 import WriteScreen from "./screens/WriteScreen";
 import PictureScreen from "./screens/PictureScreen";
 import JoinScreen from "./screens/JoinScreen";
 import DiaryScreen from "./screens/DiaryScreen";
-import ChartScreen from "./screens/ChartScreen";
 import HomeScreen from "./screens/Home";
 import FindPwScreen from "./screens/FindPwScreen";
 import ChangePwScreen from "./screens/ChangePwScreen";
 import NewPwScreen from "./screens/NewPwScreen";
 import ChangeEmailScreen from "./screens/ChangeEmailScreen";
 import UserInfoScreen from "./screens/UserInfoScreen";
+import DiagnosisScreen from "./screens/DiagnosisScreen";
+import ResultScreen from "./screens/ResultScreen";
 import LoginScreen from "./screens/LoginScreen";
 import ThemeScreen from "./screens/ThemeScreen";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import AnalysisDetailScreen from "./screens/AnalysisDetailScreen";
 import DetailScreen from "./screens/DetailScreen";
 import ModifyScreen from "./screens/ModifyScreen";
 import PictureDeailScreen from "./screens/PictureDeailScreen";
-import MyPieChart from "./screens/component/charts/MyPieChart";
-import EmotionPieChart from "./screens/component/charts/EmotionPieChart";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { API } from "./config.js";
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
 
 //사용 디바이스 크기 값 받아오기
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
-//Drawer
+//Drawer 커스텀
 function CustomDrawerContent(props) {
   //스크린 이동할 때 lifecycle 실행
   const isFocused = useIsFocused();
   //테마
-  const [nowTheme, setNowTheme] = useState(dark);
+  const [nowTheme, setNowTheme] = useState(votanical);
 
   useEffect(() => {
     getTheme();
@@ -95,7 +99,7 @@ function CustomDrawerContent(props) {
     else if (selectedTheme.includes("winter")) setNowTheme(winter);
   };
 
-  const [id, setId] = useState("");
+  const [id, setId] = useState();
   const navigation = useNavigation();
   const [pieData, setPieData] = useState([]);
 
@@ -215,7 +219,11 @@ function CustomDrawerContent(props) {
 
   return (
     <DrawerContentScrollView
-      style={{ ...styles.drawerBox, backgroundColor: nowTheme.drawer }}
+      style={{
+        ...styles.drawerBox,
+        backgroundColor: nowTheme.drawer,
+        borderColor: nowTheme.btn,
+      }}
       {...props}
       contentContainerStyle={{ flex: 1 }}
     >
@@ -229,13 +237,12 @@ function CustomDrawerContent(props) {
       >
         <Image
           resizeMode="contain"
-          style={{ height: SCREEN_HEIGHT / 5 }}
+          style={{ height: SCREEN_HEIGHT / 4 }}
           source={nowTheme.logo}
         />
       </View>
 
       {/* <DrawerItemList {...props} /> */}
-
       <View style={{ alignItems: "flex-end", marginRight: 24 }}>
         <TouchableOpacity
           style={{ ...styles.nameBox, backgroundColor: nowTheme.btn }}
@@ -244,12 +251,44 @@ function CustomDrawerContent(props) {
         </TouchableOpacity>
       </View>
 
-      {/* 파이차트 */}
+      {/* 파이차트
       {pieData.length > 0 ? (
         <EmotionPieChart data={pieData} />
       ) : (
         <ActivityIndicator size="large" color="white" />
-      )}
+      )} */}
+
+      {/* 자가진단 기능 */}
+      <View style={{ marginTop: 20 }}>
+        <TouchableOpacity
+          style={{ ...styles.drawerItem, backgroundColor: nowTheme.btn }}
+          // label="Close drawer"
+          onPress={() => props.navigation.navigate("Diagnosis")}
+        >
+          <MaterialCommunityIcons
+            name="theme-light-dark"
+            size={24}
+            color="white"
+          />
+          <Text style={styles.drawerItemText}>자가진단</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* 앨범 기능 */}
+      <View style={{}}>
+        <TouchableOpacity
+          style={{ ...styles.drawerItem, backgroundColor: nowTheme.btn }}
+          // label="Close drawer"
+          onPress={() => props.navigation.navigate("Picture")}
+        >
+          <MaterialCommunityIcons
+            name="theme-light-dark"
+            size={24}
+            color="white"
+          />
+          <Text style={styles.drawerItemText}>앨범</Text>
+        </TouchableOpacity>
+      </View>
 
       {/* 테마변경 기능 */}
       <View style={{ marginTop: 20 }}>
@@ -280,102 +319,417 @@ function CustomDrawerContent(props) {
       </View>
 
       {/* 초기화 기능 */}
-      <View>
-        <TouchableOpacity
-          style={{ ...styles.drawerItem, backgroundColor: nowTheme.btn }}
-          // label="Close drawer"
-          onPress={() => deleteAll()}
-        >
-          <Ionicons name="refresh" size={24} color="red" />
-          <Text style={styles.drawerItemText}>초기화</Text>
-        </TouchableOpacity>
-      </View>
-
+      {id !== null ? (
+        <View>
+          <TouchableOpacity
+            style={{ ...styles.drawerItem, backgroundColor: nowTheme.btn }}
+            // label="Close drawer"
+            onPress={() => deleteAll()}
+          >
+            <Ionicons name="refresh" size={24} color="red" />
+            <Text style={styles.drawerItemText}>초기화</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <View></View>
+      )}
       {/* 로그아웃 기능 */}
-      <View style={{}}>
-        <TouchableOpacity
-          style={{ ...styles.drawerItem, backgroundColor: nowTheme.btn }}
-          // label="Close drawer"
-          onPress={() => logOut()}
-        >
-          <MaterialIcons name="logout" size={24} color="white" />
-          <Text style={styles.drawerItemText}>로그아웃</Text>
-        </TouchableOpacity>
-      </View>
+      {id !== null ? (
+        <View style={{}}>
+          <TouchableOpacity
+            style={{ ...styles.drawerItem, backgroundColor: nowTheme.btn }}
+            // label="Close drawer"
+            onPress={() => logOut()}
+          >
+            <MaterialIcons name="logout" size={24} color="white" />
+            <Text style={styles.drawerItemText}>로그아웃</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <View></View>
+      )}
 
       {/* 계정탈퇴 기능 */}
-      <View>
-        <TouchableOpacity
-          style={{ ...styles.drawerItem, backgroundColor: nowTheme.btn }}
-          // label="Close drawer"
-          onPress={() => withdrawal()}
-        >
-          <AntDesign name="deleteuser" size={24} color="red" />
-          <Text style={styles.drawerItemText}>계정탈퇴</Text>
-        </TouchableOpacity>
-      </View>
+      {id !== null ? (
+        <View>
+          <TouchableOpacity
+            style={{ ...styles.drawerItem, backgroundColor: nowTheme.btn }}
+            // label="Close drawer"
+            onPress={() => withdrawal()}
+          >
+            <AntDesign name="deleteuser" size={24} color="red" />
+            <Text style={styles.drawerItemText}>계정탈퇴</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <View></View>
+      )}
     </DrawerContentScrollView>
   );
 }
 
+//바텀 탭 네비게이터
+const TabComponent = () => {
+  //스크린 이동할 때 lifecycle 실행
+  const isFocused = useIsFocused();
+  //테마
+  const [nowTheme, setNowTheme] = useState(votanical);
+
+  useEffect(() => {
+    getTheme();
+  }, [isFocused]);
+
+  // useEffect(() => {
+  //   getPieData();
+  // }, []);
+
+  const getTheme = async () => {
+    let selectedTheme = await AsyncStorage.getItem("theme");
+
+    if (selectedTheme.includes("dark")) setNowTheme(dark);
+    else if (selectedTheme.includes("votanical")) setNowTheme(votanical);
+    else if (selectedTheme.includes("town")) setNowTheme(town);
+    else if (selectedTheme.includes("classic")) setNowTheme(classic);
+    else if (selectedTheme.includes("purple")) setNowTheme(purple);
+    else if (selectedTheme.includes("block")) setNowTheme(block);
+    else if (selectedTheme.includes("pattern")) setNowTheme(pattern);
+    else if (selectedTheme.includes("magazine")) setNowTheme(magazine);
+    else if (selectedTheme.includes("winter")) setNowTheme(winter);
+  };
+
+  const navigation = useNavigation();
+  return (
+    <Tab.Navigator
+      backBehavior="history"
+      screenOptions={({ route }) => ({
+        tabBarLabel: route.name,
+        tabBarIcon: ({ focused }) => TabBarIcon(focused, route.name),
+
+        tabBarActiveBackgroundColor: "white",
+        tabBarInactiveBackgroundColor: "white",
+        tabBarActiveTintColor: "#549750",
+        tabBarInactiveTintColor: "black",
+        // tabBarLabelPosition: 'beside-icon',
+        tabBarLabelPosition: "below-icon",
+        headerShown: false,
+      })}
+    >
+      <Tab.Screen
+        name="home"
+        component={MyDrawer}
+        listeners={() => ({
+          tabPress: (e) => {
+            e.preventDefault();
+            navigation.navigate("Home");
+          },
+        })}
+      />
+      {/* option options={{tabBarStyle : {display:'none'}}} 으로 조작하면 특정 네비게이터에서 안보인다. */}
+      <Tab.Screen
+        name="write"
+        component={WriteScreen}
+        options={{ tabBarHideOnKeyboard: true }} //키보드 꺼내면 안보이게
+      />
+      <Tab.Screen name="calender" component={CalenderScreen} />
+    </Tab.Navigator>
+  );
+};
+
+//바텀탭 아이콘
+const TabBarIcon = (focused, name) => {
+  let iconName, iconSize;
+
+  //스크린 이동할 때 lifecycle 실행
+  const isFocused = useIsFocused();
+  //테마
+  const [nowTheme, setNowTheme] = useState(votanical);
+
+  useEffect(() => {
+    getTheme();
+  }, [isFocused]);
+
+  // useEffect(() => {
+  //   getPieData();
+  // }, []);
+
+  const getTheme = async () => {
+    let selectedTheme = await AsyncStorage.getItem("theme");
+
+    if (selectedTheme.includes("dark")) setNowTheme(dark);
+    else if (selectedTheme.includes("votanical")) setNowTheme(votanical);
+    else if (selectedTheme.includes("town")) setNowTheme(town);
+    else if (selectedTheme.includes("classic")) setNowTheme(classic);
+    else if (selectedTheme.includes("purple")) setNowTheme(purple);
+    else if (selectedTheme.includes("block")) setNowTheme(block);
+    else if (selectedTheme.includes("pattern")) setNowTheme(pattern);
+    else if (selectedTheme.includes("magazine")) setNowTheme(magazine);
+    else if (selectedTheme.includes("winter")) setNowTheme(winter);
+  };
+
+  if (name == "home") {
+    iconName = "home-outline";
+    // iconImagePath = require('./assets/favicon.png');
+  } else if (name == "write") {
+    iconName = "add-circle-outline";
+    // iconImagePath = require('./assets/icon.png');
+  } else if (name == "calender") {
+    iconName = "calendar-sharp";
+    // iconImagePath = require('./assets/favicon.png');
+  }
+  iconSize = focused ? 22 : 24;
+  return (
+    <>
+      <Ionicons name={iconName} size={iconSize} color={nowTheme.btn} />
+      <Image
+        style={{
+          height: focused ? -2 : -2,
+        }}
+        // source={iconImagePath}
+      />
+    </>
+  );
+};
+
+//드로워 네비게이터 컴포넌트 (바텀탭 네비게이터)
 function MyDrawer() {
+  //스크린 이동할 때 lifecycle 실행
+  const isFocused = useIsFocused();
+  //테마
+  const [nowTheme, setNowTheme] = useState(votanical);
+
+  const navigation = useNavigation();
+  const [id, setId] = useState();
+  useEffect(() => {
+    AsyncStorage.getItem("id", (err, result) => {
+      console.log("id: ", result);
+      setId(result);
+    });
+    getTheme();
+  }, [isFocused]);
+
+  // useEffect(() => {
+  //   getPieData();
+  // }, []);
+
+  const getTheme = async () => {
+    let selectedTheme = await AsyncStorage.getItem("theme");
+
+    if (selectedTheme.includes("dark")) setNowTheme(dark);
+    else if (selectedTheme.includes("votanical")) setNowTheme(votanical);
+    else if (selectedTheme.includes("town")) setNowTheme(town);
+    else if (selectedTheme.includes("classic")) setNowTheme(classic);
+    else if (selectedTheme.includes("purple")) setNowTheme(purple);
+    else if (selectedTheme.includes("block")) setNowTheme(block);
+    else if (selectedTheme.includes("pattern")) setNowTheme(pattern);
+    else if (selectedTheme.includes("magazine")) setNowTheme(magazine);
+    else if (selectedTheme.includes("winter")) setNowTheme(winter);
+  };
+
   return (
     <Drawer.Navigator
       useLegacyImplementation
-      drawerStyle={{ backgroundColor: "#C6CBEF" }}
       drawerContent={(props) => <CustomDrawerContent {...props} />}
+      drawerStyle={{ backgroundColor: nowTheme.btn }}
+      options={{}}
+      drawerContentStyle={{
+        activeTintColor: "red",
+        inactiveTintColor: "red",
+      }}
+      screenOptions={{
+        swipeEnabled: false,
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: nowTheme.bg,
+          shadowColor: "#000",
+          shadowOffset: {
+            width: 2,
+            height: 2,
+          },
+          shadowOpacity: 0.7,
+          shadowRadius: 2.62,
+          elevation: 4,
+        },
+
+        headerTitle: "",
+        headerRight: () => (
+          // 오르쪽에 검색, 프로필 보기 네비게이터 만들기
+          <TouchableOpacity
+            // onPress={(...props) => props.navigation.navigate("diary")}
+            onPress={() => navigation.navigate("Diary")}
+            style={{
+              backgroundColor: nowTheme.btn,
+              margin: 8,
+              padding: 8,
+              borderRadius: 10,
+              shadowColor: "#000",
+              shadowOffset: {
+                width: 2,
+                height: 2,
+              },
+              shadowOpacity: 0.7,
+              shadowRadius: 2.62,
+              elevation: 4,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: SCREEN_WIDTH / 26,
+                fontWeight: "bold",
+                color: nowTheme.bg,
+              }}
+            >
+              다이어리
+            </Text>
+          </TouchableOpacity>
+        ),
+      }}
     >
       <Drawer.Screen
-        name="home"
-        options={{ headerShown: false }}
-        component={HomeScreen}
+        name="SoDam"
+        options={{
+          headerShown: true,
+
+          headerTintColor: nowTheme.btn,
+        }}
+        component={MyStack}
+      />
+
+      <Drawer.Screen
+        name="Diary"
+        component={DiaryScreen}
+        options={{
+          headerTintColor: "black",
+          headerShown: false,
+        }}
       />
     </Drawer.Navigator>
   );
 }
 
 function MyStack() {
+  const [id, setId] = useState();
+  const isFocused = useIsFocused();
+  useEffect(() => {
+    AsyncStorage.getItem("id", (err, result) => {
+      console.log("id: ", result);
+      setId(result);
+    });
+  }, [isFocused]);
+
+  // useEffect(() => {
+  //   getPieData();
+  // }, []);
+
+  const getTheme = async () => {
+    let selectedTheme = await AsyncStorage.getItem("theme");
+
+    if (selectedTheme.includes("dark")) setNowTheme(dark);
+    else if (selectedTheme.includes("votanical")) setNowTheme(votanical);
+    else if (selectedTheme.includes("town")) setNowTheme(town);
+    else if (selectedTheme.includes("classic")) setNowTheme(classic);
+    else if (selectedTheme.includes("purple")) setNowTheme(purple);
+    else if (selectedTheme.includes("block")) setNowTheme(block);
+    else if (selectedTheme.includes("pattern")) setNowTheme(pattern);
+    else if (selectedTheme.includes("magazine")) setNowTheme(magazine);
+    else if (selectedTheme.includes("winter")) setNowTheme(winter);
+  };
+
+  //스크린 이동할 때 lifecycle 실행
+
+  //테마
+  const [nowTheme, setNowTheme] = useState(votanical);
+
+  useEffect(() => {
+    getTheme();
+  }, [isFocused]);
+
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName="Home">
       <Stack.Screen
         name="Login"
         component={LoginScreen}
-        options={{ headerShown: false, headerTintColor: "black" }}
+        options={{
+          headerShown: false,
+          headerTintColor: "black",
+        }}
       />
-      <Stack.Screen
-        name="Home"
-        component={MyDrawer}
-        options={{ headerShown: false, headerTintColor: "black" }}
-      />
+
+      {/*드로워 네비게이터 스택에 등록  */}
+      {id !== null ? (
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{
+            headerShown: false,
+            headerTintColor: "black",
+          }}
+        />
+      ) : (
+        <Stack.Screen
+          name="Home"
+          component={LoginScreen}
+          options={{
+            headerShown: false,
+            headerTintColor: "black",
+          }}
+        />
+      )}
 
       {/* Home */}
-      <Stack.Screen
-        name="Calender"
-        component={CalenderScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
-      />
-      <Stack.Screen
-        name="Chart"
-        component={ChartScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
-      />
-      <Stack.Screen
-        name="Write"
-        component={WriteScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
-      />
-      <Stack.Screen
-        name="Diary"
-        component={DiaryScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
-      />
-      <Stack.Screen
-        name="Picture"
-        component={PictureScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
-      />
+      {id !== null ? (
+        <Stack.Screen
+          name="Calender"
+          component={CalenderScreen}
+          options={{ headerTintColor: "black", headerShown: false }}
+        />
+      ) : (
+        <Stack.Screen
+          name="Calender"
+          component={LoginScreen}
+          options={{ headerTintColor: "black", headerShown: false }}
+        />
+      )}
+      {id !== null ? (
+        <Stack.Screen
+          name="Write"
+          component={WriteScreen}
+          options={{
+            headerTintColor: "black",
+            headerShown: false,
+          }}
+        />
+      ) : (
+        <Stack.Screen
+          name="Write"
+          component={LoginScreen}
+          options={{
+            headerTintColor: "black",
+            headerShown: false,
+          }}
+        />
+      )}
+      {id !== null ? (
+        <Stack.Screen
+          name="Picture"
+          component={PictureScreen}
+          options={{
+            headerTintColor: "black",
+            headerShown: false,
+          }}
+        />
+      ) : (
+        <Stack.Screen
+          name="Picture"
+          component={LoginScreen}
+          options={{
+            headerTintColor: "black",
+            headerShown: false,
+          }}
+        />
+      )}
 
       {/* 기타 스크린 */}
+
       <Stack.Screen
         name="Join"
         component={JoinScreen}
@@ -397,42 +751,119 @@ function MyStack() {
       <Stack.Screen
         name="ChangePw"
         component={ChangePwScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
+        options={{
+          headerTintColor: "black",
+          headerShown: false,
+        }}
       />
       <Stack.Screen
         name="NewPw"
         component={NewPwScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
+        options={{
+          headerTintColor: "black",
+          headerShown: false,
+        }}
       />
       <Stack.Screen
         name="ChangeEmail"
         component={ChangeEmailScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
+        options={{
+          headerTintColor: "black",
+          headerShown: false,
+        }}
       />
       <Stack.Screen
-        name="UserInfo"
-        component={UserInfoScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
+        name="Diagnosis"
+        component={DiagnosisScreen}
+        options={{
+          headerTintColor: "black",
+          headerShown: false,
+        }}
       />
+
       <Stack.Screen
-        name="Theme"
-        component={ThemeScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
+        name="ResultScreen"
+        component={ResultScreen}
+        options={{
+          headerTintColor: "black",
+          headerShown: false,
+
+          animation: "none",
+        }}
       />
+
+      {/* {개인 정보} */}
+      {id !== null ? (
+        <Stack.Screen
+          name="UserInfo"
+          component={UserInfoScreen}
+          options={{
+            headerTintColor: "black",
+            headerShown: false,
+          }}
+        />
+      ) : (
+        <Stack.Screen
+          name="UserInfo"
+          component={LoginScreen}
+          options={{
+            headerTintColor: "black",
+            headerShown: false,
+          }}
+        />
+      )}
+
+      {id !== null ? (
+        <Stack.Screen
+          name="Theme"
+          component={ThemeScreen}
+          options={{
+            headerTintColor: "black",
+            headerShown: false,
+          }}
+        />
+      ) : (
+        <Stack.Screen
+          name="Theme"
+          component={LoginScreen}
+          options={{
+            headerTintColor: "black",
+            headerShown: false,
+          }}
+        />
+      )}
+
       <Stack.Screen
         name="Detail"
         component={DetailScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
+        options={{
+          headerTintColor: "black",
+          headerShown: false,
+        }}
       />
       <Stack.Screen
         name="Modify"
         component={ModifyScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
+        options={{
+          headerTintColor: "black",
+          headerShown: false,
+        }}
       />
       <Stack.Screen
         name="Album"
         component={PictureDeailScreen}
-        options={{ headerTintColor: "black", headerShown: false }}
+        options={{
+          headerTintColor: "black",
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="AnalysisDetailScreen"
+        component={AnalysisDetailScreen}
+        options={{
+          headerTintColor: "black",
+          headerShown: false,
+        }}
       />
     </Stack.Navigator>
   );
@@ -446,13 +877,13 @@ export default function App() {
   const defaultTheme = async () => {
     let theme = await AsyncStorage.getItem("theme");
     if (!theme) {
-      await AsyncStorage.setItem("theme", "dark");
+      await AsyncStorage.setItem("theme", "votanical");
     }
   };
 
   return (
     <NavigationContainer>
-      <MyStack />
+      <TabComponent />
     </NavigationContainer>
   );
 }
@@ -460,13 +891,20 @@ export default function App() {
 const styles = StyleSheet.create({
   nameBox: {
     padding: 6,
-    backgroundColor: "#456185",
+    backgroundColor: "#379947",
     borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 2,
+      height: 2,
+    },
+    shadowOpacity: 0.7,
+    shadowRadius: 2.62,
+    elevation: 4,
   },
   drawerBox: {
     backgroundColor: "#071D3A",
     borderRightWidth: 1,
-    borderColor: "#555",
   },
 
   drawerChart: {
@@ -518,6 +956,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     opacity: 0.8,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 2,
+      height: 2,
+    },
+    shadowOpacity: 0.7,
+    shadowRadius: 2.62,
+    elevation: 4,
   },
 
   drawerItemText: {
